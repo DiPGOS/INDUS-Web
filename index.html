@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="description" content="" data-content="meta.description" />
+    <link rel="icon" id="favicon" href="" type="image/x-icon" />
+    <title>IndusTechSol</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f182a",
+                        "accent": "#3B82F6",
+                        "background-light": "#ffffff",
+                        "background-subtle": "#F8FAFC",
+                        "background-dark": "#14171e",
+                        "border-subtle": "#E2E8F0",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 20px -5px rgba(59, 130, 246, 0.3)'
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
+    </style>
+</head>
+<body class="bg-background-light text-primary antialiased selection:bg-accent selection:text-white overflow-x-hidden">
+    <!-- Header: transparent background -->
+    <header id="header" class="fixed top-0 left-0 w-full z-50 bg-transparent transition-colors duration-300">
+        <div class="max-w-[1280px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img id="header-logo-img" src="" alt="" class="h-8 w-auto object-contain hidden" />
+                <div id="header-logo-fallback" class="size-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">architecture</span>
+                </div>
+                <span id="header-logo" class="text-white text-xl font-bold tracking-tight drop-shadow-md">IndusTechSol</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-8" id="header-nav"></nav>
+            <div class="flex items-center gap-4">
+                <button id="header-cta" class="hidden sm:flex h-10 px-5 items-center justify-center rounded-lg bg-white/90 text-primary text-sm font-semibold hover:bg-white transition-colors shadow-sm">
+                    Request Demo
+                </button>
+                <button class="md:hidden p-2 text-white" aria-label="Menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero: full-screen image + centered headline -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center px-6 hero-bg" data-hero-bg="">
+        <div class="absolute inset-0 bg-primary/40"></div>
+        <h1 id="hero-headline" class="relative z-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center max-w-4xl drop-shadow-lg leading-tight">
+            We are Shaping the Future of Engineering & Construction
+        </h1>
+    </section>
+
+    <!-- Section: DiPGOS intro -->
+    <section class="py-20 md:py-28 bg-background-light border-t border-border-subtle">
+        <div class="max-w-[800px] mx-auto px-6 text-center space-y-6">
+            <p id="section-intro-line1" class="text-xl md:text-2xl font-semibold text-primary leading-relaxed"></p>
+            <p id="section-intro-line2" class="text-lg md:text-xl text-slate-600 leading-relaxed"></p>
+        </div>
+    </section>
+
+    <!-- Section: DiPGOS domain-built OS -->
+    <section class="py-20 md:py-28 bg-background-subtle">
+        <div class="max-w-[800px] mx-auto px-6 text-center">
+            <p id="section-dipgos-para" class="text-lg md:text-xl text-slate-700 leading-relaxed"></p>
+        </div>
+    </section>
+
+    <!-- Section: Physical AI -->
+    <section class="py-20 md:py-28 bg-background-light border-t border-border-subtle">
+        <div class="max-w-[800px] mx-auto px-6 text-center space-y-6">
+            <h2 id="section-physical-heading" class="text-2xl md:text-3xl font-bold text-primary"></h2>
+            <p id="section-physical-body1" class="text-lg text-slate-600 leading-relaxed"></p>
+            <p id="section-physical-body2" class="text-base md:text-lg font-semibold text-primary uppercase tracking-wide"></p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-16">
+        <div class="max-w-[1280px] mx-auto px-6 text-center">
+            <p id="footer-tagline" class="text-slate-300 mb-2"></p>
+            <p id="footer-copy" class="text-sm text-slate-400"></p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const contentPath = 'content.json';
+
+            function setText(id, value) {
+                const el = document.getElementById(id);
+                if (el && value != null) el.textContent = value;
+            }
+
+            function setMeta(name, value) {
+                const el = document.querySelector('meta[name="' + name + '"]');
+                if (el && value != null) el.setAttribute('content', value);
+            }
+
+            function applyContent(data) {
+                if (!data) return;
+
+                if (data.meta) {
+                    if (data.meta.title) document.title = data.meta.title;
+                    if (data.meta.description) setMeta('description', data.meta.description);
+                    const faviconEl = document.getElementById('favicon');
+                    if (faviconEl && (data.meta.favicon || (data.images && data.images.favicon))) {
+                        const faviconPath = data.meta.favicon || data.images.favicon;
+                        faviconEl.href = faviconPath;
+                        const ext = faviconPath.toLowerCase().split('.').pop();
+                        faviconEl.type = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/x-icon';
+                    }
+                }
+
+                if (data.header) {
+                    setText('header-logo', data.header.logoText);
+                    setText('header-cta', data.header.ctaText);
+                    const logoImg = document.getElementById('header-logo-img');
+                    const logoFallback = document.getElementById('header-logo-fallback');
+                    const logo = data.header.logo || (data.images && data.images.logo);
+                    const logoLight = logo && (logo.light || (typeof logo === 'string' ? logo : null));
+                    const logoDark = logo && logo.dark;
+                    if (logoImg && logoFallback) {
+                        if (logoLight) {
+                            logoImg.src = logoLight;
+                            logoImg.alt = data.header.logoText || 'Logo';
+                            logoImg.classList.remove('hidden');
+                            logoFallback.classList.add('hidden');
+                            logoImg.dataset.logoLight = logoLight;
+                            logoImg.dataset.logoDark = logoDark || logoLight;
+                        } else {
+                            logoImg.classList.add('hidden');
+                            logoFallback.classList.remove('hidden');
+                        }
+                    }
+                    const nav = document.getElementById('header-nav');
+                    if (nav && Array.isArray(data.header.nav)) {
+                        nav.innerHTML = data.header.nav.map(function (item) {
+                            return '<a class="text-sm font-medium text-white/90 hover:text-white transition-colors drop-shadow-sm" href="' + (item.href || '#') + '">' + (item.label || '') + '</a>';
+                        }).join('');
+                    }
+                }
+
+                if (data.hero) {
+                    const hero = document.getElementById('hero');
+                    if (hero && data.hero.image) {
+                        hero.style.backgroundImage = "url('" + data.hero.image + "')";
+                    }
+                    setText('hero-headline', data.hero.headline);
+                }
+
+                const s = data.sections || {};
+                if (s.intro) {
+                    setText('section-intro-line1', s.intro.line1);
+                    setText('section-intro-line2', s.intro.line2);
+                }
+                if (s.dipgosDescription) {
+                    setText('section-dipgos-para', s.dipgosDescription.paragraph);
+                }
+                if (s.physicalAI) {
+                    setText('section-physical-heading', s.physicalAI.heading);
+                    setText('section-physical-body1', s.physicalAI.body1);
+                    setText('section-physical-body2', s.physicalAI.body2);
+                }
+
+                if (data.footer) {
+                    setText('footer-tagline', data.footer.tagline);
+                    setText('footer-copy', '© ' + (data.footer.year || new Date().getFullYear()) + ' ' + (data.footer.companyName || '') + '. All rights reserved.');
+                }
+            }
+
+            function onScroll() {
+                const header = document.getElementById('header');
+                if (!header) return;
+                const logoImg = document.getElementById('header-logo-img');
+                if (window.scrollY > 60) {
+                    header.classList.remove('bg-transparent');
+                    header.classList.add('bg-white/95', 'backdrop-blur-md', 'border-b', 'border-border-subtle', 'header-solid');
+                    if (logoImg && logoImg.dataset.logoDark) logoImg.src = logoImg.dataset.logoDark;
+                    header.querySelector('#header-logo').classList.remove('text-white', 'drop-shadow-md');
+                    header.querySelector('#header-logo').classList.add('text-primary');
+                    const cta = document.getElementById('header-cta');
+                    if (cta) {
+                        cta.classList.remove('bg-white/90', 'text-primary');
+                        cta.classList.add('bg-primary', 'text-white');
+                    }
+                    const links = header.querySelectorAll('nav a');
+                    links.forEach(function (a) {
+                        a.classList.remove('text-white/90', 'hover:text-white', 'drop-shadow-sm');
+                        a.classList.add('text-slate-600', 'hover:text-primary');
+                    });
+                } else {
+                    header.classList.add('bg-transparent');
+                    header.classList.remove('bg-white/95', 'backdrop-blur-md', 'border-b', 'border-border-subtle', 'header-solid');
+                    if (logoImg && logoImg.dataset.logoLight) logoImg.src = logoImg.dataset.logoLight;
+                    header.querySelector('#header-logo').classList.add('text-white', 'drop-shadow-md');
+                    header.querySelector('#header-logo').classList.remove('text-primary');
+                    const cta = document.getElementById('header-cta');
+                    if (cta) {
+                        cta.classList.add('bg-white/90', 'text-primary');
+                        cta.classList.remove('bg-primary', 'text-white');
+                    }
+                    const links = header.querySelectorAll('nav a');
+                    links.forEach(function (a) {
+                        a.classList.add('text-white/90', 'hover:text-white', 'drop-shadow-sm');
+                        a.classList.remove('text-slate-600', 'hover:text-primary');
+                    });
+                }
+            }
+
+            fetch(contentPath)
+                .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('Failed to load content')); })
+                .then(applyContent)
+                .catch(function (err) {
+                    console.error(err);
+                    applyContent({
+                        meta: { title: 'IndusTechSol', favicon: 'assets/images/Logo/logo_light.webp' },
+                        header: { logoText: 'IndusTechSol', logo: { light: 'assets/images/Logo/logo_light.webp', dark: 'assets/images/Logo/logo_dark.webp' }, ctaText: 'Request Demo', nav: [] },
+                        images: { logo: { light: 'assets/images/Logo/logo_light.webp', dark: 'assets/images/Logo/logo_dark.webp' }, favicon: 'assets/images/Logo/logo_light.webp' },
+                        hero: { image: 'assets/images/main.png', headline: 'We are Shaping the Future of Engineering & Construction' },
+                        sections: {
+                            intro: { line1: 'Until now, construction ran on fragmented tools. Now it runs on an Operating System.', line2: "Introducing DiPGOS - the world's first Project Operating System - design, execution, and operations unified in a single intelligent platform." },
+                            dipgosDescription: { paragraph: 'DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations and control by treating construction activities as production systems rather than isolated tasks.' },
+                            physicalAI: { heading: 'Physical AI-powered Project Operating System', body1: 'A System that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding of how things work.', body2: 'WHERE INTELLIGENCE ISNT JUST ARTIFICIAL, BUT PHYSICALLY & OPERATIONALLY AWARE' }
+                        },
+                        footer: { companyName: 'IndusTechSol', tagline: 'Building the digital backbone for the physical world.', year: '2025' }
+                    });
+                });
+
+            window.addEventListener('scroll', onScroll);
+            onScroll();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "title": "IndusTechSol – Shaping the Future of Engineering & Construction",
+    "description": "DiPGOS - the world's first Project Operating System. Design, execution, and operations unified in a single intelligent platform.",
+    "favicon": "assets/images/Logo/logo_light.webp"
+  },
+  "header": {
+    "logoText": "",
+    "logo": {
+      "light": "assets/images/Logo/logo_light.webp",
+      "dark": "assets/images/Logo/logo_dark.webp"
+    },
+    "nav": [
+      { "label": "Product", "href": "#product" },
+      { "label": "Solutions", "href": "#solutions" },
+      { "label": "Company", "href": "#company" }
+    ],
+    "ctaText": "Request Demo"
+  },
+  "hero": {
+    "image": "assets/images/main.png",
+    "headline": "We are Shaping the Future of Engineering & Construction"
+  },
+  "sections": {
+    "intro": {
+      "line1": "Until now, construction ran on fragmented tools. Now it runs on an Operating System.",
+      "line2": "Introducing DiPGOS - the world's first Project Operating System - design, execution, and operations unified in a single intelligent platform."
+    },
+    "dipgosDescription": {
+      "paragraph": "DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations and control by treating construction activities as production systems rather than isolated tasks."
+    },
+    "physicalAI": {
+      "heading": "Physical AI-powered Project Operating System",
+      "body1": "A System that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding of how things work.",
+      "body2": "WHERE INTELLIGENCE ISNT JUST ARTIFICIAL, BUT PHYSICALLY & OPERATIONALLY AWARE"
+    }
+  },
+  "footer": {
+    "companyName": "IndusTechSol",
+    "tagline": "Building the digital backbone for the physical world.",
+    "year": "2025",
+    "links": {
+      "product": [
+        { "label": "DiPGOS", "href": "#" },
+        { "label": "Contact", "href": "#" }
+      ],
+      "legal": [
+        { "label": "Privacy Policy", "href": "#" },
+        { "label": "Terms of Service", "href": "#" }
+      ]
+    }
+  },
+  "images": {
+    "logo": {
+      "light": "assets/images/Logo/logo_light.webp",
+      "dark": "assets/images/Logo/logo_dark.webp"
+    },
+    "favicon": "assets/images/Logo/logo_light.webp",
+    "hero": "assets/images/main.png",
+    "reference": "assets/images/References/main_ref.png",
+    "dipgosDashboard": {
+      "light": "assets/images/dipgos_dashboard/dipgos_dashboard_light.webp",
+      "dark": "assets/images/dipgos_dashboard/dipgos_dashboard_dark.webp"
+    },
+    "autonomousStudio": {
+      "light": "assets/images/accs/accs_light.webp",
+      "dark": "assets/images/accs/accs_dark.webp"
+    }
+  }
+}
