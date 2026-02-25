@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "IndusTechSol – Shaping the Future of Engineering & Construction",
-    "description": "DiPGOS - the world's first Project Operating System. Design, execution, and operations unified in a single intelligent platform.",
+    "title": "IndusTechSol – The Project Operating System for Engineering & Construction",
+    "description": "DiPGOS unifies CPDS, ACCS, and AOS into a single intelligent platform. From proposal to operations, experience seamless, AI‑powered project delivery.",
     "favicon": "assets/images/Logo/logo_light.webp"
   },
   "header": {
@@ -12,6 +12,7 @@
     },
     "nav": [
       { "label": "Product", "href": "#product" },
+      { "label": "Platform", "href": "#platform" },
       { "label": "Solutions", "href": "#solutions" },
       { "label": "Company", "href": "#company" }
     ],
@@ -19,20 +20,115 @@
   },
   "hero": {
     "image": "assets/images/main.png",
-    "headline": "We are Shaping the Future of Engineering & Construction"
+    "headline": "We are Shaping the Future of Engineering & Construction",
+    "subheadline": "Introducing DiPGOS – the world's first Project Operating System"
   },
   "sections": {
     "intro": {
       "line1": "Until now, construction ran on fragmented tools. Now it runs on an Operating System.",
-      "line2": "Introducing DiPGOS - the world's first Project Operating System - design, execution, and operations unified in a single intelligent platform."
+      "line2": "DiPGOS – design, execution, and operations unified in a single intelligent platform."
     },
     "dipgosDescription": {
       "paragraph": "DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations and control by treating construction activities as production systems rather than isolated tasks."
     },
-    "physicalAI": {
-      "heading": "Physical AI-powered Project Operating System",
-      "body1": "A System that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding of how things work.",
-      "body2": "WHERE INTELLIGENCE ISNT JUST ARTIFICIAL, BUT PHYSICALLY & OPERATIONALLY AWARE"
+    "ontology": {
+      "heading": "System Ontology – Built for Complexity",
+      "description": "Every project is broken down into a universal, scalable hierarchy that ensures consistency across all phases:",
+      "hierarchy": [
+        "Project",
+        "Contract",
+        "Scope",
+        "Activity",
+        "Subactivity",
+        "Operation",
+        "Atom"
+      ],
+      "visual": "assets/images/ontology-diagram.png"
+    },
+    "products": {
+      "heading": "Three Products, One Unified Platform",
+      "intro": "Seamlessly move from proposal to construction to maintenance with purpose‑built studios that share the same intelligent core.",
+      "items": [
+        {
+          "name": "CPDS",
+          "fullName": "Cognitive Project Design Studio",
+          "description": "Turn RFPs into structured proposals. AI extracts scopes, BOQ, schedules and builds a traceable process with an n8n‑like flow canvas.",
+          "imageLight": "assets/images/dipgos_dashboard/dipgos_dashboard_light.webp",
+          "imageDark": "assets/images/dipgos_dashboard/dipgos_dashboard_dark.webp",
+          "phase": "Phase 1 – Proposal & Design"
+        },
+        {
+          "name": "ACCS",
+          "fullName": "Autonomous Cognitive Construction Studio",
+          "description": "Monitor execution in real‑time. AI compares as‑built against the plan, predicts delays, and automates compliance checks.",
+          "imageLight": "assets/images/accs/accs_light.webp",
+          "imageDark": "assets/images/accs/accs_dark.webp",
+          "phase": "Phase 2 – Construction & Monitoring"
+        },
+        {
+          "name": "AOS",
+          "fullName": "Autonomous Operation & Maintenance",
+          "description": "Extend asset life with AI‑driven maintenance schedules, real‑time sensor integration, and automated work orders.",
+          "imageLight": "assets/images/aos/aos_light.webp",
+          "imageDark": "assets/images/aos/aos_dark.webp",
+          "phase": "Phase 3 – Operations & Maintenance"
+        }
+      ]
+    },
+    "aiCapabilities": {
+      "heading": "Physical AI – Intelligence That Understands Reality",
+      "features": [
+        {
+          "title": "Physics‑Informed AI",
+          "description": "Our models are trained on construction domain knowledge, not just generic data – they understand loads, materials, and sequences."
+        },
+        {
+          "title": "Knowledge Retrieval from Past Work",
+          "description": "Leverage historical project data (KR) to generate better proposals, estimate risks, and reuse proven workflows."
+        },
+        {
+          "title": "Conversational AI Assistant",
+          "description": "Chat with your project data. Ask “What are the unresolved requirements?” or “Show me all operations that need a crane.”"
+        },
+        {
+          "title": "Applied AI in Proposal Making",
+          "description": "Auto‑populate BOQ, suggest scopes based on performance history, and flag compliance gaps before submission."
+        }
+      ]
+    },
+    "painPoints": {
+      "heading": "Solving the Real Pain Points of Construction",
+      "points": [
+        {
+          "icon": "collaboration",
+          "title": "Fragmented Collaboration",
+          "solution": "One source of truth for all stakeholders – estimators, engineers, compliance officers, and site teams."
+        },
+        {
+          "icon": "updates",
+          "title": "Slow, Error‑Prone Updates",
+          "solution": "Change a scope and watch it propagate instantly to BOQ, schedule, and compliance matrices."
+        },
+        {
+          "icon": "approvals",
+          "title": "Delayed BOQ Approvals",
+          "solution": "AI pre‑validates quantities and costs; approval workflows are triggered automatically."
+        },
+        {
+          "icon": "seamless",
+          "title": "Disconnected Phases",
+          "solution": "Data flows seamlessly from CPDS → ACCS → AOS – no manual handoffs, no information loss."
+        }
+      ]
+    },
+    "whyIndusTech": {
+      "heading": "Why IndusTechSol?",
+      "reasons": [
+        "We don't just digitize – we **operationalize** with a production‑system mindset.",
+        "Our ontology covers everything from a billion‑dollar contract down to a single worker (atom).",
+        "We are the only platform with **physical AI** that respects the laws of construction.",
+        "Trusted by leading EPC firms and infrastructure owners."
+      ]
     }
   },
   "footer": {
@@ -42,6 +138,9 @@
     "links": {
       "product": [
         { "label": "DiPGOS", "href": "#" },
+        { "label": "CPDS", "href": "#" },
+        { "label": "ACCS", "href": "#" },
+        { "label": "AOS", "href": "#" },
         { "label": "Contact", "href": "#" }
       ],
       "legal": [
@@ -62,9 +161,14 @@
       "light": "assets/images/dipgos_dashboard/dipgos_dashboard_light.webp",
       "dark": "assets/images/dipgos_dashboard/dipgos_dashboard_dark.webp"
     },
-    "autonomousStudio": {
+    "accs": {
       "light": "assets/images/accs/accs_light.webp",
       "dark": "assets/images/accs/accs_dark.webp"
-    }
+    },
+    "aos": {
+      "light": "assets/images/aos/aos_light.webp",
+      "dark": "assets/images/aos/aos_dark.webp"
+    },
+    "ontologyDiagram": "assets/images/ontology-diagram.png"
   }
 }

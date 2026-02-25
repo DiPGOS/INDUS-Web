@@ -1,261 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta name="description" content="" data-content="meta.description" />
-    <link rel="icon" id="favicon" href="" type="image/x-icon" />
-    <title>IndusTechSol</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#0f182a",
-                        "accent": "#3B82F6",
-                        "background-light": "#ffffff",
-                        "background-subtle": "#F8FAFC",
-                        "background-dark": "#14171e",
-                        "border-subtle": "#E2E8F0",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "sans": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "2xl": "2rem",
-                        "full": "9999px"
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                        'glow': '0 0 20px -5px rgba(59, 130, 246, 0.3)'
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .hero-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DiPGOS unifies CPDS, ACCS, and AOS into a single intelligent platform.">
+  <meta name="theme-color" content="#2563eb">
+  <title>IndusTechSol – The Project Operating System</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/webp" href="public/images/Logo/logo_light.webp">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-background-light text-primary antialiased selection:bg-accent selection:text-white overflow-x-hidden">
-    <!-- Header: transparent background -->
-    <header id="header" class="fixed top-0 left-0 w-full z-50 bg-transparent transition-colors duration-300">
-        <div class="max-w-[1280px] mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <img id="header-logo-img" src="" alt="" class="h-8 w-auto object-contain hidden" />
-                <div id="header-logo-fallback" class="size-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
-                    <span class="material-symbols-outlined text-[20px]">architecture</span>
-                </div>
-                <span id="header-logo" class="text-white text-xl font-bold tracking-tight drop-shadow-md">IndusTechSol</span>
+<body>
+
+  <!-- =============================================
+       HEADER
+       ============================================= -->
+  <header id="site-header">
+    <div class="header-inner">
+      <!-- Logo -->
+      <a href="#" class="logo-wrap" aria-label="IndusTechSol Home">
+        <img id="logo-img" class="logo-img" src="" alt="IndusTechSol" />
+        <!-- Fallback icon shown until image loads or on error -->
+        <div class="logo-icon" id="logo-icon-fallback" aria-hidden="true">
+          <span class="material-symbols-outlined">architecture</span>
+        </div>
+        <span class="logo-text"></span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav id="nav-links" class="nav-links" aria-label="Main navigation"></nav>
+
+      <!-- Desktop CTA + Hamburger -->
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <a href="mailto:sales@industechsol.com" class="header-cta" style="display:none;" id="header-cta-btn">Request Demo</a>
+        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+      <div id="mobile-nav"></div>
+    </nav>
+  </header>
+
+  <!-- =============================================
+       HERO
+       ============================================= -->
+  <section id="hero">
+    <!-- Background -->
+    <div class="hero-bg-img" aria-hidden="true"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <!-- Ambient orbs -->
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+
+    <!-- Content -->
+    <div class="hero-content">
+      <div class="hero-tag tag" data-reveal>
+        Introducing DiPGOS
+      </div>
+
+      <h1 class="hero-headline" id="hero-headline" data-reveal data-delay="100">
+        Shaping the Future of Engineering &amp; Construction
+      </h1>
+
+      <p class="hero-sub" id="hero-sub" data-reveal data-delay="200">
+        Introducing DiPGOS — the world's first Project Operating System built natively for engineering and construction delivery.
+      </p>
+
+      <div class="hero-actions" data-reveal data-delay="300">
+        <a href="mailto:sales@industechsol.com" class="btn-primary">
+          <span class="material-symbols-outlined">mail</span>
+          Request Demo
+        </a>
+        <a href="#products" class="btn-outline">
+          <span class="material-symbols-outlined">play_circle</span>
+          Explore Platform
+        </a>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar" data-reveal data-delay="450">
+        <div class="stats-grid" id="hero-stats"></div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="scroll-indicator-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- =============================================
+       INTRO SECTION
+       ============================================= -->
+  <section id="intro" class="section-padding bg-mesh-1">
+    <div class="container">
+      <div class="intro-grid">
+        <!-- Visual -->
+        <div class="intro-visual" data-reveal="left">
+          <div class="intro-visual-inner">
+            <div class="intro-icon-ring">
+              <span class="material-symbols-outlined">hub</span>
             </div>
-            <nav class="hidden md:flex items-center gap-8" id="header-nav"></nav>
-            <div class="flex items-center gap-4">
-                <button id="header-cta" class="hidden sm:flex h-10 px-5 items-center justify-center rounded-lg bg-white/90 text-primary text-sm font-semibold hover:bg-white transition-colors shadow-sm">
-                    Request Demo
-                </button>
-                <button class="md:hidden p-2 text-white" aria-label="Menu">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
+            <div style="text-align:center;padding:0 1.5rem;">
+              <p style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--white);letter-spacing:-0.01em;margin-bottom:0.4rem;">One Platform</p>
+              <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.6;">Design → Build → Operate</p>
             </div>
+            <!-- Decorative lines -->
+            <div style="position:absolute;inset:0;pointer-events:none;" aria-hidden="true">
+              <svg width="100%" height="100%" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="200" cy="150" r="80" stroke="rgba(212,168,67,0.08)" stroke-width="1"/>
+                <circle cx="200" cy="150" r="120" stroke="rgba(212,168,67,0.05)" stroke-width="1"/>
+                <circle cx="200" cy="150" r="160" stroke="rgba(36,53,98,0.3)" stroke-width="1"/>
+                <line x1="200" y1="0" x2="200" y2="300" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                <line x1="0" y1="150" x2="400" y2="150" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+              </svg>
+            </div>
+          </div>
         </div>
-    </header>
 
-    <!-- Hero: full-screen image + centered headline -->
-    <section id="hero" class="relative min-h-screen flex items-center justify-center px-6 hero-bg" data-hero-bg="">
-        <div class="absolute inset-0 bg-primary/40"></div>
-        <h1 id="hero-headline" class="relative z-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center max-w-4xl drop-shadow-lg leading-tight">
-            We are Shaping the Future of Engineering & Construction
-        </h1>
-    </section>
-
-    <!-- Section: DiPGOS intro -->
-    <section class="py-20 md:py-28 bg-background-light border-t border-border-subtle">
-        <div class="max-w-[800px] mx-auto px-6 text-center space-y-6">
-            <p id="section-intro-line1" class="text-xl md:text-2xl font-semibold text-primary leading-relaxed"></p>
-            <p id="section-intro-line2" class="text-lg md:text-xl text-slate-600 leading-relaxed"></p>
+        <!-- Text -->
+        <div class="intro-text-block" data-reveal="right">
+          <span class="accent-line" aria-hidden="true"></span>
+          <span class="tag" style="margin-bottom:1.25rem;">The OS for Construction</span>
+          <h2 class="intro-large-text" style="margin-top:1rem;">
+            <span id="intro-line1">Until now, construction ran on fragmented tools.</span>
+            <br>
+            <span id="intro-line2" style="color:var(--accent-400);">Now it runs on an Operating System.</span>
+          </h2>
+          <p class="intro-para" id="intro-para" style="margin-top:1.25rem;"></p>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Section: DiPGOS domain-built OS -->
-    <section class="py-20 md:py-28 bg-background-subtle">
-        <div class="max-w-[800px] mx-auto px-6 text-center">
-            <p id="section-dipgos-para" class="text-lg md:text-xl text-slate-700 leading-relaxed"></p>
+  <div class="section-separator"></div>
+
+  <!-- =============================================
+       PLATFORM / ONTOLOGY
+       ============================================= -->
+  <section id="platform" class="section-padding bg-mesh-3">
+    <div class="container">
+      <div class="ontology-header" data-reveal>
+        <span class="accent-line" style="margin:0 auto 1.25rem;" aria-hidden="true"></span>
+        <span class="tag" style="margin-bottom:1.25rem;">System Architecture</span>
+        <h2 class="section-title" style="margin-top:1rem;">Built for <span>Complexity</span></h2>
+        <p class="section-subtitle" style="margin:1rem auto 0;" id="ontology-desc"></p>
+      </div>
+
+      <!-- Hierarchy flow -->
+      <div class="hierarchy-flow" id="ontology-flow" role="list" aria-label="Project hierarchy"></div>
+
+      <p class="hierarchy-description" data-reveal style="margin-top:2rem;">
+        This universal decomposition language enables DiPGOS to track, report, and act on any level of your project — from the billion-dollar program down to the individual worker's daily task.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- =============================================
+       PRODUCTS
+       ============================================= -->
+  <section id="products" class="section-padding bg-mesh-2">
+    <div class="container">
+      <div class="products-header" data-reveal>
+        <span class="accent-line" style="margin:0 auto 1.25rem;" aria-hidden="true"></span>
+        <span class="tag" style="margin-bottom:1.25rem;">Three Studios, One Core</span>
+        <h2 class="section-title" style="margin-top:1rem;">The Full <span>Project Lifecycle</span></h2>
+        <p class="section-subtitle" style="margin:1rem auto 0;" id="products-intro"></p>
+      </div>
+
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- =============================================
+       PHYSICAL AI
+       ============================================= -->
+  <section id="ai-section" class="section-padding bg-mesh-1">
+    <div class="container">
+      <div class="ai-header" data-reveal>
+        <span class="accent-line" style="margin:0 auto 1.25rem;" aria-hidden="true"></span>
+        <span class="tag" style="margin-bottom:1.25rem;">Physical AI</span>
+        <h2 class="section-title" style="margin-top:1rem;">Intelligence That <span>Understands Reality</span></h2>
+        <p class="section-subtitle" style="margin:1rem auto 0;">
+          Our AI isn't trained on generic internet data. It's built on decades of construction domain knowledge — and it knows the difference between a load-bearing wall and a partition.
+        </p>
+      </div>
+
+      <div class="ai-grid" id="ai-grid"></div>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- =============================================
+       PAIN POINTS / SOLUTIONS
+       ============================================= -->
+  <section id="solutions" class="section-padding bg-mesh-3">
+    <div class="container">
+      <div class="solutions-header" data-reveal>
+        <span class="accent-line" style="margin:0 auto 1.25rem;" aria-hidden="true"></span>
+        <span class="tag" style="margin-bottom:1.25rem;">Pain Points Solved</span>
+        <h2 class="section-title" style="margin-top:1rem;">Real Problems, <span>Real Solutions</span></h2>
+        <p class="section-subtitle" style="margin:1rem auto 0;">
+          We built DiPGOS by listening to the most painful problems EPC firms face every day.
+        </p>
+      </div>
+
+      <div class="pain-grid" id="pain-grid"></div>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- =============================================
+       WHY INDUSTECHSOL
+       ============================================= -->
+  <section id="why" class="section-padding bg-mesh-2">
+    <div class="container">
+      <div class="why-inner" data-reveal>
+        <div style="text-align:center;">
+          <span class="accent-line" style="margin:0 auto 1.25rem;" aria-hidden="true"></span>
+          <span class="tag" style="margin-bottom:1.25rem;">Why Us</span>
+          <h2 class="section-title" style="margin-top:1rem;">Why <span>IndusTechSol?</span></h2>
         </div>
-    </section>
 
-    <!-- Section: Physical AI -->
-    <section class="py-20 md:py-28 bg-background-light border-t border-border-subtle">
-        <div class="max-w-[800px] mx-auto px-6 text-center space-y-6">
-            <h2 id="section-physical-heading" class="text-2xl md:text-3xl font-bold text-primary"></h2>
-            <p id="section-physical-body1" class="text-lg text-slate-600 leading-relaxed"></p>
-            <p id="section-physical-body2" class="text-base md:text-lg font-semibold text-primary uppercase tracking-wide"></p>
+        <div class="why-grid">
+          <div class="why-reasons" id="why-reasons"></div>
+
+          <div class="why-visual" data-reveal="right">
+            <div class="why-big-number">DiP<span style="-webkit-text-fill-color:var(--accent-400)">GOS</span></div>
+            <p class="why-visual-label">The Project<br>Operating System</p>
+            <p style="font-size:0.85rem;color:var(--text-muted);text-align:center;max-width:200px;line-height:1.6;">
+              Domain-integrated Production & Governance Operating System
+            </p>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Footer -->
-    <footer class="bg-primary text-white py-16">
-        <div class="max-w-[1280px] mx-auto px-6 text-center">
-            <p id="footer-tagline" class="text-slate-300 mb-2"></p>
-            <p id="footer-copy" class="text-sm text-slate-400"></p>
+  <!-- =============================================
+       CTA
+       ============================================= -->
+  <section id="cta" class="section-padding bg-mesh-3">
+    <div class="container">
+      <div class="cta-inner" data-reveal>
+        <div class="cta-glow" aria-hidden="true"></div>
+        <h2 class="cta-title">Ready to <span>transform</span><br>your projects?</h2>
+        <p class="cta-sub">Experience the power of a unified Project Operating System. Join the firms already delivering smarter.</p>
+        <div class="cta-actions">
+          <a href="mailto:sales@industechsol.com" class="btn-primary">
+            <span class="material-symbols-outlined">mail</span>
+            Contact Sales
+          </a>
+          <a href="#products" class="btn-outline">
+            <span class="material-symbols-outlined">grid_view</span>
+            View Products
+          </a>
         </div>
-    </footer>
+        <p class="cta-email">or write to <a href="mailto:sales@industechsol.com">sales@industechsol.com</a></p>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        (function () {
-            const contentPath = 'content.json';
+  <!-- =============================================
+       FOOTER
+       ============================================= -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-text">IndusTechSol</div>
+          <p class="footer-tagline" id="footer-tagline"></p>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Platform</h4>
+          <ul class="footer-links" id="footer-product-links"></ul>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Legal</h4>
+          <ul class="footer-links" id="footer-legal-links"></ul>
+        </div>
+      </div>
 
-            function setText(id, value) {
-                const el = document.getElementById(id);
-                if (el && value != null) el.textContent = value;
-            }
+      <div class="footer-bottom">
+        <p class="footer-copy" id="footer-copy"></p>
+        <p class="footer-copy" style="color:var(--text-muted);">Built for the physical world.</p>
+      </div>
+    </div>
+  </footer>
 
-            function setMeta(name, value) {
-                const el = document.querySelector('meta[name="' + name + '"]');
-                if (el && value != null) el.setAttribute('content', value);
-            }
+  <!-- Scripts -->
+  <script src="main.js" defer></script>
 
-            function applyContent(data) {
-                if (!data) return;
-
-                if (data.meta) {
-                    if (data.meta.title) document.title = data.meta.title;
-                    if (data.meta.description) setMeta('description', data.meta.description);
-                    const faviconEl = document.getElementById('favicon');
-                    if (faviconEl && (data.meta.favicon || (data.images && data.images.favicon))) {
-                        const faviconPath = data.meta.favicon || data.images.favicon;
-                        faviconEl.href = faviconPath;
-                        const ext = faviconPath.toLowerCase().split('.').pop();
-                        faviconEl.type = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/x-icon';
-                    }
-                }
-
-                if (data.header) {
-                    setText('header-logo', data.header.logoText);
-                    setText('header-cta', data.header.ctaText);
-                    const logoImg = document.getElementById('header-logo-img');
-                    const logoFallback = document.getElementById('header-logo-fallback');
-                    const logo = data.header.logo || (data.images && data.images.logo);
-                    const logoLight = logo && (logo.light || (typeof logo === 'string' ? logo : null));
-                    const logoDark = logo && logo.dark;
-                    if (logoImg && logoFallback) {
-                        if (logoLight) {
-                            logoImg.src = logoLight;
-                            logoImg.alt = data.header.logoText || 'Logo';
-                            logoImg.classList.remove('hidden');
-                            logoFallback.classList.add('hidden');
-                            logoImg.dataset.logoLight = logoLight;
-                            logoImg.dataset.logoDark = logoDark || logoLight;
-                        } else {
-                            logoImg.classList.add('hidden');
-                            logoFallback.classList.remove('hidden');
-                        }
-                    }
-                    const nav = document.getElementById('header-nav');
-                    if (nav && Array.isArray(data.header.nav)) {
-                        nav.innerHTML = data.header.nav.map(function (item) {
-                            return '<a class="text-sm font-medium text-white/90 hover:text-white transition-colors drop-shadow-sm" href="' + (item.href || '#') + '">' + (item.label || '') + '</a>';
-                        }).join('');
-                    }
-                }
-
-                if (data.hero) {
-                    const hero = document.getElementById('hero');
-                    if (hero && data.hero.image) {
-                        hero.style.backgroundImage = "url('" + data.hero.image + "')";
-                    }
-                    setText('hero-headline', data.hero.headline);
-                }
-
-                const s = data.sections || {};
-                if (s.intro) {
-                    setText('section-intro-line1', s.intro.line1);
-                    setText('section-intro-line2', s.intro.line2);
-                }
-                if (s.dipgosDescription) {
-                    setText('section-dipgos-para', s.dipgosDescription.paragraph);
-                }
-                if (s.physicalAI) {
-                    setText('section-physical-heading', s.physicalAI.heading);
-                    setText('section-physical-body1', s.physicalAI.body1);
-                    setText('section-physical-body2', s.physicalAI.body2);
-                }
-
-                if (data.footer) {
-                    setText('footer-tagline', data.footer.tagline);
-                    setText('footer-copy', '© ' + (data.footer.year || new Date().getFullYear()) + ' ' + (data.footer.companyName || '') + '. All rights reserved.');
-                }
-            }
-
-            function onScroll() {
-                const header = document.getElementById('header');
-                if (!header) return;
-                const logoImg = document.getElementById('header-logo-img');
-                if (window.scrollY > 60) {
-                    header.classList.remove('bg-transparent');
-                    header.classList.add('bg-white/95', 'backdrop-blur-md', 'border-b', 'border-border-subtle', 'header-solid');
-                    if (logoImg && logoImg.dataset.logoDark) logoImg.src = logoImg.dataset.logoDark;
-                    header.querySelector('#header-logo').classList.remove('text-white', 'drop-shadow-md');
-                    header.querySelector('#header-logo').classList.add('text-primary');
-                    const cta = document.getElementById('header-cta');
-                    if (cta) {
-                        cta.classList.remove('bg-white/90', 'text-primary');
-                        cta.classList.add('bg-primary', 'text-white');
-                    }
-                    const links = header.querySelectorAll('nav a');
-                    links.forEach(function (a) {
-                        a.classList.remove('text-white/90', 'hover:text-white', 'drop-shadow-sm');
-                        a.classList.add('text-slate-600', 'hover:text-primary');
-                    });
-                } else {
-                    header.classList.add('bg-transparent');
-                    header.classList.remove('bg-white/95', 'backdrop-blur-md', 'border-b', 'border-border-subtle', 'header-solid');
-                    if (logoImg && logoImg.dataset.logoLight) logoImg.src = logoImg.dataset.logoLight;
-                    header.querySelector('#header-logo').classList.add('text-white', 'drop-shadow-md');
-                    header.querySelector('#header-logo').classList.remove('text-primary');
-                    const cta = document.getElementById('header-cta');
-                    if (cta) {
-                        cta.classList.add('bg-white/90', 'text-primary');
-                        cta.classList.remove('bg-primary', 'text-white');
-                    }
-                    const links = header.querySelectorAll('nav a');
-                    links.forEach(function (a) {
-                        a.classList.add('text-white/90', 'hover:text-white', 'drop-shadow-sm');
-                        a.classList.remove('text-slate-600', 'hover:text-primary');
-                    });
-                }
-            }
-
-            fetch(contentPath)
-                .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('Failed to load content')); })
-                .then(applyContent)
-                .catch(function (err) {
-                    console.error(err);
-                    applyContent({
-                        meta: { title: 'IndusTechSol', favicon: 'assets/images/Logo/logo_light.webp' },
-                        header: { logoText: 'IndusTechSol', logo: { light: 'assets/images/Logo/logo_light.webp', dark: 'assets/images/Logo/logo_dark.webp' }, ctaText: 'Request Demo', nav: [] },
-                        images: { logo: { light: 'assets/images/Logo/logo_light.webp', dark: 'assets/images/Logo/logo_dark.webp' }, favicon: 'assets/images/Logo/logo_light.webp' },
-                        hero: { image: 'assets/images/main.png', headline: 'We are Shaping the Future of Engineering & Construction' },
-                        sections: {
-                            intro: { line1: 'Until now, construction ran on fragmented tools. Now it runs on an Operating System.', line2: "Introducing DiPGOS - the world's first Project Operating System - design, execution, and operations unified in a single intelligent platform." },
-                            dipgosDescription: { paragraph: 'DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations and control by treating construction activities as production systems rather than isolated tasks.' },
-                            physicalAI: { heading: 'Physical AI-powered Project Operating System', body1: 'A System that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding of how things work.', body2: 'WHERE INTELLIGENCE ISNT JUST ARTIFICIAL, BUT PHYSICALLY & OPERATIONALLY AWARE' }
-                        },
-                        footer: { companyName: 'IndusTechSol', tagline: 'Building the digital backbone for the physical world.', year: '2025' }
-                    });
-                });
-
-            window.addEventListener('scroll', onScroll);
-            onScroll();
-        })();
-    </script>
 </body>
 </html>
