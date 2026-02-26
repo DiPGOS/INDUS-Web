@@ -25,12 +25,16 @@
       ],
     },
     hero: {
-      image: 'public/images/main.png',
+      imageDark:  'public/images/main.png',
+      imageLight: 'public/images/main_light.png',
       headline: ['Shaping the Future of', 'Engineering & Construction'],
+      subHeadline: "Introducing DiPGOS\nThe world's first Project Operating System",
     },
     intro: {
       headline: 'Until now, construction ran on fragmented tools. Now it runs on an <em>Operating System.</em>',
       para: 'DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations by treating construction activities as production systems — not isolated tasks.',
+      imageDark:  'public/images/dipgos_dashboard/dipgos_dashboard_dark.webp',
+      imageLight: 'public/images/dipgos_dashboard/dipgos_dashboard_light.webp',
     },
     products: {
       intro: 'Seamlessly move from proposal to construction to maintenance with three purpose-built studios sharing a single intelligent core.',
@@ -40,21 +44,20 @@
           name: 'Cognitive Project Design Studio',
           phase: 'Phase 1 – Design & Proposal',
           icon: 'design_services',
-          img:  'public/images/dipgos_dashboard/dipgos_dashboard_light.webp',
         },
         {
           abbr: 'ACCS',
           name: 'Autonomous Cognitive Construction Studio',
           phase: 'Phase 2 – Construction & Monitoring',
           icon: 'construction',
-          img:  'public/images/accs/accs_light.webp',
+          imgLight: 'public/images/accs/accs_light.webp',
+          imgDark:  'public/images/accs/accs_dark.webp',
         },
         {
           abbr: 'AOS',
           name: 'Autonomous Operation & Maintenance',
           phase: 'Phase 3 – Operations & Maintenance',
           icon: 'precision_manufacturing',
-          img:  'public/images/aos/aos_light.webp',
         },
       ],
     },
@@ -102,9 +105,107 @@
   const setHTML = (id, val) => { const el = $(id); if (el) el.innerHTML = val; };
 
   /* =============================================
+     THEME
+     ============================================= */
+  const THEME_KEY = 'theme';
+
+  function getPreferredTheme() {
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored === 'light' || stored === 'dark') return stored;
+    } catch (e) {
+      // ignore storage errors and fall through to system preference
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      // ignore storage errors
+    }
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+      const isDark = theme === 'dark';
+      const iconEl = btn.querySelector('.material-symbols-outlined');
+      btn.setAttribute('aria-pressed', String(isDark));
+      btn.setAttribute(
+        'aria-label',
+        isDark ? 'Switch to light mode' : 'Switch to dark mode'
+      );
+      if (iconEl) {
+        iconEl.textContent = isDark ? 'light_mode' : 'dark_mode';
+      }
+    }
+
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.content = theme === 'dark' ? '#060a14' : '#f5f7fb';
+    }
+
+    setHeroBackgroundForTheme(theme);
+    setIntroImageForTheme(theme);
+    setProductImagesForTheme(theme);
+  }
+
+  function setHeroBackgroundForTheme(theme) {
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+    const bg = hero.querySelector('.hero-bg-img');
+    if (!bg) return;
+
+    const isLight = theme === 'light';
+    const src = isLight
+      ? (DATA.hero.imageLight || DATA.hero.imageDark)
+      : (DATA.hero.imageDark || DATA.hero.imageLight);
+
+    bg.style.backgroundImage = `url('${src}')`;
+  }
+
+  function setIntroImageForTheme(theme) {
+    const img = document.querySelector('.intro-screenshot');
+    if (!img) return;
+
+    const isLight = theme === 'light';
+    const light = img.dataset.imgLight || DATA.intro.imageLight;
+    const dark  = img.dataset.imgDark  || DATA.intro.imageDark;
+    const src   = isLight ? (light || dark) : (dark || light);
+    if (src) img.src = src;
+  }
+
+  function setProductImagesForTheme(theme) {
+    const imgs = document.querySelectorAll('.product-thumb img[data-img-light], .product-thumb img[data-img-dark]');
+    imgs.forEach(img => {
+      const light = img.dataset.imgLight;
+      const dark  = img.dataset.imgDark;
+      if (!light && !dark) return;
+      const isLight = theme === 'light';
+      const src = isLight ? (light || dark) : (dark || light);
+      if (src) img.src = src;
+    });
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+  }
+
+  /* =============================================
      BUILD
      ============================================= */
   function init() {
+    const initialTheme = getPreferredTheme();
+    applyTheme(initialTheme);
+
     document.title = DATA.meta.title;
     const metaEl = document.querySelector('meta[name="description"]');
     if (metaEl) metaEl.content = DATA.meta.description;
@@ -116,6 +217,12 @@
     buildAI();
     buildFooter();
 
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    setupHeroSubheadline();
     setupHeader();
     setupMobile();
     setupReveal();
@@ -140,58 +247,67 @@
 
   /* ---- Hero ---- */
   function buildHero() {
-    const hero = document.getElementById('hero');
-    const bg = hero && hero.querySelector('.hero-bg-img');
-    if (bg) bg.style.backgroundImage = `url('${DATA.hero.image}')`;
+    const theme = document.documentElement.dataset.theme || getPreferredTheme();
+    setHeroBackgroundForTheme(theme);
 
     const hl = $('hero-headline');
     if (hl) {
       hl.innerHTML =
         DATA.hero.headline[0] + '<br><span class="accent">' + DATA.hero.headline[1] + '</span>';
     }
-    // setText('hero-sub', DATA.hero.sub);
 
-    // setHTML('hero-stats', DATA.hero.stats.map(s => `
-    //   <div class="stat-cell">
-    //     <div class="stat-num" data-target="${s.number}" data-suffix="${s.suffix}">0${s.suffix}</div>
-    //     <div class="stat-lbl">${s.label}</div>
-    //   </div>`).join(''));
+    const sub = DATA.hero.subHeadline;
+    if (sub) setText('hero-sub', sub);
   }
 
   /* ---- Intro ---- */
   function buildIntro() {
     setHTML('intro-headline', DATA.intro.headline);
     setText('intro-para', DATA.intro.para);
-  }
 
-  /* ---- Stats strip (duplicate, same data) ---- */
-  // function buildStats() {
-  //   setHTML('stats-grid', DATA.hero.stats.map(s => `
-  //     <div class="stat-cell">
-  //       <div class="stat-num" data-target="${s.number}" data-suffix="${s.suffix}">0${s.suffix}</div>
-  //       <div class="stat-lbl">${s.label}</div>
-  //     </div>`).join(''));
-  // }
+    const img = document.querySelector('.intro-screenshot');
+    if (img) {
+      img.dataset.imgLight = DATA.intro.imageLight || '';
+      img.dataset.imgDark  = DATA.intro.imageDark  || '';
+      const theme = document.documentElement.dataset.theme || getPreferredTheme();
+      setIntroImageForTheme(theme);
+    }
+  }
 
   /* ---- Products ---- */
   function buildProducts() {
     setText('products-intro', DATA.products.intro);
-    setHTML('products-grid', DATA.products.items.map((p, i) => `
+
+    const theme = document.documentElement.dataset.theme || getPreferredTheme();
+
+    setHTML('products-grid', DATA.products.items.map((p, i) => {
+      const imgLight = p.imgLight || p.img || '';
+      const imgDark  = p.imgDark  || p.img || '';
+      const isLight  = theme === 'light';
+      const imgSrc   = isLight ? (imgLight || imgDark) : (imgDark || imgLight);
+      const hasImage = Boolean(imgSrc);
+
+      return `
       <div class="product-card" data-reveal data-delay="${i * 120}">
         <div class="product-thumb">
           <div class="product-placeholder">
             ${icon(p.icon)}
             <span style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">${p.abbr}</span>
+            ${hasImage ? '' : '<span class="product-coming-soon">Coming soon</span>'}
           </div>
-          <img src="${p.img}" alt="${p.name}" loading="lazy"
+          ${hasImage ? `
+          <img src="${imgSrc}" alt="${p.name}" loading="lazy"
+               data-img-light="${imgLight || ''}"
+               data-img-dark="${imgDark || ''}"
                onload="this.classList.add('img-loaded')"
-               onerror="this.remove()">
+               onerror="this.remove()">` : ''}
           <span class="product-phase-pill">${p.phase}</span>
         </div>
         <div class="product-body">
           <h3 class="product-name">${p.name}</h3>
         </div>
-      </div>`).join(''));
+      </div>`;
+    }).join(''));
   }
 
   /* ---- AI ---- */
@@ -218,6 +334,62 @@
     setText('footer-copy', `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`);
     setHTML('footer-product-links', DATA.footer.product.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
     setHTML('footer-legal-links',   DATA.footer.legal.map(l  => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
+  }
+
+  /* =============================================
+     HERO SUBHEADLINE — grab attention on first interaction
+     ============================================= */
+  function setupHeroSubheadline() {
+    const heroSub = document.getElementById('hero-sub');
+    if (!heroSub || !heroSub.textContent.trim()) return;
+
+    let locked = true;
+
+    const reveal = () => {
+      if (!locked) return;
+      locked = false;
+      window.scrollTo({ top: 0 });
+      heroSub.classList.add('visible', 'emphasize');
+      setTimeout(() => {
+        heroSub.classList.remove('emphasize');
+        teardown();
+      }, 900);
+    };
+
+    const onWheel = (e) => {
+      if (!locked) return;
+      if (e.deltaY > 0 && window.scrollY < 40) {
+        e.preventDefault();
+        reveal();
+      }
+    };
+
+    const onKeydown = (e) => {
+      if (!locked) return;
+      const key = e.key;
+      if (key === 'ArrowDown' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+        e.preventDefault();
+        reveal();
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (!locked) return;
+      if (window.scrollY < 40) {
+        e.preventDefault();
+        reveal();
+      }
+    };
+
+    function teardown() {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKeydown);
+      window.removeEventListener('touchmove', onTouchMove);
+    }
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKeydown);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
   }
 
   /* =============================================
