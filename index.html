@@ -23,6 +23,16 @@
 </head>
 <body>
 
+  <!-- Global glow orbs (behind all sections, consistent look) -->
+  <div class="global-glow-orbs" aria-hidden="true">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+    <div class="glow-orb glow-orb-4"></div>
+    <div class="glow-orb glow-orb-5"></div>
+    <div class="glow-orb glow-orb-6"></div>
+  </div>
+
   <!-- =============================================
        HEADER
        ============================================= -->
@@ -69,35 +79,11 @@
     <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
     <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
 
-    <!-- Content -->
+    <!-- Content: only headline + scroll indicator -->
     <div class="hero-content">
-      <div class="hero-tag tag" data-reveal>
-        Introducing DiPGOS
-      </div>
-
-      <h1 class="hero-headline" id="hero-headline" data-reveal data-delay="100">
+      <h1 class="hero-headline" id="hero-headline">
         Shaping the Future of Engineering &amp; Construction
       </h1>
-
-      <p class="hero-sub" id="hero-sub" data-reveal data-delay="200">
-        Introducing DiPGOS — the world's first Project Operating System built natively for engineering and construction delivery.
-      </p>
-
-      <div class="hero-actions" data-reveal data-delay="300">
-        <a href="mailto:sales@industechsol.com" class="btn-primary">
-          <span class="material-symbols-outlined">mail</span>
-          Request Demo
-        </a>
-        <a href="#products" class="btn-outline">
-          <span class="material-symbols-outlined">play_circle</span>
-          Explore Platform
-        </a>
-      </div>
-
-      <!-- Stats Bar -->
-      <div class="stats-bar" data-reveal data-delay="450">
-        <div class="stats-grid" id="hero-stats"></div>
-      </div>
     </div>
 
     <!-- Scroll indicator -->
@@ -112,7 +98,7 @@
        ============================================= -->
   <section id="intro" class="section-padding bg-mesh-1">
     <div class="container">
-      <div class="intro-grid">
+      <div class="intro-grid" data-reveal="bottom">
         <!-- Visual -->
         <div class="intro-visual" data-reveal="left">
           <div class="intro-visual-inner">
@@ -146,6 +132,29 @@
             <span id="intro-line2" style="color:var(--accent-400);">Now it runs on an Operating System.</span>
           </h2>
           <p class="intro-para" id="intro-para" style="margin-top:1.25rem;"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       STATS + CTAs (reveal from bottom)
+       ============================================= -->
+  <section id="stats-strip" class="section-padding">
+    <div class="container">
+      <div class="stats-strip-inner" data-reveal="bottom">
+        <div class="stats-bar">
+          <div class="stats-grid" id="hero-stats"></div>
+        </div>
+        <div class="hero-actions">
+          <a href="mailto:sales@industechsol.com" class="btn-primary">
+            <span class="material-symbols-outlined">mail</span>
+            Request Demo
+          </a>
+          <a href="#products" class="btn-outline">
+            <span class="material-symbols-outlined">play_circle</span>
+            Explore Platform
+          </a>
         </div>
       </div>
     </div>

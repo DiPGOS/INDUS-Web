@@ -191,6 +191,7 @@
   
       buildHeader();
       buildHero();
+      buildStatsStrip();
       buildIntro();
       buildOntology();
       buildProducts();
@@ -250,30 +251,27 @@
         bgEl.style.backgroundImage = `url('${DATA.hero.image}')`;
       }
   
-      // Headline
+      // Headline: two lines (first line + <br> + second line with accent)
       const hlEl = heroSection.querySelector('#hero-headline');
       if (hlEl) {
-        hlEl.innerHTML = DATA.hero.headline.map((line, i) =>
-          i === 1 ? `<span class="line-accent">${line}</span>` : line
-        ).join(' ');
-      }
-  
-      // Sub
-      const subEl = heroSection.querySelector('#hero-sub');
-      if (subEl) subEl.textContent = DATA.hero.sub;
-  
-      // Stats
-      const statsEl = heroSection.querySelector('#hero-stats');
-      if (statsEl) {
-        statsEl.innerHTML = DATA.hero.stats.map(s => `
-          <div class="stat-item">
-            <div class="stat-number" data-target="${s.number}" data-suffix="${s.suffix}">0${s.suffix}</div>
-            <div class="stat-label">${s.label}</div>
-          </div>
-        `).join('');
+        const line1 = DATA.hero.headline[0];
+        const line2 = DATA.hero.headline[1] ? `<span class="line-accent">${DATA.hero.headline[1]}</span>` : '';
+        hlEl.innerHTML = line2 ? `${line1}<br>${line2}` : line1;
       }
     }
-  
+
+    /* ---- STATS STRIP (after intro) ---- */
+    function buildStatsStrip() {
+      const statsEl = document.getElementById('hero-stats');
+      if (!statsEl) return;
+      statsEl.innerHTML = DATA.hero.stats.map(s => `
+        <div class="stat-item">
+          <div class="stat-number" data-target="${s.number}" data-suffix="${s.suffix}">0${s.suffix}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>
+      `).join('');
+    }
+
     /* ---- INTRO ---- */
     function buildIntro() {
       const el1 = document.getElementById('intro-line1');
@@ -385,7 +383,7 @@
       if (taglineEl) taglineEl.textContent = DATA.footer.tagline;
   
       const copyEl = document.getElementById('footer-copy');
-      if (copyEl) copyEl.textContent = `© ${DATA.footer.year} IndusTechSol. All rights reserved.`;
+      if (copyEl) copyEl.textContent = `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`;
   
       const productLinksEl = document.getElementById('footer-product-links');
       if (productLinksEl) {
@@ -427,19 +425,29 @@
       const hamburger = document.getElementById('hamburger');
       const mobileMenu = document.getElementById('mobile-menu');
       if (!hamburger || !mobileMenu) return;
-  
+
+      function closeMenu() {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      }
+
       hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('open');
         mobileMenu.classList.toggle('open');
       });
-  
+
       // Close on nav link click
       mobileMenu.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-          hamburger.classList.remove('open');
-          mobileMenu.classList.remove('open');
-        });
+        link.addEventListener('click', closeMenu);
       });
+
+      // Close when viewport is wide enough that hamburger is hidden (e.g. resize from mobile to desktop)
+      const mediaQuery = window.matchMedia('(min-width: 769px)');
+      function onResizeOrMatch(e) {
+        if (e.matches && mobileMenu.classList.contains('open')) closeMenu();
+      }
+      mediaQuery.addEventListener('change', onResizeOrMatch);
+      onResizeOrMatch(mediaQuery);
     }
   
     /* =============================================
