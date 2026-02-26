@@ -24,8 +24,8 @@ INDUS-Web/
     │   └── content.json
     ├── images/
     │   ├── Logo/
-    │   │   ├── logo_light.webp
-    │   │   └── logo_dark.webp
+    │   │   ├── logo.webp
+    │   │   └── logo.webp
     │   ├── main.png
     │   ├── Refrence Images/
     │   │   └── main_ref.png
@@ -74,7 +74,7 @@ All user-facing text and image paths live in `content.json`. The script in `main
 | `footer` | `companyName`, `tagline`, `year`, `links`. |
 | `images` | Central paths: `logo`, `favicon`, `hero`, `dipgosDashboard`, `autonomousStudio`, etc. |
 
-**Logo and favicon:** Place `logo_light.webp` and `logo_dark.webp` in `assets/images/Logo/`. The header uses the light logo on the transparent hero and switches to the dark logo when scrolled. Set `meta.favicon` or `images.favicon` in `content.json` (e.g. `logo_light.webp`).
+**Logo and favicon:** Place `logo.webp` and `logo.webp` in `assets/images/Logo/`. The header uses the light logo on the transparent hero and switches to the dark logo when scrolled. Set `meta.favicon` or `images.favicon` in `content.json` (e.g. `logo.webp`).
 
 ---
 
