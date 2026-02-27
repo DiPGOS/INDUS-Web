@@ -1,6 +1,6 @@
 # IndusTechSol – Landing Page
 
-A clean, professional one-paged static landing site for IndusTechSol. Content and image paths are driven by `content.json` so copy and assets can be updated without editing the HTML.
+A clean, professional one-paged static landing site for IndusTechSol. All copy, navigation, and image paths are defined in the `DATA` object inside `main.js`, so the HTML file stays mostly structural.
 
 ---
 
@@ -8,41 +8,21 @@ A clean, professional one-paged static landing site for IndusTechSol. Content an
 
 ```
 INDUS-Web/
-├── index.html          # Single-page template (content injected from JSON)
-├── content.json        # Copy, nav, and image paths (single source of truth)
-├── styles.css          # Main styles (theme, layout, components)
-├── main.js             # Content loading, header behaviour, animations
-├── package.json        # Node project and dev server scripts
-├── package-lock.json
-├── tailwind.config.js  # Optional Tailwind config
-├── .gitignore
+├── index.html          # Single-page template wired to JS data
+├── styles.css          # Main styles (theme, layout, components, glassmorphism)
+├── main.js             # DATA model, DOM wiring, interactions, theme toggle
 ├── Readme.md           # This file
-└── assets/
-    ├── css/
-    │   └── tailwind.css
-    ├── data/
-    │   └── content.json
-    ├── images/
-    │   ├── Logo/
-    │   │   ├── logo.webp
-    │   │   └── logo.webp
-    │   ├── main.png
-    │   ├── Refrence Images/
-    │   │   └── main_ref.png
-    │   ├── dipgos_dashboard/
-    │   │   ├── dipgos_dashboard_light.webp
-    │   │   └── dipgos_dashboard_dark.webp
-    │   ├── atonomus_cognative_construction_studio/
-    │   │   ├── accs_light.webp
-    │   │   └── accs_dark.webp
-    │   └── cpds/
-    └── js/
-        └── main.js
+└── public/
+    └── images/
+        ├── Logo/
+        │   ├── logo.webp
+        │   └── logo_rectangle.webp
+        ├── main.webp
+        ├── main_light.webp
+        ├── accs/
+        ├── cpds/
+        └── dipgos_dashboard/
 ```
-
-`node_modules/` is created by `npm install` and is ignored by Git.
-
----
 
 ## Tech stack
 
@@ -61,43 +41,29 @@ INDUS-Web/
 
 ---
 
-## Content model (`content.json`)
+## Content model (`main.js` → `DATA`)
 
-All user-facing text and image paths live in `content.json`. The script in `main.js` maps this data into the DOM.
+All user-facing text and image paths live in the `DATA` object inside `main.js`. The script maps this data into the DOM on load.
 
 | Key | Purpose |
 |-----|--------|
-| `meta` | `title`, `description`, `favicon`. |
-| `header` | `logoText`, `logo` (`{ light, dark }`), `nav`, `ctaText`. |
-| `hero` | `image`, `headline`, copy and stats. |
-| `sections` | Intro, products, AI, pain points, why, CTA. |
-| `footer` | `companyName`, `tagline`, `year`, `links`. |
-| `images` | Central paths: `logo`, `favicon`, `hero`, `dipgosDashboard`, `autonomousStudio`, etc. |
+| `meta` | `title`, `description`. |
+| `header` | `logo` (`{ square, rectangle }`), `nav`. |
+| `hero` | `imageDark`, `imageLight`, `headline`, `subEyebrow`, `subMain`. |
+| `intro` | Headline, body copy, and dashboard images for DiPGOS. |
+| `products` | Cards for CPDS, ACCS, AOS. |
+| `ai` | AI capability chips (icons + labels). |
+| `footer` | Tagline, year, product links, legal links. |
 
-**Logo and favicon:** Place `logo.webp` and `logo.webp` in `assets/images/Logo/`. The header uses the light logo on the transparent hero and switches to the dark logo when scrolled. Set `meta.favicon` or `images.favicon` in `content.json` (e.g. `logo.webp`).
+**Logo and favicon:** Place `logo.webp` and `logo_rectangle.webp` in `public/images/Logo/`. The header uses the rectangle logo where appropriate, and the favicon is referenced in `index.html` via `<link rel="icon" ...>`.
 
 ---
 
 ## Development
 
-**Requirements:** [Node.js](https://nodejs.org/) (v18+ recommended).
-
-```bash
-npm install
-npm run dev
-```
-
-Open **http://localhost:3000**. The page loads and injects content from `content.json`.
-
-**Scripts:**
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Serve site at port 3000 (same as `npm start`). |
-| `npm start` | Same as `npm run dev`. |
-| `npm run preview` | Serve at port 5000. |
-
-**Note:** Use the dev server (or another static server) for local testing. Opening `index.html` via `file://` can block loading `content.json` due to browser security.
+- **No build step.** This is a pure static site (`index.html`, `styles.css`, `main.js`).
+- **Local preview:** Open `index.html` directly in a browser, or serve the folder with any static server (e.g. VS Code Live Server, `npx serve .`, or your tool of choice).
+- **Assets:** All images live under `public/images/...` and are referenced via relative paths from `index.html` / `main.js`.
 
 ---
 

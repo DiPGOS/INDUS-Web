@@ -25,8 +25,8 @@
       ],
     },
     hero: {
-      imageDark: 'public/images/main.png',
-      imageLight: 'public/images/main_light.png',
+      imageDark: 'public/images/main.webp',
+      imageLight: 'public/images/main_light.webp',
       headline: ['Shaping the Future of', 'Engineering & Construction'],
       subEyebrow: 'Introducing DiPGOS',
       subMain: 'The World\'s First<br>Project Operating System',
