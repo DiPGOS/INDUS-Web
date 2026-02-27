@@ -218,8 +218,17 @@
       const imgSrc   = isLight ? (imgLight || imgDark) : (imgDark || imgLight);
       const hasImage = Boolean(imgSrc);
 
+      // Flow bridge HTML — 3 particles, delays set in CSS animation-delay via inline style
+      const bridgeHTML = i < DATA.products.items.length - 1
+        ? `<div class="product-flow-bridge" aria-hidden="true">
+             <span class="fp" style="animation-delay:${1.6 * i + 0.65}s"></span>
+             <span class="fp" style="animation-delay:${1.6 * i + 0.80}s"></span>
+             <span class="fp" style="animation-delay:${1.6 * i + 0.95}s"></span>
+           </div>` : '';
+
       return `
       <div class="product-card" data-reveal data-delay="${i * 120}">
+        ${bridgeHTML}
         <div class="product-thumb">
           <div class="product-placeholder">
             ${icon(p.icon)}
@@ -235,6 +244,7 @@
           <span class="product-phase-pill">${p.phase}</span>
         </div>
         <div class="product-body">
+          <div class="product-abbr">${p.abbr}</div>
           <h3 class="product-name">${p.name}</h3>
         </div>
       </div>`;
@@ -272,60 +282,34 @@
   }
 
   /* =============================================
-     HERO — phase-2 scroll reveal
+     HERO — sticky phase-2 scroll reveal
      ─────────────────────────────────────────────
-     Phase 1 (default):  Headline — large, centred
-     Phase 2 (on scroll): Headline shrinks + floats
-                          to top; sub-headline rises
-                          from below to centre stage.
+     Phase 1 (default):   Main headline, large centred.
+     Phase 2 (on scroll): Headline disappears;
+                          sub-headline rises to centre
+                          (styled as bold heading).
+     Persists on reverse scroll — sub stays, no headline.
+     =============================================
+     The hero is position:sticky inside #hero-wrapper
+     (200vh tall). Scrolling through the wrapper keeps
+     the hero pinned; once the wrapper is past the top
+     the hero scrolls off naturally.
      ============================================= */
   function setupHeroPhase2() {
     const heroEl = document.getElementById('hero');
     if (!heroEl) return;
 
-    let triggered = false;
+    let shifted = false;
 
-    const trigger = () => {
-      if (triggered) return;
-      triggered = true;
-      heroEl.classList.add('hero--shifted');
-      teardown();
-    };
-
-    // Wheel: fire only on first downward scroll while still at top
-    const onWheel = (e) => {
-      if (triggered || window.scrollY > 40) return;
-      if (e.deltaY > 0) { e.preventDefault(); trigger(); }
-    };
-
-    // Keyboard: arrow-down / space / page-down
-    const onKeydown = (e) => {
-      if (triggered) return;
-      if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key)) {
-        e.preventDefault();
-        trigger();
+    const check = () => {
+      if (!shifted && window.scrollY > 40) {
+        shifted = true;
+        heroEl.classList.add('hero--shifted');
       }
     };
 
-    // Touch: upward swipe
-    let touchStartY = 0;
-    const onTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
-    const onTouchMove  = (e) => {
-      if (triggered || window.scrollY > 40) return;
-      if (e.touches[0].clientY < touchStartY - 12) { e.preventDefault(); trigger(); }
-    };
-
-    function teardown() {
-      window.removeEventListener('wheel',      onWheel,      { passive: false });
-      window.removeEventListener('keydown',    onKeydown);
-      window.removeEventListener('touchstart', onTouchStart, { passive: true  });
-      window.removeEventListener('touchmove',  onTouchMove,  { passive: false });
-    }
-
-    window.addEventListener('wheel',      onWheel,      { passive: false });
-    window.addEventListener('keydown',    onKeydown);
-    window.addEventListener('touchstart', onTouchStart, { passive: true  });
-    window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    window.addEventListener('scroll', check, { passive: true });
+    check(); // run once in case page reloads mid-scroll
   }
 
   /* =============================================
@@ -385,6 +369,32 @@
   }
 
   /* =============================================
+     ACTIVE NAV HIGHLIGHTING
+     Uses IntersectionObserver to highlight the nav
+     link matching the current visible section.
+     ============================================= */
+  function setupActiveNav() {
+    const sections = document.querySelectorAll('section[id]');
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+
+    const linkMap = {};
+    document.querySelectorAll('.nav-link[href^="#"]').forEach(a => {
+      linkMap[a.getAttribute('href').slice(1)] = a;
+    });
+
+    const setActive = (id) => {
+      Object.values(linkMap).forEach(a => a.classList.remove('nav-active'));
+      if (linkMap[id]) linkMap[id].classList.add('nav-active');
+    };
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(s => obs.observe(s));
+  }
+
+  /* =============================================
      SMOOTH SCROLL
      ============================================= */
   function setupSmoothScroll() {
@@ -427,6 +437,7 @@
     setupMobile();
     setupReveal();
     setupSmoothScroll();
+    setupActiveNav();
   }
 
   document.readyState === 'loading'
