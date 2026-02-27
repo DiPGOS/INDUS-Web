@@ -432,18 +432,19 @@
      height: 200vh;   /* extra 100vh keeps hero pinned while phase-2 settles */
    }
 
-   #hero {
-     position: sticky;
-     top: 0;
-     height: 100vh;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     text-align: center;
-     padding: 9rem 1.25rem 6rem;
-     z-index: 2;
-     overflow: hidden;
-   }
+  #hero {
+    --hero-shift: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 9rem 1.25rem 6rem;
+    z-index: 2;
+    overflow: hidden;
+  }
 
    .hero-bg-img {
      position: absolute; inset: 0;
@@ -478,49 +479,53 @@
      justify-content: center;
    }
 
-   /* -------------------------------------------------------
-      PHASE 1 — Headline: large, centred
-      Transition smoothly when .hero--shifted is applied.
-      ------------------------------------------------------- */
-   .hero-headline {
-     font-size: clamp(2.8rem, 6vw, 4rem);
-     font-weight: 800;
-     letter-spacing: -0.04em;
-     line-height: 1.04;
-     color: var(--t1);
-     will-change: transform, opacity;
-     transform-origin: top center;
-     transition:
-       transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
-       opacity   0.95s cubic-bezier(0.22, 1, 0.36, 1);
-   }
-   .hero-headline .accent { color: var(--blue-400); }
+  /* -------------------------------------------------------
+     HEADLINE — scroll-linked, no CSS transition so it tracks
+     the scroll thumb exactly in both directions.
+     --hero-shift: 0 = fully visible centre; 1 = gone above.
+     ------------------------------------------------------- */
+  .hero-headline {
+    font-size: clamp(2.8rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+    color: var(--t1);
+    transform-origin: top center;
+    will-change: transform, opacity;
+    /* NO transition — must track scroll instantly */
+    transform:
+      translateY(calc(-45vh * var(--hero-shift, 0)))
+      scale(calc(1 - 0.42 * var(--hero-shift, 0)));
+    opacity: calc(1 - var(--hero-shift, 0) * 1.4);
+  }
+  .hero-headline .accent { color: var(--blue-400); }
 
-   /* -------------------------------------------------------
-      PHASE 1 — Sub-headline: parked off-screen below centre
-      Absolutely positioned so it never disturbs headline layout.
-      ------------------------------------------------------- */
-   .hero-sub {
-     position: absolute;
-     left: 50%;
-     top: 50%;
-     /* start: centred horizontally, parked 80vh below centre */
-     transform: translate(-50%, calc(-50% + 80vh));
-     width: 100%;
-     opacity: 0;
-     pointer-events: none;
+  /* -------------------------------------------------------
+     SUB-HEADLINE — scroll-linked, parks below then rises.
+     No transition — tracks scroll exactly in both directions.
+     --hero-shift: 0 = below viewport; 1 = dead centre.
+     ------------------------------------------------------- */
+  .hero-sub {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform:
+      translate(
+        -50%,
+        calc(-50% + 70vh * (1 - var(--hero-shift, 0)))
+      );
+    width: 100%;
+    /* Fade in faster than headline fades out for a clean cross */
+    opacity: calc((var(--hero-shift, 0) - 0.2) * 1.6);
+    pointer-events: none;
+    will-change: transform, opacity;
 
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     gap: 0.6rem;
-     text-align: center;
-
-     will-change: transform, opacity;
-     transition:
-       transform 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
-       opacity   0.72s ease                            0.12s;
-   }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
 
    /* Sub-headline — tier 1: eyebrow label */
    .hero-sub-eyebrow {
@@ -549,7 +554,7 @@
    /* Sub-headline — tier 2: main bold title (heading-scale text) */
    .hero-sub-main {
      display: block;
-     font-size: clamp(2.4rem, 6.5vw, 4rem);
+     font-size: clamp(2.8rem, 6vw, 4rem);
      font-weight: 800;
      letter-spacing: -0.04em;
      line-height: 1.04;
@@ -557,27 +562,12 @@
      transition: font-size 0.6s var(--ease-out);
    }
 
-   /* -------------------------------------------------------
-      PHASE 2 — .hero--shifted applied by JS on first scroll
-      Headline fully disappears; sub-headline rises to centre.
-      Persists on reverse scroll — sub stays, no main heading.
-      ------------------------------------------------------- */
+  /* -------------------------------------------------------
+     PHASE 2 — cosmetic tweaks once we're clearly shifted.
+     Class is driven by JS but motion is scroll-linked.
+     ------------------------------------------------------- */
 
-   /* Headline: shrink to nothing upward */
-   #hero.hero--shifted .hero-headline {
-     transform: translateY(-28vh) scale(0.3);
-     opacity: 0;
-     pointer-events: none;
-   }
-
-   /* Sub-headline: rise to true centre */
-   #hero.hero--shifted .hero-sub {
-     transform: translate(-50%, -50%);   /* dead-centre */
-     opacity: 1;
-     pointer-events: auto;
-   }
-
-   /* Make sub-headline eyebrow feel more heading-like at phase 2 */
+  /* Make sub-headline eyebrow feel more heading-like at phase 2 */
    #hero.hero--shifted .hero-sub-eyebrow {
      letter-spacing: 0.18em;
      color: var(--blue-300);
@@ -585,7 +575,7 @@
 
    /* Sub-headline main: scale up slightly for maximum impact */
    #hero.hero--shifted .hero-sub-main {
-     font-size: clamp(2.6rem, 7vw, 4.5rem);
+     font-size: clamp(2.6rem, 6vw, 4.2rem);
      text-shadow: 0 2px 60px rgba(59,130,246,0.3);
    }
 
@@ -616,7 +606,7 @@
 
    /* Mobile tweaks */
    @media (max-width: 600px) {
-     #hero.hero--shifted .hero-headline { transform: translateY(-38vh) scale(0.33); }
+     /* hero-headline transform is scroll-linked — no fixed override */
      .hero-sub-main { font-size: clamp(1.85rem, 9vw, 2.7rem); }
      #hero-wrapper { height: 220vh; }
    }
@@ -682,32 +672,56 @@
    }
 
    /* =======================================
-      PRODUCTS
+      PRODUCTS — Pipeline layout
+      Cards are nodes; SVG edges carry animated
+      dashed flow lines conveying seamless handoff.
       ======================================= */
    #products { z-index: 2; }
-   .products-grid {
-     display: grid;
-     grid-template-columns: repeat(3, 1fr);
-     gap: 1.125rem;
+
+   /* ── Pipeline row container ── */
+   .products-pipeline {
+     display: flex;
+     align-items: stretch;
+     gap: 0;
    }
 
-   .product-card {
+   /* ── Card = node in the pipeline ── */
+   .product-node {
+     flex: 1 1 0;
+     min-width: 0;
      display: flex; flex-direction: column;
      position: relative;
-     border-radius: var(--r-xl); overflow: hidden;
+     border-radius: var(--r-xl);
      background: var(--glass-bg);
      backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
      border: 1px solid var(--glass-border);
      box-shadow: var(--shadow-md);
-     transition: border-color var(--t-med), box-shadow var(--t-med), transform var(--t-med);
+     transition: transform var(--t-med), box-shadow var(--t-med);
+     overflow: hidden;
    }
-   .product-card:hover {
-     border-color: var(--glass-border-blue);
-     box-shadow: var(--shadow-hover);
+   .product-node:hover {
      transform: translateY(-5px);
+     box-shadow: var(--shadow-hover);
    }
 
+   /* Sequential node glow — 9 s loop: CPDS→edge→ACCS→edge→AOS */
+   .product-node { animation: nodeGlow 9s ease-in-out infinite; }
+   .product-node[data-phase="0"] { animation-delay:  0.0s; }
+   .product-node[data-phase="1"] { animation-delay:  3.0s; }
+   .product-node[data-phase="2"] { animation-delay:  6.0s; }
+
+   @keyframes nodeGlow {
+     0%, 8%   { border-color: var(--glass-border);        box-shadow: var(--shadow-md); }
+     14%, 24% { border-color: rgba(59,130,246,0.7);
+                box-shadow: var(--shadow-md),
+                  0 0 0 1px rgba(59,130,246,0.32),
+                  0 0 42px rgba(59,130,246,0.28),
+                  inset 0 0 20px rgba(59,130,246,0.07); }
+     33%, 100% { border-color: var(--glass-border);       box-shadow: var(--shadow-md); }
+   }
+
+   /* ── Thumb (image/icon area) ── */
    .product-thumb {
      aspect-ratio: 16/9; position: relative;
      background: rgba(13,22,41,0.7);
@@ -721,21 +735,25 @@
      transition: opacity var(--t-med), transform 0.7s var(--ease-out);
    }
    .product-thumb img.img-loaded { opacity: 1; z-index: 2; }
-   .product-card:hover .product-thumb img { transform: scale(1.04); }
+   .product-node:hover .product-thumb img { transform: scale(1.04); }
 
    .product-placeholder {
      display: flex; flex-direction: column;
      align-items: center; gap: 0.5rem;
      color: var(--t5); z-index: 1;
    }
-   .product-placeholder .material-symbols-outlined { font-size: 38px; }
+   .product-placeholder .material-symbols-outlined {
+     font-size: 38px;
+     transition: color var(--t-med), text-shadow var(--t-med);
+   }
+   .product-node:hover .product-placeholder .material-symbols-outlined {
+     color: var(--blue-400);
+     text-shadow: 0 0 20px rgba(59,130,246,0.5);
+   }
    .product-coming-soon {
      font-size: 0.7rem; text-transform: uppercase;
      letter-spacing: 0.12em; color: var(--t4);
    }
-
-   /* .product-card flow bridge line now handled by .product-flow-bridge (JS-injected) */
-   /* Keeping only the mobile vertical connector via separate rule */
 
    .product-phase-pill {
      position: absolute; top: 0.7rem; left: 0.7rem; z-index: 3;
@@ -754,125 +772,270 @@
      display: flex; flex-direction: column;
      border-top: 1px solid var(--glass-border);
    }
-   .product-abbr {
-     font-size: 0.65rem; font-weight: 800;
-     letter-spacing: 0.15em; text-transform: uppercase;
-     color: var(--blue-400); margin-bottom: 0.35rem;
-   }
    .product-name {
      font-size: 1.05rem; font-weight: 700;
      color: var(--t1); letter-spacing: -0.015em;
-     line-height: 1.3; margin-bottom: 0.7rem;
+     line-height: 1.3; margin-bottom: 0.5rem;
    }
    .product-desc { font-size: 0.875rem; color: var(--t3); line-height: 1.7; flex: 1; }
-   .product-more {
-     margin-top: 1.125rem;
-     display: inline-flex; align-items: center; gap: 0.3rem;
-     font-size: 0.8rem; font-weight: 600; color: var(--blue-400);
-     transition: gap var(--t-fast), color var(--t-fast);
-   }
-   .product-more .material-symbols-outlined { font-size: 14px; }
-   .product-card:hover .product-more { gap: 0.5rem; color: var(--blue-300); }
 
-   /* =======================================
-      PRODUCT CARDS — data-flow animation
-      Sequential glow: CPDS → ACCS → AOS
-      ======================================= */
-
-   /* ── 1. Sequential card border-glow ── */
-   .product-card { animation: cardDataActive 4.8s ease-in-out infinite; }
-   .product-card:nth-child(1) { animation-delay: 0s;    }
-   .product-card:nth-child(2) { animation-delay: 1.6s;  }
-   .product-card:nth-child(3) { animation-delay: 3.2s;  }
-
-   @keyframes cardDataActive {
-     0%, 14%, 68%, 100% {
-       border-color: var(--glass-border);
-       box-shadow: var(--shadow-md);
-     }
-     20%, 60% {
-       border-color: rgba(59,130,246,0.55);
-       box-shadow:
-         var(--shadow-md),
-         0 0 0 1px rgba(59,130,246,0.28),
-         0 0 36px rgba(59,130,246,0.22),
-         inset 0 0 18px rgba(59,130,246,0.06);
-     }
+   /* ── Pipeline Edge connector ── */
+   .pipeline-edge-wrap {
+     flex: 0 0 72px;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 6px;
+     padding: 0 4px;
+     position: relative;
+     z-index: 5;
    }
 
-   /* ── 2. Flow bridge between cards ── */
-   .product-flow-bridge {
-     position: absolute;
-     top: 50%; right: -1.125rem;
-     width: 1.125rem; height: 4px;
-     transform: translateY(-50%);
-     z-index: 20;
-     pointer-events: none;
-     /* horizontal line stays as base */
+   .pipeline-edge-svg {
+     width: 100%;
+     height: 32px;
+     overflow: visible;
    }
 
-   .product-flow-bridge .fp {
-     position: absolute;
-     width: 6px; height: 6px;
-     border-radius: 50%;
-     background: var(--blue-400);
-     box-shadow: 0 0 8px var(--blue-400), 0 0 18px rgba(59,130,246,0.5);
-     top: 50%; left: 0;
-     transform: translateY(-50%);
-     opacity: 0;
-     /* each .fp gets its own animation-delay via inline style (set in JS) */
-     animation: fpTravel 4.8s ease-in-out infinite;
+   /* ── Base ghost line: always visible, dim ── */
+   .edge-base {
+     fill: none;
+     stroke: rgba(59,130,246,0.15);
+     stroke-width: 1.5;
+     stroke-dasharray: 5 7;
    }
 
-   @keyframes fpTravel {
-     0%, 22%     { left: 0;    opacity: 0; }
-     25%         { left: 0;    opacity: 1; }
-     48%         { left: calc(100% - 6px); opacity: 1; }
-     52%, 100%   { left: calc(100% - 6px); opacity: 0; }
+   /* ── Animated flow line ── */
+   .edge-flow {
+     fill: none;
+     stroke: var(--blue-400);
+     stroke-width: 2;
+     stroke-dasharray: 8 7;
+     stroke-linecap: round;
+     animation: dashFlow 1.6s linear infinite;
+     opacity: 0.35;
+     transition: opacity 0.5s ease, stroke 0.5s ease;
    }
 
-   /* ── 3. Edge corners glow on active card ── */
-   .product-card::before {
+   /* Sequential edge intensify — timed to fire BETWEEN node glows */
+   .pipeline-edge-wrap { animation: edgePulse 9s ease-in-out infinite; }
+   .pipeline-edge-wrap[data-edge="0"] { animation-delay: 1.4s; }
+   .pipeline-edge-wrap[data-edge="1"] { animation-delay: 4.4s; }
+
+   @keyframes edgePulse {
+     0%, 10%   { --edge-op: 0.35; }
+     16%, 26%  { --edge-op: 1.0;  }
+     33%, 100% { --edge-op: 0.35; }
+   }
+
+   /* Use a wrapper class toggled by the animation to boost the .edge-flow opacity */
+   .pipeline-edge-wrap[data-edge="0"] .edge-flow {
+     animation: dashFlow 1.6s linear infinite, edgeFlowFade 9s ease-in-out 1.4s infinite;
+   }
+   .pipeline-edge-wrap[data-edge="1"] .edge-flow {
+     animation: dashFlow 1.6s linear infinite, edgeFlowFade 9s ease-in-out 4.4s infinite;
+   }
+
+   @keyframes dashFlow {
+     to { stroke-dashoffset: -15; }
+   }
+
+   @keyframes edgeFlowFade {
+     0%, 10%   { opacity: 0.35; stroke: var(--blue-400); filter: none; }
+     16%, 26%  { opacity: 1;    stroke: var(--blue-300);
+                 filter: drop-shadow(0 0 4px rgba(59,130,246,0.8))
+                         drop-shadow(0 0 10px rgba(59,130,246,0.4)); }
+     33%, 100% { opacity: 0.35; stroke: var(--blue-400); filter: none; }
+   }
+
+   /* Arrowhead color stays solid; edges handle the motion */
+
+   /* Edge label below the SVG */
+   .edge-label {
+     font-size: 0.55rem;
+     font-weight: 700;
+     letter-spacing: 0.08em;
+     text-transform: uppercase;
+     color: var(--blue-400);
+     opacity: 0.55;
+     white-space: nowrap;
+     text-align: center;
+   }
+
+   /* Arrowhead: always visible, no ghosting */
+   .edge-arrow {
+     fill: var(--blue-300);
+     filter: drop-shadow(0 0 1px rgba(59,130,246,0.9));
+   }
+
+   /* ── Node connector dots — small dots on left/right edges of each card
+      that visually anchor the SVG line to the card border ── */
+   .product-node::before,
+   .product-node::after {
      content: '';
      position: absolute;
-     inset: -1px;
-     border-radius: var(--r-xl);
+     top: 50%; width: 8px; height: 8px;
+     border-radius: 50%;
+     background: var(--blue-600);
+     border: 2px solid var(--blue-400);
+     box-shadow: 0 0 8px rgba(59,130,246,0.6);
+     transform: translateY(-50%);
+     z-index: 10;
      opacity: 0;
-     background: linear-gradient(
-       135deg,
-       rgba(59,130,246,0) 30%,
-       rgba(59,130,246,0.6) 50%,
-       rgba(59,130,246,0) 70%
-     );
-     background-size: 300% 300%;
-     animation: cardEdgeSweep 4.8s ease-in-out infinite;
-     z-index: -1;
-     pointer-events: none;
+     transition: opacity 0.4s ease;
    }
-   .product-card:nth-child(1)::before { animation-delay: 0.2s; }
-   .product-card:nth-child(2)::before { animation-delay: 1.8s; }
-   .product-card:nth-child(3)::before { animation-delay: 3.4s; }
+   /* left dot — only for non-first nodes */
+   .product-node[data-phase="1"]::before,
+   .product-node[data-phase="2"]::before { left: -5px; opacity: 0; }
+   /* right dot — only for non-last nodes */
+   .product-node[data-phase="0"]::after,
+   .product-node[data-phase="1"]::after  { right: -5px; opacity: 0; }
 
-   @keyframes cardEdgeSweep {
-     0%, 12%, 65%, 100% { opacity: 0; background-position: 0% 0%; }
-     20%  { opacity: 0.7; background-position: 0%   0%;   }
-     40%  { opacity: 0.4; background-position: 100% 100%; }
-     55%  { opacity: 0;   background-position: 100% 100%; }
-   }
+   /* Dots pulse in sync with their card's nodeGlow */
+   .product-node[data-phase="0"]::after,
+   .product-node[data-phase="0"]::before { animation: dotPulse 3s ease-in-out  0.0s infinite; }
+   .product-node[data-phase="1"]::after,
+   .product-node[data-phase="1"]::before { animation: dotPulse 3s ease-in-out  1.0s infinite; }
+   .product-node[data-phase="2"]::after,
+   .product-node[data-phase="2"]::before { animation: dotPulse 3s ease-in-out  2.0s infinite; }
 
-   /* ── 4. Placeholder icon pulse when card is active ── */
-   .product-placeholder .material-symbols-outlined {
-     transition: color var(--t-med), text-shadow var(--t-med);
+   @keyframes dotPulse {
+     0%, 8%   { box-shadow: 0 0 6px  rgba(59,130,246,0.5);  background: var(--blue-600); }
+     14%, 24% { box-shadow: 0 0 18px rgba(59,130,246,0.95); background: var(--blue-300); }
+     33%, 100%{ box-shadow: 0 0 6px  rgba(59,130,246,0.5);  background: var(--blue-600); }
    }
 
-   @media (max-width: 1024px) { .products-grid { grid-template-columns: 1fr 1fr; } }
-   @media (max-width: 600px) {
-     .products-grid { grid-template-columns: 1fr; }
-     /* On mobile, flow bridges are rotated below each card */
-     .product-flow-bridge {
-       top: auto; bottom: -1.125rem; right: auto;
-       left: 50%; transform: translateX(-50%) rotate(90deg);
+   /* ── Responsive ── */
+   @media (max-width: 1024px) {
+     .pipeline-edge-wrap { flex: 0 0 52px; }
+   }
+
+   /* ── VERTICAL PIPELINE — 768px and below ── */
+   @media (max-width: 768px) {
+     /* Stack pipeline vertically */
+     .products-pipeline {
+       flex-direction: column;
+       align-items: stretch;
+       gap: 0;
      }
+
+     /* Cards fill full width */
+     .product-node {
+       flex: none;
+       width: 100%;
+     }
+
+     /* Connector strip becomes a horizontal band */
+     .pipeline-edge-wrap {
+       flex: none;
+       width: 100%;
+       height: 52px;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       padding: 4px 0;
+       gap: 0;
+       position: relative;
+     }
+
+     /* Hide the horizontal SVG — replaced by CSS vertical connector */
+     .pipeline-edge-svg { display: none; }
+     .edge-label         { display: none; }
+
+     /* ── Vertical dashed line (CSS, not SVG) ── */
+     .pipeline-edge-wrap::before {
+       content: '';
+       position: absolute;
+       left: 50%;
+       top: 0; bottom: 14px;        /* leave room for arrowhead */
+       width: 2px;
+       transform: translateX(-50%);
+       background: repeating-linear-gradient(
+         to bottom,
+         rgba(59,130,246,0.18) 0px, rgba(59,130,246,0.18) 5px,
+         transparent 5px,           transparent 12px
+       );
+       background-size: 2px 17px;
+       /* Dashes march downward — same feel as the horizontal SVG */
+       animation: vertDashFlow 1.6s linear infinite;
+     }
+
+     /* Intensify in sync with the edge pulse timing */
+     .pipeline-edge-wrap[data-edge="0"]::before {
+       animation: vertDashFlow 1.6s linear infinite,
+                  vertEdgeFade 9s ease-in-out 1.4s infinite;
+     }
+     .pipeline-edge-wrap[data-edge="1"]::before {
+       animation: vertDashFlow 1.6s linear infinite,
+                  vertEdgeFade 9s ease-in-out 4.4s infinite;
+     }
+
+     /* ── Arrowhead pointing DOWN ── */
+     .pipeline-edge-wrap::after {
+       content: '';
+       position: absolute;
+       bottom: 4px;
+       left: 50%;
+       transform: translateX(-50%);
+       width: 0; height: 0;
+       border-left:  5px solid transparent;
+       border-right: 5px solid transparent;
+       border-top:   7px solid rgba(59,130,246,0.45);
+       /* Arrow also intensifies with edge pulse */
+       transition: border-top-color 0.5s ease;
+     }
+     .pipeline-edge-wrap[data-edge="0"]::after {
+       animation: vertArrowFade 9s ease-in-out 1.4s infinite;
+     }
+     .pipeline-edge-wrap[data-edge="1"]::after {
+       animation: vertArrowFade 9s ease-in-out 4.4s infinite;
+     }
+
+     /* ── Connector dots: reposition to top/bottom edges ── */
+     .product-node::before,
+     .product-node::after {
+       /* Reset desktop left/right positioning */
+       top: auto; left: 50%;
+       transform: translateX(-50%);
+     }
+     /* Top dot (receives the incoming edge) */
+     .product-node[data-phase="1"]::before,
+     .product-node[data-phase="2"]::before {
+       top: -5px; left: 50%;
+       transform: translateX(-50%);
+     }
+     /* Bottom dot (sends the outgoing edge) */
+     .product-node[data-phase="0"]::after,
+     .product-node[data-phase="1"]::after {
+       top: auto; bottom: -5px; left: 50%;
+       transform: translateX(-50%);
+     }
+   }
+
+   @keyframes vertDashFlow {
+     to { background-position: 0 17px; }
+   }
+   @keyframes vertEdgeFade {
+     0%, 10%   { background-image: repeating-linear-gradient(
+                   to bottom,
+                   rgba(59,130,246,0.18) 0px, rgba(59,130,246,0.18) 5px,
+                   transparent 5px, transparent 12px); }
+     16%, 26%  { background-image: repeating-linear-gradient(
+                   to bottom,
+                   rgba(59,130,246,0.90) 0px, rgba(59,130,246,0.90) 5px,
+                   transparent 5px, transparent 12px);
+                 filter: drop-shadow(0 0 4px rgba(59,130,246,0.7)); }
+     33%, 100% { background-image: repeating-linear-gradient(
+                   to bottom,
+                   rgba(59,130,246,0.18) 0px, rgba(59,130,246,0.18) 5px,
+                   transparent 5px, transparent 12px); }
+   }
+   @keyframes vertArrowFade {
+     0%, 10%   { border-top-color: rgba(59,130,246,0.40); }
+     16%, 26%  { border-top-color: var(--blue-300);
+                 filter: drop-shadow(0 0 5px rgba(59,130,246,0.9)); }
+     33%, 100% { border-top-color: rgba(59,130,246,0.40); }
    }
 
    /* =======================================
@@ -937,7 +1100,7 @@
    #cta { z-index: 2; }
    .cta-panel {
      text-align: center;
-     padding: clamp(3.25rem, 7vw, 5.5rem) clamp(1.5rem, 5vw, 3rem);
+     padding: clamp(3.25rem, 6vw, 5.5rem) clamp(1.5rem, 5vw, 3rem);
      border-radius: var(--r-xl);
      background: var(--glass-bg);
      backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
@@ -990,7 +1153,7 @@
    #footer {
      position: relative; z-index: 2;
      border-top: 1px solid var(--glass-border);
-     padding: clamp(3rem, 5vw, 4.5rem) 0 1.75rem;
+     padding: clamp(3rem, 5vw, 4.2rem) 0 1.75rem;
    }
    .footer-grid {
      display: grid;
@@ -1077,4 +1240,3 @@
    .fill .material-symbols-outlined {
      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
    }
-   

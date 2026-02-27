@@ -15,26 +15,26 @@
     },
     header: {
       logo: {
-        square:    'public/images/Logo/logo.webp',
+        square: 'public/images/Logo/logo.webp',
         rectangle: 'public/images/Logo/logo_rectangle.webp',
       },
       nav: [
-        { label: 'Platform', href: '#intro'    },
+        { label: 'Platform', href: '#intro' },
         { label: 'Products', href: '#products' },
-        { label: 'Company',  href: '#cta'      },
+        { label: 'Company', href: '#cta' },
       ],
     },
     hero: {
-      imageDark:  'public/images/main.png',
+      imageDark: 'public/images/main.png',
       imageLight: 'public/images/main_light.png',
-      headline:   ['Shaping the Future of', 'Engineering & Construction'],
+      headline: ['Shaping the Future of', 'Engineering & Construction'],
       subEyebrow: 'Introducing DiPGOS',
-      subMain:    'The World\'s First<br>Project Operating System',
+      subMain: 'The World\'s First<br>Project Operating System',
     },
     intro: {
       headline: 'Until now, construction ran on fragmented tools. Now it runs on an <em>Operating System.</em>',
       para: 'DiPGOS is a domain-built Operating System for engineering and construction delivery. It provides a unified, integrated view of project operations by treating construction activities as production systems — not isolated tasks.',
-      imageDark:  'public/images/dipgos_dashboard/dipgos_dashboard_dark.webp',
+      imageDark: 'public/images/dipgos_dashboard/dipgos_dashboard_dark.webp',
       imageLight: 'public/images/dipgos_dashboard/dipgos_dashboard_light.webp',
     },
     products: {
@@ -43,44 +43,44 @@
         {
           abbr: 'CPDS',
           name: 'Cognitive Project Design Studio',
-          phase: 'Phase 1 – Design & Proposal',
+          phase: 'Design',
           icon: 'design_services',
         },
         {
           abbr: 'ACCS',
           name: 'Autonomous Cognitive Construction Studio',
-          phase: 'Phase 2 – Construction & Monitoring',
+          phase: 'Construction',
           icon: 'construction',
           imgLight: 'public/images/accs/accs_light.webp',
-          imgDark:  'public/images/accs/accs_dark.webp',
+          imgDark: 'public/images/accs/accs_dark.webp',
         },
         {
           abbr: 'AOS',
           name: 'Autonomous Operation & Maintenance',
-          phase: 'Phase 3 – Operations & Maintenance',
+          phase: 'Operations & Maintenance',
           icon: 'precision_manufacturing',
         },
       ],
     },
     ai: [
-      { icon: 'psychology',    title: 'Physics‑Informed AI'               },
-      { icon: 'history_edu',   title: 'Knowledge Retrieval from Past Work' },
-      { icon: 'chat',          title: 'Conversational AI Assistant'        },
-      { icon: 'auto_fix_high', title: 'Applied AI'                         },
+      { icon: 'psychology', title: 'Physics‑Informed AI' },
+      { icon: 'history_edu', title: 'Knowledge Retrieval from Past Work' },
+      { icon: 'chat', title: 'Conversational AI Assistant' },
+      { icon: 'auto_fix_high', title: 'Applied AI' },
     ],
     footer: {
       tagline: 'Shaping the future of Engineering and Construction.',
       year: '2025',
       product: [
         { label: 'DiPGOS', href: '#platform' },
-        { label: 'CPDS',   href: '#products' },
-        { label: 'ACCS',   href: '#products' },
-        { label: 'AOS',    href: '#products' },
+        { label: 'CPDS', href: '#products' },
+        { label: 'ACCS', href: '#products' },
+        { label: 'AOS', href: '#products' },
       ],
       legal: [
-        { label: 'Privacy Policy',   href: '#'                             },
-        { label: 'Terms of Service', href: '#'                             },
-        { label: 'Contact',          href: 'mailto:sales@industechsol.com' },
+        { label: 'Privacy Policy', href: '#' },
+        { label: 'Terms of Service', href: '#' },
+        { label: 'Contact', href: 'mailto:kamran@industechsol.com' },
       ],
     },
   };
@@ -88,10 +88,10 @@
   /* =============================================
      HELPERS
      ============================================= */
-  const $       = id  => document.getElementById(id);
-  const icon    = n   => `<span class="material-symbols-outlined">${n}</span>`;
+  const $ = id => document.getElementById(id);
+  const icon = n => `<span class="material-symbols-outlined">${n}</span>`;
   const setText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
-  const setHTML = (id, val) => { const el = $(id); if (el) el.innerHTML   = val; };
+  const setHTML = (id, val) => { const el = $(id); if (el) el.innerHTML = val; };
 
   /* =============================================
      THEME
@@ -101,7 +101,7 @@
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
 
-    const btn    = $('theme-toggle');
+    const btn = $('theme-toggle');
     const isDark = theme === 'dark';
 
     if (btn) {
@@ -134,7 +134,7 @@
     if (heroBg) {
       const src = isLight
         ? (DATA.hero.imageLight || DATA.hero.imageDark)
-        : (DATA.hero.imageDark  || DATA.hero.imageLight);
+        : (DATA.hero.imageDark || DATA.hero.imageLight);
       heroBg.style.backgroundImage = `url('${src}')`;
     }
 
@@ -142,7 +142,7 @@
     document.querySelectorAll('img[data-img-light], img[data-img-dark]').forEach(img => {
       const src = isLight
         ? (img.dataset.imgLight || img.dataset.imgDark)
-        : (img.dataset.imgDark  || img.dataset.imgLight);
+        : (img.dataset.imgDark || img.dataset.imgLight);
       if (src) img.src = src;
     });
   }
@@ -153,7 +153,7 @@
   function buildHeader() {
     const logoImg = $('logo-img');
     if (logoImg) {
-      logoImg.src    = DATA.header.logo.rectangle;
+      logoImg.src = DATA.header.logo.rectangle;
       logoImg.onload = () => logoImg.classList.add('loaded');
     }
 
@@ -161,7 +161,7 @@
       .map(n => `<a href="${n.href}" class="nav-link">${n.label}</a>`)
       .join('');
 
-    setHTML('nav-links',  links);
+    setHTML('nav-links', links);
     setHTML('mobile-nav', links);
   }
 
@@ -194,45 +194,62 @@
      ============================================= */
   function buildIntro() {
     setHTML('intro-headline', DATA.intro.headline);
-    setText('intro-para',     DATA.intro.para);
+    setText('intro-para', DATA.intro.para);
 
     const img = document.querySelector('.intro-screenshot');
     if (img) {
       img.dataset.imgLight = DATA.intro.imageLight || '';
-      img.dataset.imgDark  = DATA.intro.imageDark  || '';
+      img.dataset.imgDark = DATA.intro.imageDark || '';
       updateThemeImages(document.documentElement.dataset.theme);
     }
   }
 
   /* =============================================
-     BUILD — products
+     BUILD — products  (pipeline layout)
+     Cards = nodes. SVG edges between them carry
+     animated dashed flow lines with arrowheads,
+     conveying seamless CPDS → ACCS → AOS handoff.
      ============================================= */
   function buildProducts() {
     setText('products-intro', DATA.products.intro);
 
     const isLight = document.documentElement.dataset.theme === 'light';
+    const items = DATA.products.items;
 
-    setHTML('products-grid', DATA.products.items.map((p, i) => {
+    // Build SVG edge connector between two consecutive nodes
+    function buildEdge(idx) {
+      const markerId = `arr${idx}`;
+      // Labels for each transition
+      return `
+      <div class="pipeline-edge-wrap" data-edge="${idx}" aria-hidden="true">
+        <svg class="pipeline-edge-svg" viewBox="0 0 72 32" preserveAspectRatio="none">
+          <defs>
+            <marker id="${markerId}" markerWidth="8" markerHeight="8"
+                    refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+              <polygon class="edge-arrow" points="0,1 8,4 0,7" fill="rgba(59,130,246,0.4)"/>
+            </marker>
+          </defs>
+         
+          <!-- animated flow -->
+          <line class="edge-flow" x1="4" y1="16" x2="60" y2="16"
+                marker-end="url(#${markerId})"/>
+        </svg>
+      </div>`;
+    }
+
+    // Build a card node
+    function buildNode(p, i) {
       const imgLight = p.imgLight || p.img || '';
-      const imgDark  = p.imgDark  || p.img || '';
-      const imgSrc   = isLight ? (imgLight || imgDark) : (imgDark || imgLight);
+      const imgDark = p.imgDark || p.img || '';
+      const imgSrc = isLight ? (imgLight || imgDark) : (imgDark || imgLight);
       const hasImage = Boolean(imgSrc);
 
-      // Flow bridge HTML — 3 particles, delays set in CSS animation-delay via inline style
-      const bridgeHTML = i < DATA.products.items.length - 1
-        ? `<div class="product-flow-bridge" aria-hidden="true">
-             <span class="fp" style="animation-delay:${1.6 * i + 0.65}s"></span>
-             <span class="fp" style="animation-delay:${1.6 * i + 0.80}s"></span>
-             <span class="fp" style="animation-delay:${1.6 * i + 0.95}s"></span>
-           </div>` : '';
-
       return `
-      <div class="product-card" data-reveal data-delay="${i * 120}">
-        ${bridgeHTML}
+      <div class="product-node" data-phase="${i}" data-reveal data-delay="${i * 80}">
         <div class="product-thumb">
           <div class="product-placeholder">
             ${icon(p.icon)}
-            <span style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">${p.abbr}</span>
+            <span style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;">${p.abbr}</span>
             ${hasImage ? '' : '<span class="product-coming-soon">Coming soon</span>'}
           </div>
           ${hasImage ? `
@@ -244,11 +261,20 @@
           <span class="product-phase-pill">${p.phase}</span>
         </div>
         <div class="product-body">
-          <div class="product-abbr">${p.abbr}</div>
           <h3 class="product-name">${p.name}</h3>
         </div>
       </div>`;
-    }).join(''));
+    }
+
+    // Interleave nodes and edges
+    let html = '<div class="products-pipeline">';
+    items.forEach((p, i) => {
+      html += buildNode(p, i);
+      if (i < items.length - 1) html += buildEdge(i);
+    });
+    html += '</div>';
+
+    setHTML('products-grid', html);
   }
 
   /* =============================================
@@ -268,17 +294,17 @@
   function buildFooter() {
     const brand = document.querySelector('.footer-brand');
     if (brand && !brand.querySelector('.footer-logo')) {
-      const logo     = document.createElement('img');
-      logo.src       = DATA.header.logo.rectangle;
-      logo.alt       = 'Indus Technology Solution';
+      const logo = document.createElement('img');
+      logo.src = DATA.header.logo.rectangle;
+      logo.alt = 'Indus Technology Solution';
       logo.className = 'footer-logo';
       brand.insertBefore(logo, brand.firstChild);
     }
 
     setText('footer-tagline', DATA.footer.tagline);
-    setText('footer-copy',    `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`);
+    setText('footer-copy', `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`);
     setHTML('footer-product-links', DATA.footer.product.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
-    setHTML('footer-legal-links',   DATA.footer.legal.map(l  => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
+    setHTML('footer-legal-links', DATA.footer.legal.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
   }
 
   /* =============================================
@@ -296,20 +322,33 @@
      the hero scrolls off naturally.
      ============================================= */
   function setupHeroPhase2() {
+    const wrapper = document.getElementById('hero-wrapper');
     const heroEl = document.getElementById('hero');
-    if (!heroEl) return;
+    if (!wrapper || !heroEl) return;
 
-    let shifted = false;
+    // Ensure headline is visible immediately (no reveal system involved)
+    heroEl.style.setProperty('--hero-shift', '0');
 
-    const check = () => {
-      if (!shifted && window.scrollY > 40) {
-        shifted = true;
-        heroEl.classList.add('hero--shifted');
-      }
+    const update = () => {
+      const viewportH = window.innerHeight || 1;
+      // getBoundingClientRect + scrollY gives the correct document-relative top
+      // even after images / fonts load and push layout down.
+      const wrapperTop = wrapper.getBoundingClientRect().top + window.scrollY;
+      // The scrollable range inside the wrapper is (wrapperHeight - viewportH).
+      // We want --hero-shift to go 0→1 smoothly across that range.
+      const scrollable = Math.max(wrapper.offsetHeight - viewportH, 1);
+      const scrolled = Math.max(0, window.scrollY - wrapperTop);
+      const t = Math.min(1, scrolled / scrollable);
+
+      heroEl.style.setProperty('--hero-shift', t.toFixed(4));
+
+      // Class used only for cosmetic extras (progress bar, scroll-cue hide)
+      heroEl.classList.toggle('hero--shifted', t > 0.05);
     };
 
-    window.addEventListener('scroll', check, { passive: true });
-    check(); // run once in case page reloads mid-scroll
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update(); // run once on load
   }
 
   /* =============================================
@@ -327,7 +366,7 @@
      MOBILE MENU
      ============================================= */
   function setupMobile() {
-    const btn  = $('hamburger');
+    const btn = $('hamburger');
     const menu = $('mobile-menu');
     if (!btn || !menu) return;
 
