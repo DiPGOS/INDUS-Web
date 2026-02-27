@@ -15,20 +15,21 @@
     },
     header: {
       logo: {
-        square: 'public/images/Logo/logo.webp',
-        rectangle:  'public/images/Logo/logo_rectangle.webp',
+        square:    'public/images/Logo/logo.webp',
+        rectangle: 'public/images/Logo/logo_rectangle.webp',
       },
       nav: [
-        { label: 'Platform',  href: '#intro' },
-        { label: 'Products',  href: '#products' },
-        { label: 'Company',   href: '#cta' },
+        { label: 'Platform', href: '#intro'    },
+        { label: 'Products', href: '#products' },
+        { label: 'Company',  href: '#cta'      },
       ],
     },
     hero: {
       imageDark:  'public/images/main.png',
       imageLight: 'public/images/main_light.png',
-      headline: ['Shaping the Future of', 'Engineering & Construction'],
-      subHeadline: "Introducing DiPGOS\nThe world's first Project Operating System",
+      headline:   ['Shaping the Future of', 'Engineering & Construction'],
+      subEyebrow: 'Introducing DiPGOS',
+      subMain:    'The World\'s First<br>Project Operating System',
     },
     intro: {
       headline: 'Until now, construction ran on fragmented tools. Now it runs on an <em>Operating System.</em>',
@@ -62,25 +63,13 @@
       ],
     },
     ai: [
-      {
-        icon: 'psychology',
-        title: 'Physics‑Informed AI',
-      },
-      {
-        icon: 'history_edu',
-        title: 'Knowledge Retrieval from Past Work',
-      },
-      {
-        icon: 'chat',
-        title: 'Conversational AI Assistant',
-      },
-      {
-        icon: 'auto_fix_high',
-        title: 'Applied AI',
-      },
+      { icon: 'psychology',    title: 'Physics‑Informed AI'               },
+      { icon: 'history_edu',   title: 'Knowledge Retrieval from Past Work' },
+      { icon: 'chat',          title: 'Conversational AI Assistant'        },
+      { icon: 'auto_fix_high', title: 'Applied AI'                         },
     ],
     footer: {
-      tagline: 'Shaping teh future of Engineering and Construction.',
+      tagline: 'Shaping the future of Engineering and Construction.',
       year: '2025',
       product: [
         { label: 'DiPGOS', href: '#platform' },
@@ -89,8 +78,8 @@
         { label: 'AOS',    href: '#products' },
       ],
       legal: [
-        { label: 'Privacy Policy',   href: '#' },
-        { label: 'Terms of Service', href: '#' },
+        { label: 'Privacy Policy',   href: '#'                             },
+        { label: 'Terms of Service', href: '#'                             },
         { label: 'Contact',          href: 'mailto:sales@industechsol.com' },
       ],
     },
@@ -99,191 +88,133 @@
   /* =============================================
      HELPERS
      ============================================= */
-  const $ = id => document.getElementById(id);
-  const icon = name => `<span class="material-symbols-outlined">${name}</span>`;
+  const $       = id  => document.getElementById(id);
+  const icon    = n   => `<span class="material-symbols-outlined">${n}</span>`;
   const setText = (id, val) => { const el = $(id); if (el) el.textContent = val; };
-  const setHTML = (id, val) => { const el = $(id); if (el) el.innerHTML = val; };
+  const setHTML = (id, val) => { const el = $(id); if (el) el.innerHTML   = val; };
 
   /* =============================================
      THEME
+     Always dark on load — no localStorage, no OS preference.
+     Theme toggle still works within the session.
      ============================================= */
-  const THEME_KEY = 'theme';
-
-  function getPreferredTheme() {
-    try {
-      const stored = localStorage.getItem(THEME_KEY);
-      if (stored === 'light' || stored === 'dark') return stored;
-    } catch (e) {
-      // ignore storage errors and fall through to system preference
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
-  }
-
   function applyTheme(theme) {
-    const root = document.documentElement;
-    root.dataset.theme = theme;
+    document.documentElement.dataset.theme = theme;
 
-    try {
-      localStorage.setItem(THEME_KEY, theme);
-    } catch (e) {
-      // ignore storage errors
-    }
+    const btn    = $('theme-toggle');
+    const isDark = theme === 'dark';
 
-    const btn = document.getElementById('theme-toggle');
     if (btn) {
-      const isDark = theme === 'dark';
       const iconEl = btn.querySelector('.material-symbols-outlined');
       btn.setAttribute('aria-pressed', String(isDark));
-      btn.setAttribute(
-        'aria-label',
-        isDark ? 'Switch to light mode' : 'Switch to dark mode'
-      );
-      if (iconEl) {
-        iconEl.textContent = isDark ? 'light_mode' : 'dark_mode';
-      }
+      btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      if (iconEl) iconEl.textContent = isDark ? 'light_mode' : 'dark_mode';
     }
 
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) {
-      metaTheme.content = theme === 'dark' ? '#060a14' : '#f5f7fb';
-    }
+    if (metaTheme) metaTheme.content = isDark ? '#060a14' : '#f5f7fb';
 
-    setHeroBackgroundForTheme(theme);
-    setIntroImageForTheme(theme);
-    setProductImagesForTheme(theme);
-  }
-
-  function setHeroBackgroundForTheme(theme) {
-    const hero = document.getElementById('hero');
-    if (!hero) return;
-    const bg = hero.querySelector('.hero-bg-img');
-    if (!bg) return;
-
-    const isLight = theme === 'light';
-    const src = isLight
-      ? (DATA.hero.imageLight || DATA.hero.imageDark)
-      : (DATA.hero.imageDark || DATA.hero.imageLight);
-
-    bg.style.backgroundImage = `url('${src}')`;
-  }
-
-  function setIntroImageForTheme(theme) {
-    const img = document.querySelector('.intro-screenshot');
-    if (!img) return;
-
-    const isLight = theme === 'light';
-    const light = img.dataset.imgLight || DATA.intro.imageLight;
-    const dark  = img.dataset.imgDark  || DATA.intro.imageDark;
-    const src   = isLight ? (light || dark) : (dark || light);
-    if (src) img.src = src;
-  }
-
-  function setProductImagesForTheme(theme) {
-    const imgs = document.querySelectorAll('.product-thumb img[data-img-light], .product-thumb img[data-img-dark]');
-    imgs.forEach(img => {
-      const light = img.dataset.imgLight;
-      const dark  = img.dataset.imgDark;
-      if (!light && !dark) return;
-      const isLight = theme === 'light';
-      const src = isLight ? (light || dark) : (dark || light);
-      if (src) img.src = src;
-    });
+    updateThemeImages(theme);
   }
 
   function toggleTheme() {
-    const current = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-    const next = current === 'light' ? 'dark' : 'light';
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
     applyTheme(next);
   }
 
   /* =============================================
-     BUILD
+     THEME-AWARE IMAGE HELPER
+     One consolidated helper used everywhere.
      ============================================= */
-  function init() {
-    const initialTheme = getPreferredTheme();
-    applyTheme(initialTheme);
+  function updateThemeImages(theme) {
+    const isLight = theme === 'light';
 
-    document.title = DATA.meta.title;
-    const metaEl = document.querySelector('meta[name="description"]');
-    if (metaEl) metaEl.content = DATA.meta.description;
-
-    buildHeader();
-    buildHero();
-    buildIntro();
-    buildProducts();
-    buildAI();
-    buildFooter();
-
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (themeToggleBtn) {
-      themeToggleBtn.addEventListener('click', toggleTheme);
+    // Hero background
+    const heroBg = document.querySelector('#hero .hero-bg-img');
+    if (heroBg) {
+      const src = isLight
+        ? (DATA.hero.imageLight || DATA.hero.imageDark)
+        : (DATA.hero.imageDark  || DATA.hero.imageLight);
+      heroBg.style.backgroundImage = `url('${src}')`;
     }
 
-    setupHeroSubheadline();
-    setupHeader();
-    setupMobile();
-    setupReveal();
-    setupSmoothScroll();
+    // All images tagged with data-img-light / data-img-dark
+    document.querySelectorAll('img[data-img-light], img[data-img-dark]').forEach(img => {
+      const src = isLight
+        ? (img.dataset.imgLight || img.dataset.imgDark)
+        : (img.dataset.imgDark  || img.dataset.imgLight);
+      if (src) img.src = src;
+    });
   }
 
-  /* ---- Header ---- */
+  /* =============================================
+     BUILD — header
+     ============================================= */
   function buildHeader() {
     const logoImg = $('logo-img');
     if (logoImg) {
-      logoImg.src = DATA.header.logo.rectangle;
-      logoImg.onload  = () => logoImg.classList.add('loaded');
-      logoImg.onerror = () => logoImg.style.display = 'none';
+      logoImg.src    = DATA.header.logo.rectangle;
+      logoImg.onload = () => logoImg.classList.add('loaded');
     }
 
-    const navEl = $('nav-links');
-    const mobEl = $('mobile-nav');
-    const links = DATA.header.nav.map(n => `<a href="${n.href}" class="nav-link">${n.label}</a>`).join('');
-    if (navEl) navEl.innerHTML = links;
-    if (mobEl) mobEl.innerHTML = links;
+    const links = DATA.header.nav
+      .map(n => `<a href="${n.href}" class="nav-link">${n.label}</a>`)
+      .join('');
+
+    setHTML('nav-links',  links);
+    setHTML('mobile-nav', links);
   }
 
-  /* ---- Hero ---- */
+  /* =============================================
+     BUILD — hero
+     ============================================= */
   function buildHero() {
-    const theme = document.documentElement.dataset.theme || getPreferredTheme();
-    setHeroBackgroundForTheme(theme);
+    updateThemeImages(document.documentElement.dataset.theme);
 
+    // Main headline
     const hl = $('hero-headline');
     if (hl) {
       hl.innerHTML =
-        DATA.hero.headline[0] + '<br><span class="accent">' + DATA.hero.headline[1] + '</span>';
+        DATA.hero.headline[0] +
+        '<br><span class="accent">' + DATA.hero.headline[1] + '</span>';
     }
 
-    const sub = DATA.hero.subHeadline;
-    if (sub) setText('hero-sub', sub);
+    // Sub-headline: two-tier markup for phase-2 impact
+    const sub = $('hero-sub');
+    if (sub) {
+      sub.innerHTML =
+        `<span class="hero-sub-eyebrow">${DATA.hero.subEyebrow}</span>` +
+        `<span class="hero-sub-main">${DATA.hero.subMain}</span>`;
+      sub.removeAttribute('aria-hidden');
+    }
   }
 
-  /* ---- Intro ---- */
+  /* =============================================
+     BUILD — intro
+     ============================================= */
   function buildIntro() {
     setHTML('intro-headline', DATA.intro.headline);
-    setText('intro-para', DATA.intro.para);
+    setText('intro-para',     DATA.intro.para);
 
     const img = document.querySelector('.intro-screenshot');
     if (img) {
       img.dataset.imgLight = DATA.intro.imageLight || '';
       img.dataset.imgDark  = DATA.intro.imageDark  || '';
-      const theme = document.documentElement.dataset.theme || getPreferredTheme();
-      setIntroImageForTheme(theme);
+      updateThemeImages(document.documentElement.dataset.theme);
     }
   }
 
-  /* ---- Products ---- */
+  /* =============================================
+     BUILD — products
+     ============================================= */
   function buildProducts() {
     setText('products-intro', DATA.products.intro);
 
-    const theme = document.documentElement.dataset.theme || getPreferredTheme();
+    const isLight = document.documentElement.dataset.theme === 'light';
 
     setHTML('products-grid', DATA.products.items.map((p, i) => {
       const imgLight = p.imgLight || p.img || '';
       const imgDark  = p.imgDark  || p.img || '';
-      const isLight  = theme === 'light';
       const imgSrc   = isLight ? (imgLight || imgDark) : (imgDark || imgLight);
       const hasImage = Boolean(imgSrc);
 
@@ -297,8 +228,8 @@
           </div>
           ${hasImage ? `
           <img src="${imgSrc}" alt="${p.name}" loading="lazy"
-               data-img-light="${imgLight || ''}"
-               data-img-dark="${imgDark || ''}"
+               data-img-light="${imgLight}"
+               data-img-dark="${imgDark}"
                onload="this.classList.add('img-loaded')"
                onerror="this.remove()">` : ''}
           <span class="product-phase-pill">${p.phase}</span>
@@ -310,7 +241,9 @@
     }).join(''));
   }
 
-  /* ---- AI ---- */
+  /* =============================================
+     BUILD — AI section
+     ============================================= */
   function buildAI() {
     setHTML('ai-grid', DATA.ai.map((f, i) => `
       <div class="ai-card" data-reveal data-delay="${i * 100}">
@@ -319,92 +252,89 @@
       </div>`).join(''));
   }
 
-  /* ---- Footer ---- */
+  /* =============================================
+     BUILD — footer
+     ============================================= */
   function buildFooter() {
-    const footerBrand = document.querySelector('.footer-brand');
-    if (footerBrand && !footerBrand.querySelector('.footer-logo')) {
-      const logo = document.createElement('img');
-      logo.src = DATA.header.logo.rectangle;
-      logo.alt = 'Indus Technology Solution';
+    const brand = document.querySelector('.footer-brand');
+    if (brand && !brand.querySelector('.footer-logo')) {
+      const logo     = document.createElement('img');
+      logo.src       = DATA.header.logo.rectangle;
+      logo.alt       = 'Indus Technology Solution';
       logo.className = 'footer-logo';
-      footerBrand.insertBefore(logo, footerBrand.firstChild);
+      brand.insertBefore(logo, brand.firstChild);
     }
 
     setText('footer-tagline', DATA.footer.tagline);
-    setText('footer-copy', `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`);
+    setText('footer-copy',    `© ${DATA.footer.year} Indus Technology Solutions. All rights reserved.`);
     setHTML('footer-product-links', DATA.footer.product.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
     setHTML('footer-legal-links',   DATA.footer.legal.map(l  => `<li><a href="${l.href}">${l.label}</a></li>`).join(''));
   }
 
   /* =============================================
-     HERO SUBHEADLINE — grab attention on first interaction
+     HERO — phase-2 scroll reveal
+     ─────────────────────────────────────────────
+     Phase 1 (default):  Headline — large, centred
+     Phase 2 (on scroll): Headline shrinks + floats
+                          to top; sub-headline rises
+                          from below to centre stage.
      ============================================= */
-  function setupHeroSubheadline() {
-    const heroSub = document.getElementById('hero-sub');
-    if (!heroSub || !heroSub.textContent.trim()) return;
+  function setupHeroPhase2() {
+    const heroEl = document.getElementById('hero');
+    if (!heroEl) return;
 
-    let locked = true;
+    let triggered = false;
 
-    const reveal = () => {
-      if (!locked) return;
-      locked = false;
-      window.scrollTo({ top: 0 });
-      heroSub.classList.add('visible', 'emphasize');
-      setTimeout(() => {
-        heroSub.classList.remove('emphasize');
-        teardown();
-      }, 900);
+    const trigger = () => {
+      if (triggered) return;
+      triggered = true;
+      heroEl.classList.add('hero--shifted');
+      teardown();
     };
 
+    // Wheel: fire only on first downward scroll while still at top
     const onWheel = (e) => {
-      if (!locked) return;
-      if (e.deltaY > 0 && window.scrollY < 40) {
-        e.preventDefault();
-        reveal();
-      }
+      if (triggered || window.scrollY > 40) return;
+      if (e.deltaY > 0) { e.preventDefault(); trigger(); }
     };
 
+    // Keyboard: arrow-down / space / page-down
     const onKeydown = (e) => {
-      if (!locked) return;
-      const key = e.key;
-      if (key === 'ArrowDown' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
+      if (triggered) return;
+      if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key)) {
         e.preventDefault();
-        reveal();
+        trigger();
       }
     };
 
-    const onTouchMove = (e) => {
-      if (!locked) return;
-      if (window.scrollY < 40) {
-        e.preventDefault();
-        reveal();
-      }
+    // Touch: upward swipe
+    let touchStartY = 0;
+    const onTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
+    const onTouchMove  = (e) => {
+      if (triggered || window.scrollY > 40) return;
+      if (e.touches[0].clientY < touchStartY - 12) { e.preventDefault(); trigger(); }
     };
 
     function teardown() {
-      window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('keydown', onKeydown);
-      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('wheel',      onWheel,      { passive: false });
+      window.removeEventListener('keydown',    onKeydown);
+      window.removeEventListener('touchstart', onTouchStart, { passive: true  });
+      window.removeEventListener('touchmove',  onTouchMove,  { passive: false });
     }
 
-    window.addEventListener('wheel', onWheel, { passive: false });
-    window.addEventListener('keydown', onKeydown);
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('wheel',      onWheel,      { passive: false });
+    window.addEventListener('keydown',    onKeydown);
+    window.addEventListener('touchstart', onTouchStart, { passive: true  });
+    window.addEventListener('touchmove',  onTouchMove,  { passive: false });
   }
 
   /* =============================================
-     HEADER SCROLL BEHAVIOR
+     HEADER — scroll behaviour
      ============================================= */
   function setupHeader() {
-    const header = document.getElementById('site-header');
-    const logoImg = $('logo-img');
+    const header = $('site-header');
     if (!header) return;
-
-    const onScroll = () => {
-      const scrolled = window.scrollY > 60;
-      header.classList.toggle('scrolled', scrolled);
-    };
-
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
@@ -417,12 +347,18 @@
     const menu = $('mobile-menu');
     if (!btn || !menu) return;
 
-    const close = () => { btn.classList.remove('open'); menu.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
+    const close = () => {
+      btn.classList.remove('open');
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    };
+
     btn.addEventListener('click', () => {
       const open = menu.classList.toggle('open');
       btn.classList.toggle('open', open);
       btn.setAttribute('aria-expanded', String(open));
     });
+
     menu.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', close));
     window.matchMedia('(min-width: 769px)').addEventListener('change', e => { if (e.matches) close(); });
   }
@@ -432,22 +368,21 @@
      ============================================= */
   function setupReveal() {
     const targets = document.querySelectorAll('[data-reveal]');
-    if (!targets.length || !('IntersectionObserver' in window)) {
+    if (!targets.length) return;
+
+    if (!('IntersectionObserver' in window)) {
       targets.forEach(t => t.classList.add('revealed'));
       return;
     }
+
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -36px 0px' });
+
     targets.forEach(t => obs.observe(t));
   }
-
-  /* =============================================
-     ANIMATED COUNTERS
-     ============================================= */
-  // (Animated counters removed – no stats elements in current HTML)
 
   /* =============================================
      SMOOTH SCROLL
@@ -461,14 +396,39 @@
       const target = document.querySelector(href);
       if (!target) return;
       e.preventDefault();
-      const offset = 80;
-      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+      window.scrollTo({
+        top: target.getBoundingClientRect().top + window.scrollY - 80,
+        behavior: 'smooth',
+      });
     });
   }
 
   /* =============================================
      INIT
      ============================================= */
+  function init() {
+    applyTheme('dark'); // always dark on load
+
+    document.title = DATA.meta.title;
+    const metaEl = document.querySelector('meta[name="description"]');
+    if (metaEl) metaEl.content = DATA.meta.description;
+
+    buildHeader();
+    buildHero();
+    buildIntro();
+    buildProducts();
+    buildAI();
+    buildFooter();
+
+    $('theme-toggle')?.addEventListener('click', toggleTheme);
+
+    setupHeroPhase2();
+    setupHeader();
+    setupMobile();
+    setupReveal();
+    setupSmoothScroll();
+  }
+
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', init)
     : init();
