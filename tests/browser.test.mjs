@@ -125,6 +125,7 @@ test('the AI stack uses the primary amber card and tinted layers', async () => {
   assert.equal(await css(p, '.stack__card--primary', 'backgroundColor'), 'rgb(232, 160, 32)');
   assert.equal(await css(p, '.stack__card--primary .stack__title', 'color'), 'rgb(18, 35, 63)');
   assert.equal(await css(p, '.stack__card--primary .stack__sub', 'color'), 'rgb(58, 44, 12)');
+  assert.equal(await css(p, '.stack__card:not(.stack__card--primary)', 'backgroundColor'), 'rgba(255, 255, 255, 0.05)');
   await p.context().close();
 });
 
@@ -149,5 +150,7 @@ test('the footer lays out three columns plus a full-width bottom bar', async () 
   assert.equal(await css(p, '.footer__bottom', 'gridColumnStart'), '1');
   const cols = await p.$$eval('.footer__col', (els) => els.length);
   assert.equal(cols, 2, 'expected Explore and Contact columns');
+  assert.equal(await css(p, '.footer__brand', 'gridColumnStart'), '1');
+  assert.equal(await css(p, '.footer__brand', 'gridColumnEnd'), 'span 5');
   await p.context().close();
 });
