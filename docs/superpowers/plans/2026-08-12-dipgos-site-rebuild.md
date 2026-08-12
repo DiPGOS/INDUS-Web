@@ -1725,12 +1725,14 @@ Expected: FAIL on the four new subtests.
 }
 .ai-prose { grid-column: 8 / span 5; min-width: 0; }
 .ai-prose p { font: 400 clamp(16px, 1.9vw, 20px)/1.6 var(--sans); color: var(--steel); }
-.ai-prose__hi { color: var(--text-hi) !important; }
 .ai-prose p + p { margin-top: 22px; }
-.ai-prose__close {
-  margin-top: 26px !important;
-  font: 600 clamp(18px, 2.3vw, 25px)/1.38 var(--serif) !important;
-  color: var(--bone) !important;
+/* Two-class selectors (0,2,0) outrank `.ai-prose p` (0,1,1) and
+   `.ai-prose p + p` (0,1,2) on specificity alone — no !important. */
+.ai-prose .ai-prose__hi { color: var(--text-hi); }
+.ai-prose .ai-prose__close {
+  margin-top: 26px;
+  font: 600 clamp(18px, 2.3vw, 25px)/1.38 var(--serif);
+  color: var(--bone);
 }
 
 /* --- 04 Company --------------------------------------------------- */
@@ -1774,7 +1776,7 @@ Expected: FAIL on the four new subtests.
 .company__meta .meta:last-child .meta__role { font-size: 15px; line-height: 1.6; }
 ```
 
-`.ai-prose__hi` and `.ai-prose__close` carry `!important` because they override the `.ai-prose p` block rule on the same specificity level; the alternative is deeper selector nesting that is harder to read.
+`.ai-prose__hi` and `.ai-prose__close` are written as two-class selectors so specificity alone carries the override. Do not reach for `!important` here.
 
 - [ ] **Step 4: Append the contact and footer rules**
 
@@ -1976,9 +1978,14 @@ Expected: FAIL — grids stay 5-across at 390px and the toggle never appears.
   .nav__inner { justify-content: space-between; }
 
   .nav__links {
-    position: fixed;
-    inset: 0 0 auto;
+    /* absolute, NOT fixed: the panel must hang below the nav bar.
+       On a fixed element `top:100%` resolves against the viewport and
+       would drop the panel off the bottom of the screen. `.nav` is
+       position:sticky, so it is the containing block for this. */
+    position: absolute;
     top: 100%;
+    left: 0;
+    right: 0;
     flex-direction: column;
     align-items: stretch;
     gap: 0;

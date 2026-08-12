@@ -1,202 +1,338 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="DiPGOS unifies CPDS, ACCS, and AOS into a single intelligent platform. AI‑powered project delivery for engineering and construction.">
-  <meta name="theme-color" content="#060a14">
-  <title>Indus Technology Solution – The Project Operating System</title>
-  <link rel="icon" type="image/webp" href="public/images/Logo/logo.webp">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus — The Project Operating System for Engineering &amp; Construction</title>
+<meta name="description" content="INDUS is rebuilding how the world builds — a single operating system where every part of a project connects, so the project itself can think and act.">
+<meta name="theme-color" content="#0A1424">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://industechsol.com/">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://industechsol.com/">
+<meta property="og:title" content="Indus — The Project Operating System">
+<meta property="og:description" content="A single operating system where every part of a project connects, so the project itself can think and act.">
+<meta property="og:image" content="https://industechsol.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Indus — The Project Operating System">
+<meta name="twitter:description" content="A single operating system where every part of a project connects, so the project itself can think and act.">
+<meta name="twitter:image" content="https://industechsol.com/assets/og-card.png">
 
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preload" as="image" href="public/images/main.webp">
-  <link rel="preload" as="image" href="public/images/main_light.webp" media="(prefers-color-scheme: light)">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.png" type="image/png" sizes="any">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.className = 'js';</script>
 </head>
-
 <body>
 
-  <!-- =========================================================
-       AMBIENT ORBS — fixed behind everything, unify all sections
-       ========================================================= -->
-  <div class="ambient-orbs" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="orb orb-4"></div>
-    <div class="orb orb-5"></div>
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="#top" aria-label="Indus — home">
+      <span class="wordmark"><span class="wordmark__i">ı<span class="wordmark__dot" aria-hidden="true"></span></span>ndus</span>
+    </a>
+
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#conviction">Conviction</a>
+      <a class="nav__link" href="#dipgos">DiPGOS</a>
+      <a class="nav__link" href="#ai">Applied AI</a>
+      <a class="nav__link" href="#company">Company</a>
+      <a class="nav__cta" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <img class="hero__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <img class="hero__mark" src="assets/dipgos-mark-light.svg" alt="" aria-hidden="true">
+  <div class="hero__orb" aria-hidden="true"></div>
+
+  <div class="hero__inner">
+    <h1 class="hero__title" data-reveal>The world needs a new way to <span class="accent">build</span>.</h1>
+    <p class="hero__lead" data-reveal>We can’t house, power and connect eight billion people with the fractured way the world builds today. <b>INDUS</b>&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
   </div>
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
-  <header id="site-header">
-    <div class="header-inner">
-      <a href="#" class="logo-wrap" aria-label="Indus Technology Solution home">
-        <img id="logo-img" class="logo-img" src="" alt="Indus Technology Solution">
-      </a>
+  <div class="hero__strip">
+    <div class="hero__strip-inner">
+      <span class="hero__tagline">The world’s oldest industry, reimagined from the ground up.</span>
+      <a class="hero__scroll" href="#conviction">Scroll<span class="hero__arrow" aria-hidden="true">↓</span></a>
+    </div>
+  </div>
+</section>
 
-      <nav id="nav-links" class="nav-links" aria-label="Main navigation"></nav>
+<section class="section section--conviction" id="conviction">
+  <div class="ghost" aria-hidden="true">01</div>
+  <div class="section__inner">
+    <div class="eyebrow" data-reveal>
+      <span class="eyebrow__num">01</span>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+      <span class="eyebrow__label">Our Conviction</span>
+    </div>
 
-      <div style="display:flex;align-items:center;gap:0.625rem">
-        <a href="mailto:kamran@industechsol.com" class="header-cta" id="header-cta-btn" style="display:none">Request Demo</a>
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="true">
-          <span class="material-symbols-outlined">light_mode</span>
-        </button>
-        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
+    <h2 class="section__title section__title--xl" data-reveal>We built the world. But never built the <span class="underline">machine that builds it</span>.</h2>
+
+    <div class="split" data-reveal>
+      <div class="split__col split__col--a">
+        <p>Roads, dams, cities, power plants, buildings — every physical thing around us was delivered by engineering and construction. It is the largest industry on earth: <b>$15 trillion a year</b>. And its greatest work is still ahead — <span class="hi">the build now coming is the largest in the history of human civilization.</span></p>
+      </div>
+      <div class="split__col split__col--b">
+        <p>What keeps us up at night is one question: <span class="hi">how will the world deliver it?</span> The industry carrying humanity’s future still fights the battles it has always fought — <span class="hi-soft">productivity stalled for decades</span>, <span class="hi-soft">cost and schedule overruns the norm rather than the exception</span>, <span class="hi-soft">quality failures still making headlines</span>.</p>
       </div>
     </div>
-    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
-      <div id="mobile-nav"></div>
-    </nav>
-  </header>
 
-  <!-- =========================================================
-       HERO — sticky wrapper + full viewport section
-       ========================================================= -->
-  <div id="hero-wrapper">
-    <section id="hero">
-      <div class="hero-bg-img" aria-hidden="true"></div>
-      <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
+    <div class="statement" data-reveal>
+      <span class="statement__bar" aria-hidden="true"></span>
+      <p>The answer is not another tool on the pile. The industry has thousands of tools — each holding a fragment of the project. What’s missing is <b>the machine</b>: an <span class="accent">operating system</span>, one place where every part of a project connects, understands itself, and acts. Connect the work, and it <span class="accent">begins to think</span>.</p>
+    </div>
+  </div>
+</section>
 
-      <div class="hero-content">
+<section class="section section--dipgos" id="dipgos">
+  <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <div class="section__inner">
+    <div class="eyebrow" data-reveal>
+      <span class="eyebrow__num">02</span>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+      <span class="eyebrow__label">The Operating System</span>
+    </div>
 
+    <div class="lockup" data-reveal>
+      <img class="lockup__mark" src="assets/dipgos-mark-light.svg" alt="" aria-hidden="true">
+      <span class="lockup__word" aria-hidden="true">D<span class="wordmark__i wordmark__i--lg">ı<span class="wordmark__dot" aria-hidden="true"></span></span>PGOS</span><span class="sr-only">DiPGOS</span>
+      <span class="lockup__tag">Project<br>Operating System</span>
+    </div>
 
-        <h1 class="hero-headline" id="hero-headline">
-          Shaping the Future of<br>
-          <span class="accent">Engineering &amp; Construction</span>
-        </h1>
-        <p class="hero-sub" id="hero-sub" aria-hidden="true"></p>
-      </div>
+    <h2 class="section__title" data-reveal>Your whole project, running as <span class="accent">one system</span>.</h2>
+    <p class="lead" data-reveal>The first system built to run the work itself — connecting every signal, reasoning over the whole, and turning your project into one that can <b>think and act</b>.</p>
 
-      <div class="scroll-cue" aria-hidden="true">
-        <div class="scroll-cue-line"></div>
-        <span>Scroll</span>
-      </div>
-    </section>
-  </div><!-- /#hero-wrapper -->
-
-  <!-- Flow divider: no hard color change between sections -->
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       INTRO — what DiPGOS is
-       ========================================================= -->
-  <section id="intro" class="section-pad">
-    <div class="container">
-      <div class="intro-grid">
-
-        <div class="intro-panel" data-reveal="left">
-          <img class="intro-screenshot" src="" alt="DiPGOS portfolio overview" loading="lazy" data-img-light=""
-            data-img-dark="">
+    <div class="block" data-reveal>
+      <div class="sublabel"><span class="sublabel__rule" aria-hidden="true"></span>How it thinks</div>
+      <p class="prose">A living loop runs continuously over the work. Each turn makes the next sharper — the project learns as it is built.</p>
+      <div class="loop">
+        <div class="loop-card">
+          <div class="loop-card__num">01</div>
+          <h3 class="loop-card__title">Sense</h3>
+          <p class="loop-card__body">Read the project’s true state from the ground, live.</p>
+          <span class="loop-card__bar" aria-hidden="true"></span>
         </div>
-
-        <div class="intro-text" data-reveal="right">
-          <span class="eyebrow">The OS for Construction</span>
-          <h2 class="intro-big-line" id="intro-headline"></h2>
-          <p class="intro-body" id="intro-para"></p>
+        <div class="loop-card">
+          <div class="loop-card__num">02</div>
+          <h3 class="loop-card__title">Understand</h3>
+          <p class="loop-card__body">Set it against what you know and the science of the work.</p>
+          <span class="loop-card__bar" aria-hidden="true"></span>
         </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================
-       PRODUCTS
-       ========================================================= -->
-  <section id="products" class="section-pad">
-    <div class="container">
-      <div class="section-header centered" data-reveal>
-        <span class="eyebrow">Three Studios, One Core</span>
-        <h2 class="section-title">The Full <em>Project Lifecycle</em></h2>
-        <p class="section-lead" id="products-intro"></p>
-      </div>
-
-      <div class="products-grid" id="products-grid"></div>
-    </div>
-  </section>
-
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       PHYSICAL AI
-       ========================================================= -->
-  <section id="ai-section" class="section-pad">
-    <div class="container">
-      <div class="section-header centered" data-reveal>
-        <span class="eyebrow">Physical AI</span>
-        <h2 class="section-title">Physically &amp; Operationally Aware<em> Intelligence</em></h2>
-        <p class="section-lead">
-          A system that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding
-          of how things work.
-        </p>
-      </div>
-
-      <div class="ai-grid" id="ai-grid"></div>
-    </div>
-  </section>
-
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       CTA
-       ========================================================= -->
-  <section id="cta" class="section-pad">
-    <div class="container">
-      <div class="cta-panel" data-reveal>
-        <h2 class="cta-title">Ready to <em>transform</em><br>your projects?</h2>
-        <p class="cta-sub">Experience the power of a unified Project Operating System. Join the firms already delivering
-          smarter.</p>
-        <div class="cta-btns">
-          <a href="mailto:kamran@industechsol.com" class="btn btn-primary">
-            <span class="material-symbols-outlined">mail</span>
-            Contact Sales
-          </a>
+        <div class="loop-card">
+          <div class="loop-card__num">03</div>
+          <h3 class="loop-card__title">Foresee</h3>
+          <p class="loop-card__body">See what’s coming before it lands on the programme.</p>
+          <span class="loop-card__bar" aria-hidden="true"></span>
+        </div>
+        <div class="loop-card">
+          <div class="loop-card__num">04</div>
+          <h3 class="loop-card__title">Adapt</h3>
+          <p class="loop-card__body">Reshape the plan against the live operation.</p>
+          <span class="loop-card__bar" aria-hidden="true"></span>
+        </div>
+        <div class="loop-card loop-card--act">
+          <div class="loop-card__num">05</div>
+          <h3 class="loop-card__title">Act</h3>
+          <p class="loop-card__body">Put the call in front of the right person, and move.</p>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="footer-brand-name">Indus Technology Solution</div>
-          <p class="footer-tagline-text" id="footer-tagline"></p>
-        </div>
-        <div>
-          <h4 class="footer-col-title">Platform</h4>
-          <ul class="footer-links" id="footer-product-links"></ul>
-        </div>
-        <div>
-          <h4 class="footer-col-title">Legal</h4>
-          <ul class="footer-links" id="footer-legal-links"></ul>
+    <div class="block" data-reveal>
+      <div class="sublabel"><span class="sublabel__rule" aria-hidden="true"></span>What it connects</div>
+      <h3 class="block__title">Every function, on one live picture of the work.</h3>
+      <p class="prose">Today each function runs in its own tool, blind to the rest. In DiPGOS they all run on one live picture of the job — so schedule, cost, supply chain, quality and safety finally move together.</p>
+
+      <div class="kicker">Functions that run themselves — driven by the work, approved by you</div>
+      <div class="fn-grid">
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Autonomous Scheduling</h4></div><p>The plan drives itself off the live process.</p></div>
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Finance</h4></div><p>Cost and value move with the work.</p></div>
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Supply Chain</h4></div><p>Materials sequenced to the real plan.</p></div>
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Risk Management</h4></div><p>Exposure caught before it bites.</p></div>
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Resource Manager</h4></div><p>People and plant, put where they pay.</p></div>
+        <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Document Manager</h4></div><p>The right revision, tied to the work.</p></div>
+      </div>
+
+      <div class="arrow-label" aria-hidden="true">↓&nbsp;&nbsp;every function runs on one foundation&nbsp;&nbsp;↓</div>
+
+      <div class="foundation">
+        <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+        <div class="foundation__inner">
+          <div class="foundation__lead">
+            <div class="foundation__label">The foundation · it all starts here</div>
+            <h4 class="foundation__title">Operational Management</h4>
+            <p>How the work is actually going, on the ground — captured live, where delivery is won or lost.</p>
+          </div>
+          <div class="foundation__chips">
+            <div class="chip">Productivity</div>
+            <div class="chip">Quality</div>
+            <div class="chip">Health &amp; safety</div>
+          </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p class="footer-copy" id="footer-copy"></p>
+
+      <p class="statement__close">The intelligence does the heavy lifting; <span class="accent">you approve</span>. Every function runs itself — and you stay in command.</p>
+    </div>
+
+    <div class="block" data-reveal>
+      <div class="sublabel"><span class="sublabel__rule" aria-hidden="true"></span>Where you run it</div>
+      <h3 class="block__title">The command center — not a dashboard.</h3>
+      <p class="prose">The operational command center your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+
+      <div class="frame">
+        <img src="assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async"
+             alt="DiPGOS command center — scope navigation at left, a live project map at the centre, and productivity, quality and business panels at right">
       </div>
+
+      <div class="trio">
+        <div class="trio__col">
+          <div class="trio__label">Navigate — where, what &amp; how</div>
+          <p><b>Where</b> — the live map, the epicentre of activity. <b>What</b> — scope, blocks and work fronts. <b>How</b> — productivity, quality and safety. The whole project, navigable from one place.</p>
+        </div>
+        <div class="trio__col">
+          <div class="trio__label">Action &amp; command</div>
+          <p>Approve, escalate, change, resolve — every action taken inside the system, in context, on the record. Alarms, decision engine, change manager, notifications, collaboration — command lives where the work lives.</p>
+        </div>
+        <div class="trio__col">
+          <div class="trio__label">Decision intelligence</div>
+          <p>Your <b>knowledge repository</b> — historic projects and contracts — reasoned against the live operation the moment a decision is made.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ai" id="ai">
+  <div class="section__inner">
+    <div class="eyebrow" data-reveal>
+      <span class="eyebrow__num">03</span>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+      <span class="eyebrow__label">Applied &amp; Physical AI</span>
+    </div>
+    <h2 class="section__title section__title--ai" data-reveal>AI can only act on ground it understands. <span class="accent">We build the ground.</span></h2>
+
+    <div class="ai-grid">
+      <div class="stack" data-reveal>
+        <div class="stack__card stack__card--primary">
+          <h3 class="stack__title">Applied AI — human in command</h3>
+          <p class="stack__sub">AI does the heavy lifting; your engineers stay in command.</p>
+        </div>
+        <div class="stack__connector" aria-hidden="true">↑&nbsp;&nbsp;stands on&nbsp;&nbsp;↑</div>
+        <div class="stack__card">
+          <h3 class="stack__title">Semantic &amp; knowledge layer</h3>
+          <p class="stack__sub">The meaning and context of your project.</p>
+        </div>
+        <div class="stack__card">
+          <h3 class="stack__title">Operational relationships</h3>
+          <p class="stack__sub">How work sequences, depends and constrains.</p>
+        </div>
+        <div class="stack__card">
+          <h3 class="stack__title">Physics &amp; Operational Sciences</h3>
+          <p class="stack__sub">How things really behave on the ground.</p>
+        </div>
+      </div>
+
+      <div class="ai-prose" data-reveal>
+        <p class="ai-prose__hi">Everyone is racing to put AI to work. But an agent is only as good as what it understands — and in construction, that understanding never existed.</p>
+        <p>DiPGOS builds the layers AI must stand on: the meaning, the relationships, the operational sciences and the physics of the work. Give AI that ground, and it can finally reason and act on real projects.</p>
+        <p class="ai-prose__close">Electricity. The internet. AI. The value was never in the raw technology — it was in the <span class="accent">application layer</span> built on top. We are that applied layer for engineering &amp; construction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--company" id="company">
+  <div class="section__inner company">
+    <div class="company__label" data-reveal>
+      <div class="eyebrow">
+        <span class="eyebrow__num">04</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span class="eyebrow__label">The Company</span>
+      </div>
+    </div>
+    <div class="company__body">
+      <h2 class="section__title section__title--company" data-reveal>We lived the problem before we built the answer.</h2>
+      <p class="company__prose" data-reveal>Indus is built by engineers and builders who spent their careers inside real projects — feeling the gridlock first-hand.&nbsp;We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      <div class="company__meta" data-reveal>
+        <div class="meta">
+          <div class="meta__label">Founded by</div>
+          <div class="meta__name">M. Kamran Basit</div>
+          <div class="meta__role">Founder &amp; CEO</div>
+        </div>
+        <div class="meta">
+          <div class="meta__label">Entities</div>
+          <div class="meta__role">Indus Technology Solutions (Pvt) Ltd<br>Indus Technologies LLC · USA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <div class="contact__orb" aria-hidden="true"></div>
+
+  <div class="contact__inner">
+    <div class="contact__eyebrow" data-reveal>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+      <span class="eyebrow__label eyebrow__label--amber">Let’s Build</span>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+    </div>
+    <h2 class="contact__title" data-reveal>Let’s shape the future of how the world <span class="accent">gets built</span>.</h2>
+    <div class="contact__actions" data-reveal>
+      <a class="contact__cta" href="#contact" data-u="kamran" data-d="industechsol.com">Contact Us</a>
+    </div>
+  </div>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__brand">
+      <span class="wordmark wordmark--footer" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot" aria-hidden="true"></span></span>ndus</span><span class="sr-only">Indus</span>
+      <p class="footer__tagline">Shaping the Future of Engineering &amp; Construction</p>
+    </div>
+
+    <div class="footer__col footer__col--explore">
+      <div class="footer__label">Explore</div>
+      <nav class="footer__links" aria-label="Footer">
+        <a class="footer__link" href="#conviction">Our conviction</a>
+        <a class="footer__link" href="#dipgos">DiPGOS</a>
+        <a class="footer__link" href="#ai">Applied &amp; Physical AI</a>
+        <a class="footer__link" href="#company">Company</a>
+      </nav>
+    </div>
+
+    <div class="footer__col footer__col--contact">
+      <div class="footer__label">Contact</div>
+      <div class="footer__links">
+        <a class="footer__link" href="#contact" data-u="kamran" data-d="industechsol.com">Get in touch</a>
+        <span class="footer__note">Indus Technology Solutions (Pvt) Ltd</span>
+        <span class="footer__note">Indus Technologies LLC · USA</span>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span class="footer__copy">© <span id="year">2026</span> Indus Technology Solutions. All rights reserved.</span>
+      <span class="footer__motto">The project thinks; the human commands.</span>
     </div>
   </footer>
+</section>
 
-  <script src="main.js" defer></script>
+</main>
+<script src="main.js" defer></script>
 </body>
-
 </html>
