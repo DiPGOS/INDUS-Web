@@ -314,21 +314,27 @@ test('with JS disabled below 860px, nav links render normally and stay reachable
 //
 // Fix: gate .nav__link/.nav__cta's mobile-panel sizing on .js too, matching
 // their container, so it only ever applies when the panel actually exists.
+// The style assertions below directly guard that regression.
 //
-// This does NOT make the no-JS row fit inside 390px/320px: a full-text row
-// of 4 nav links + a CTA next to the brand mark is ~560-580px wide at
-// minimum at any readable size and does not wrap (see the comment above
-// this media query — the no-JS fallback is deliberately "the
-// un-media-queried, always-visible default: a horizontal row", not a
-// responsive one). That residual overflow is pre-existing, present even at
-// the correct base (desktop) sizing, and independent of this bug — closing
-// it would mean either wrapping the row (which breaks the ~69px nav height
-// asserted below) or a different layout mechanism, neither of which this
-// fix's scope authorizes. This test instead targets the bug's actual root
-// cause directly (the vertical-panel sizing leaking through) rather than
-// the confounded overflow number.
+// A second, separate defect stacked on top of the first: the base
+// `.nav__links` rule (used unmodified as the no-JS row layout) was missing
+// `flex-wrap: wrap`, present in the design prototype
+// (`dipgos-presentation-cover/project/DiPGOS Site.dc.html` line 38) but
+// dropped from our copy. Without it, the ~560-580px-wide row of 4 links + a
+// CTA could not wrap and overflowed the 390px/320px viewports no matter how
+// the individual links were sized. Restoring `flex-wrap: wrap` on the base
+// rule (styles.css) lets the row wrap onto multiple lines at these widths,
+// which is achievable zero overflow, not merely a smaller residual number —
+// so the test below asserts that directly instead of a link-style proxy.
+//
+// Trade-off, accepted and intentionally unasserted here: wrapping makes the
+// no-JS row 2-3 lines tall (measured ~102.5px at 390px, ~135px at 320px, up
+// from the single-row ~70px), which pushes past the fixed 72px --nav-h that
+// <section>'s scroll-margin-top uses, so anchor jumps no longer fully clear
+// the nav in this no-JS mobile case. That matches the prototype's own
+// wrapping behaviour and is out of this fix's scope to solve.
 for (const width of [390, 320]) {
-  test(`with JS disabled at ${width}px, nav links use their horizontal-row sizing, not the vertical-panel sizing`, async () => {
+  test(`with JS disabled at ${width}px, nav links wrap and stay inside the viewport`, async () => {
     const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width, height: 900 } });
     const p = await ctx.newPage();
     await p.goto(server.url, { waitUntil: 'load' });
@@ -342,15 +348,21 @@ for (const width of [390, 320]) {
     assert.equal(linkStyle.fontSize, '14.5px',
       'nav__link is carrying the vertical-panel\'s 17px font-size without JS');
 
-    const navHeight = await p.$eval('.nav', (el) => el.getBoundingClientRect().height);
-    assert.ok(navHeight <= 80,
-      `sticky nav is ${navHeight.toFixed(1)}px tall at ${width}px — expected ~69-70px, not the vertical panel's ~99px`);
+    const { scrollWidth, clientWidth } = await p.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    assert.ok(scrollWidth - clientWidth <= 1,
+      `no-JS nav row overflows at ${width}px — scrollWidth ${scrollWidth} vs clientWidth ${clientWidth}`);
 
-    // The first link (flush after the brand) must land inside the
-    // viewport, not merely have a non-zero size — the gap the m5 test left.
-    const firstBox = await p.locator('.nav a[href="#conviction"]').first().boundingBox();
-    assert.ok(firstBox && firstBox.x >= 0 && firstBox.x + firstBox.width <= width,
-      `first nav link falls outside the ${width}px viewport (x=${firstBox && firstBox.x}, right=${firstBox && firstBox.x + firstBox.width})`);
+    // Every nav link/CTA — not just the first — must land fully inside the
+    // viewport now that the row wraps instead of merely not being clipped.
+    const hrefs = await p.$$eval('.nav__link, .nav__cta', (els) => els.map((e) => e.getAttribute('href')));
+    for (const href of hrefs) {
+      const box = await p.locator(`.nav a[href="${href}"]`).first().boundingBox();
+      assert.ok(box && box.x >= 0 && box.x + box.width <= width,
+        `link ${href} falls outside the ${width}px viewport (x=${box && box.x}, right=${box && box.x + box.width})`);
+    }
 
     await ctx.close();
   });
