@@ -1,86 +1,67 @@
-# IndusTechSol – Landing Page
+# Indus — industechsol.com
 
-A clean, professional one-paged static landing site for IndusTechSol. All copy, navigation, and image paths are defined in the `DATA` object inside `main.js`, so the HTML file stays mostly structural.
+Single-page marketing site for Indus Technology Solutions, built from the
+DiPGOS Site design in Claude Design. Static, no build step, deployed to
+GitHub Pages.
 
----
+## Shipped files
 
-## Project structure
+| Path | Purpose |
+|---|---|
+| `index.html` | All markup and copy. Seven landmarks, no inline styles. |
+| `styles.css` | Every visual rule. Tokens → reset → keyframes → components → responsive. |
+| `main.js` | Reveal observer, mobile nav, active link, contact assembly, year. |
+| `assets/` | Three SVGs, the command-center WebP, favicons, OG card. |
+| `CNAME` | `industechsol.com`. |
 
+Everything else in the repo is development tooling and is not served
+content.
+
+## Local preview
+
+```bash
+npm run serve      # http://127.0.0.1:<port>
 ```
-INDUS-Web/
-├── index.html          # Single-page template wired to JS data
-├── styles.css          # Main styles (theme, layout, components, glassmorphism)
-├── main.js             # DATA model, DOM wiring, interactions, theme toggle
-├── Readme.md           # This file
-└── public/
-    └── images/
-        ├── Logo/
-        │   ├── logo.webp
-        │   └── logo_rectangle.webp
-        ├── main.webp
-        ├── main_light.webp
-        ├── accs/
-        ├── cpds/
-        └── dipgos_dashboard/
+
+Or open `index.html` directly — every path is relative and works from
+`file://`.
+
+## Tests
+
+```bash
+npm install
+npx playwright install chromium
+npm test
 ```
 
-## Tech stack
+Three suites: `assets` (existence, dimensions, byte budgets), `structure`
+(HTML/CSS invariants, parsed as text), and `browser` (Playwright —
+computed styles, responsive tiers, no-JS, reduced motion, keyboard).
 
-- **HTML** – Single `index.html` with semantic sections and IDs for content injection.
-- **CSS** – `styles.css` with CSS custom properties for theme (navy base, **blue accent**). No build step.
-- **Fonts** – **[Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans)** (headings and body) and [Material Symbols Outlined](https://fonts.google.com/icons) for icons. Plus Jakarta Sans is used for a consistent, professional look.
-- **Data** – `content.json` at project root. `main.js` fetches it and injects title, meta, header, hero, sections, and footer.
-- **Dev server** – [serve](https://www.npmjs.com/package/serve) for local development so `content.json` and assets load correctly.
+## Design conventions
 
----
+- **Tokens only.** Every colour is a custom property on `:root` in
+  `styles.css`. Hex literals outside that block fail the test suite.
+- **No inline styles.** `index.html` carrying a `style=` attribute fails
+  the test suite.
+- **The contact address is never in the source.** It is assembled at
+  runtime from `data-u` / `data-d`. Adding a literal `mailto:` fails the
+  test suite.
+- **Breakpoints:** desktop ≥1100px, tablet 700–1099px, mobile <700px.
+  The nav flips to a hamburger at 860px, which is deliberately not a
+  tier boundary.
+- **Every animation** must be disabled under
+  `@media (prefers-reduced-motion: reduce)`.
 
-## Design and branding
+## Provenance
 
-- **Default accent colour: blue.** Primary buttons, links, highlights, and decorative elements use a blue palette (`--accent-400`, `--accent-500`, etc.) defined in `styles.css`. Backgrounds remain navy/dark for contrast.
-- **Typography: Plus Jakarta Sans.** One font family for both display and body keeps the layout professional and readable across sections.
+The design is `DiPGOS Site.dc.html` from the Claude Design project
+`DiPGOS presentation cover`. The handoff bundle lives in
+`dipgos-presentation-cover/`, which is **gitignored** — it is a
+reference, not a dependency. The design spec and this implementation's
+plan are in `docs/superpowers/`.
 
----
-
-## Content model (`main.js` → `DATA`)
-
-All user-facing text and image paths live in the `DATA` object inside `main.js`. The script maps this data into the DOM on load.
-
-| Key | Purpose |
-|-----|--------|
-| `meta` | `title`, `description`. |
-| `header` | `logo` (`{ square, rectangle }`), `nav`. |
-| `hero` | `imageDark`, `imageLight`, `headline`, `subEyebrow`, `subMain`. |
-| `intro` | Headline, body copy, and dashboard images for DiPGOS. |
-| `products` | Cards for CPDS, ACCS, AOS. |
-| `ai` | AI capability chips (icons + labels). |
-| `footer` | Tagline, year, product links, legal links. |
-
-**Logo and favicon:** Place `logo.webp` and `logo_rectangle.webp` in `public/images/Logo/`. The header uses the rectangle logo where appropriate, and the favicon is referenced in `index.html` via `<link rel="icon" ...>`.
-
----
-
-## Development
-
-- **No build step.** This is a pure static site (`index.html`, `styles.css`, `main.js`).
-- **Local preview:** Open `index.html` directly in a browser, or serve the folder with any static server (e.g. VS Code Live Server, `npx serve .`, or your tool of choice).
-- **Assets:** All images live under `public/images/...` and are referenced via relative paths from `index.html` / `main.js`.
-
----
-
-## Design / content spec (reference)
-
-1. **Header** – Fixed, transparent over hero; solid background on scroll. Logo (light/dark), nav, CTA.
-2. **Hero** – Full-viewport background (`assets/images/main.png`), headline, sub copy, primary/secondary actions, stats bar.
-3. **Intro** – “Until now, construction ran on fragmented tools…” / “Introducing DiPGOS…”.
-4. **Products** – DiPGOS, ACCS, CPDS, AOS cards.
-5. **Physical AI** – “Physical AI-powered Project Operating System” and supporting copy.
-6. **Pain points** – Problems and solutions.
-7. **Why** – Reasons / differentiators.
-8. **CTA** – Final call-to-action and contact.
-9. **Footer** – Tagline, links, copyright.
-
----
-
-## Deployment
-
-Deploy the project as a static site (e.g. GitHub Pages, Netlify, Vercel). Exclude `node_modules`. Ensure `content.json` is served with a JSON MIME type and from the same origin so the fetch in `main.js` succeeds.
+Fourteen deliberate deviations from the prototype (responsive tiers,
+mobile nav, focus rings, reduced motion, image budget, and others) are
+itemised in
+`docs/superpowers/specs/2026-08-12-dipgos-site-rebuild-design.md`.

@@ -84,3 +84,29 @@ test('the mailto contract is present and complete', async () => {
     assert.equal(d, 'industechsol.com');
   }
 });
+
+test('the old public/ tree is gone', async () => {
+  const { stat } = await import('node:fs/promises');
+  await assert.rejects(stat(new URL('../public', import.meta.url)),
+    'public/ still exists — the old site was not removed');
+});
+
+test('styles.css defines colours only in :root', async () => {
+  const css = await read('styles.css');
+  const root = css.slice(css.indexOf(':root'), css.indexOf('}', css.indexOf(':root')));
+  const outside = css.replace(root, '');
+  const hexes = [...outside.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map((m) => m[0]);
+  assert.deepEqual(hexes, [], `hex literals outside :root: ${hexes.join(', ')}`);
+});
+
+test('the total shipped payload stays under 1 MB', async () => {
+  const { stat, readdir } = await import('node:fs/promises');
+  let total = 0;
+  for (const f of ['index.html', 'styles.css', 'main.js']) {
+    total += (await stat(new URL(`../${f}`, import.meta.url))).size;
+  }
+  for (const f of await readdir(new URL('../assets', import.meta.url))) {
+    total += (await stat(new URL(`../assets/${f}`, import.meta.url))).size;
+  }
+  assert.ok(total < 1024 * 1024, `shipped payload is ${Math.round(total / 1024)} KB, budget 1024 KB`);
+});
