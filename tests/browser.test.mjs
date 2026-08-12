@@ -224,7 +224,51 @@ test('the footer lays out three columns plus a full-width bottom bar', async () 
   assert.equal(cols, 2, 'expected Explore and Contact columns');
   assert.equal(await css(p, '.footer__brand', 'gridColumnStart'), '1');
   assert.equal(await css(p, '.footer__brand', 'gridColumnEnd'), 'span 5');
+  // Both columns must be EXPLICITLY placed. A column that matches no rule is
+  // auto-placed into a single narrow track instead of failing loudly — which is
+  // exactly how the :nth-of-type bug shipped: it counted divs, and .footer__brand
+  // is a div, so Contact matched nothing and collapsed to one column.
+  assert.equal(await css(p, '.footer__col--explore', 'gridColumnStart'), '7');
+  assert.equal(await css(p, '.footer__col--explore', 'gridColumnEnd'), 'span 3');
+  assert.equal(await css(p, '.footer__col--contact', 'gridColumnStart'), '10');
+  assert.equal(await css(p, '.footer__col--contact', 'gridColumnEnd'), 'span 3');
   await p.context().close();
+});
+
+test('both footer columns stay on one row and are readably wide', async () => {
+  // Guards the visible symptom rather than the mechanism: a mis-placed column
+  // drops to the next row and squeezes its text into a ~90px ribbon.
+  for (const width of [1440, 1280]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const [brand, explore, contact] = await Promise.all(
+      ['.footer__brand', '.footer__col--explore', '.footer__col--contact'].map((s) =>
+        p.$eval(s, (el) => el.getBoundingClientRect().toJSON())));
+
+    assert.ok(Math.abs(explore.top - brand.top) < 2,
+      `Explore column left the brand's row at ${width}px`);
+    assert.ok(Math.abs(contact.top - brand.top) < 2,
+      `Contact column left the brand's row at ${width}px (top ${contact.top} vs ${brand.top})`);
+    assert.ok(contact.width > 150,
+      `Contact column is only ${contact.width}px wide at ${width}px — it is being squeezed`);
+    assert.ok(contact.left > explore.left,
+      'Contact must sit to the right of Explore');
+    await p.context().close();
+  }
+});
+
+test('footer columns stack correctly below the desktop tier', async () => {
+  const at = async (width, sel, prop) => {
+    const p = await page({ viewport: { width, height: 900 } });
+    const v = await css(p, sel, prop);
+    await p.context().close();
+    return v;
+  };
+  // tablet: side by side in a 6-column grid
+  assert.equal(await at(900, '.footer__col--explore', 'gridColumnStart'), '1');
+  assert.equal(await at(900, '.footer__col--contact', 'gridColumnStart'), '4');
+  // mobile: full width, one under the other
+  assert.equal(await at(390, '.footer__col--explore', 'gridColumnEnd'), '-1');
+  assert.equal(await at(390, '.footer__col--contact', 'gridColumnEnd'), '-1');
 });
 
 const WIDTHS = [390, 768, 1024, 1280, 1920];
