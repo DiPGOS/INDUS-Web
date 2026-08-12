@@ -224,7 +224,11 @@ test('below-the-fold reveals start hidden and reveal on scroll', async () => {
   const p = await page();
   const sel = '.section--company .section__title--company';
   assert.equal(await css(p, sel, 'opacity'), '0', 'should start hidden');
-  await p.$eval(sel, (el) => el.scrollIntoView());
+  // `html { scroll-behavior: smooth }` makes the default behavior:'auto'
+  // inherit an animated scroll (CSSOM), so force an instant jump here —
+  // otherwise the IntersectionObserver fire time rides on an animation
+  // duration that races the 3600ms reveal failsafe and this timeout.
+  await p.$eval(sel, (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
   await p.waitForFunction(
     (s) => getComputedStyle(document.querySelector(s)).opacity === '1', sel, { timeout: 4000 });
   await p.context().close();
@@ -238,4 +242,86 @@ test('reduced-motion visitors get everything visible with no transition', async 
     (els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
   assert.equal(hidden, 0);
   await ctx.close();
+});
+
+test('the contact links resolve to a real mailto after JS runs', async () => {
+  const p = await page();
+  const hrefs = await p.$$eval('[data-u][data-d]', (els) => els.map((e) => e.getAttribute('href')));
+  assert.equal(hrefs.length, 2);
+  for (const h of hrefs) assert.equal(h, 'mailto:kamran@industechsol.com');
+  await p.context().close();
+});
+
+test('with JS disabled the contact links stay harmless, never dead', async () => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const hrefs = await p.$$eval('[data-u][data-d]', (els) => els.map((e) => e.getAttribute('href')));
+  for (const h of hrefs) assert.equal(h, '#contact');
+  await ctx.close();
+});
+
+test('the mobile menu opens, closes on link, and closes on Escape', async () => {
+  const p = await page({ viewport: { width: 500, height: 800 } });
+  const open = () => p.$eval('.nav', (el) => el.classList.contains('nav--open'));
+  const expanded = () => p.$eval('#nav-toggle', (el) => el.getAttribute('aria-expanded'));
+
+  assert.equal(await open(), false);
+  assert.equal(await expanded(), 'false');
+
+  await p.click('#nav-toggle');
+  assert.equal(await open(), true);
+  assert.equal(await expanded(), 'true');
+  assert.equal(await css(p, 'body', 'overflow'), 'hidden');
+
+  await p.click('.nav__link[href="#dipgos"]');
+  assert.equal(await open(), false);
+
+  await p.click('#nav-toggle');
+  assert.equal(await open(), true);
+  await p.keyboard.press('Escape');
+  assert.equal(await open(), false);
+  assert.equal(await expanded(), 'false');
+
+  await p.context().close();
+});
+
+test('the active nav link tracks the scrolled section', async () => {
+  const p = await page();
+  await p.$eval('#ai', (el) => el.scrollIntoView());
+  await p.waitForFunction(
+    () => document.querySelector('.nav__link--active')?.getAttribute('href') === '#ai',
+    null, { timeout: 4000 });
+  await p.context().close();
+});
+
+test('the copyright year is current', async () => {
+  const p = await page();
+  const year = await p.$eval('#year', (el) => el.textContent.trim());
+  assert.equal(year, String(new Date().getFullYear()));
+  await p.context().close();
+});
+
+test('every interactive element is reachable by keyboard', async () => {
+  const p = await page();
+  const count = await p.$$eval('a[href], button', (els) => els.length);
+  const reached = new Set();
+  for (let i = 0; i < count + 5; i++) {
+    await p.keyboard.press('Tab');
+    // Identify by position in the control list, not by href/id/tagName:
+    // several distinct nav/footer/hero links intentionally share the same
+    // href (e.g. multiple links to #conviction, both contact CTAs resolving
+    // to the same mailto address), so a value-based key collapses genuinely
+    // distinct, independently-reachable elements and undercounts coverage.
+    const idx = await p.evaluate(() => {
+      const a = document.activeElement;
+      if (a === document.body) return null;
+      const all = Array.prototype.slice.call(document.querySelectorAll('a[href], button'));
+      const i = all.indexOf(a);
+      return i === -1 ? null : i;
+    });
+    if (idx !== null) reached.add(idx);
+  }
+  assert.ok(reached.size >= count - 1, `tab reached ${reached.size} of ${count} controls`);
+  await p.context().close();
 });
