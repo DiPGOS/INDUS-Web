@@ -1,202 +1,79 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="DiPGOS unifies CPDS, ACCS, and AOS into a single intelligent platform. AI‑powered project delivery for engineering and construction.">
-  <meta name="theme-color" content="#060a14">
-  <title>Indus Technology Solution – The Project Operating System</title>
-  <link rel="icon" type="image/webp" href="public/images/Logo/logo.webp">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus — The Project Operating System for Engineering &amp; Construction</title>
+<meta name="description" content="INDUS is rebuilding how the world builds — a single operating system where every part of a project connects, so the project itself can think and act.">
+<meta name="theme-color" content="#0A1424">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://industechsol.com/">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://industechsol.com/">
+<meta property="og:title" content="Indus — The Project Operating System">
+<meta property="og:description" content="A single operating system where every part of a project connects, so the project itself can think and act.">
+<meta property="og:image" content="https://industechsol.com/assets/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Indus — The Project Operating System">
+<meta name="twitter:description" content="A single operating system where every part of a project connects, so the project itself can think and act.">
+<meta name="twitter:image" content="https://industechsol.com/assets/og-card.png">
 
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preload" as="image" href="public/images/main.webp">
-  <link rel="preload" as="image" href="public/images/main_light.webp" media="(prefers-color-scheme: light)">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.png" type="image/png" sizes="any">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.className = 'js';</script>
 </head>
-
 <body>
 
-  <!-- =========================================================
-       AMBIENT ORBS — fixed behind everything, unify all sections
-       ========================================================= -->
-  <div class="ambient-orbs" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="orb orb-4"></div>
-    <div class="orb orb-5"></div>
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="#top" aria-label="Indus — home">
+      <span class="wordmark"><span class="wordmark__i">ı<span class="wordmark__dot" aria-hidden="true"></span></span>ndus</span>
+    </a>
+
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#conviction">Conviction</a>
+      <a class="nav__link" href="#dipgos">DiPGOS</a>
+      <a class="nav__link" href="#ai">Applied AI</a>
+      <a class="nav__link" href="#company">Company</a>
+      <a class="nav__cta" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <img class="hero__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <img class="hero__mark" src="assets/dipgos-mark-light.svg" alt="" aria-hidden="true">
+  <div class="hero__orb" aria-hidden="true"></div>
+
+  <div class="hero__inner">
+    <h1 class="hero__title" data-reveal>The world needs a new way to <span class="accent">build</span>.</h1>
+    <p class="hero__lead" data-reveal>We can’t house, power and connect eight billion people with the fractured way the world builds today. <b>INDUS</b>&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
   </div>
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
-  <header id="site-header">
-    <div class="header-inner">
-      <a href="#" class="logo-wrap" aria-label="Indus Technology Solution home">
-        <img id="logo-img" class="logo-img" src="" alt="Indus Technology Solution">
-      </a>
-
-      <nav id="nav-links" class="nav-links" aria-label="Main navigation"></nav>
-
-      <div style="display:flex;align-items:center;gap:0.625rem">
-        <a href="mailto:kamran@industechsol.com" class="header-cta" id="header-cta-btn" style="display:none">Request Demo</a>
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="true">
-          <span class="material-symbols-outlined">light_mode</span>
-        </button>
-        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
+  <div class="hero__strip">
+    <div class="hero__strip-inner">
+      <span class="hero__tagline">The world’s oldest industry, reimagined from the ground up.</span>
+      <a class="hero__scroll" href="#conviction">Scroll<span class="hero__arrow" aria-hidden="true">↓</span></a>
     </div>
-    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
-      <div id="mobile-nav"></div>
-    </nav>
-  </header>
+  </div>
+</section>
 
-  <!-- =========================================================
-       HERO — sticky wrapper + full viewport section
-       ========================================================= -->
-  <div id="hero-wrapper">
-    <section id="hero">
-      <div class="hero-bg-img" aria-hidden="true"></div>
-      <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
-
-      <div class="hero-content">
-
-
-        <h1 class="hero-headline" id="hero-headline">
-          Shaping the Future of<br>
-          <span class="accent">Engineering &amp; Construction</span>
-        </h1>
-        <p class="hero-sub" id="hero-sub" aria-hidden="true"></p>
-      </div>
-
-      <div class="scroll-cue" aria-hidden="true">
-        <div class="scroll-cue-line"></div>
-        <span>Scroll</span>
-      </div>
-    </section>
-  </div><!-- /#hero-wrapper -->
-
-  <!-- Flow divider: no hard color change between sections -->
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       INTRO — what DiPGOS is
-       ========================================================= -->
-  <section id="intro" class="section-pad">
-    <div class="container">
-      <div class="intro-grid">
-
-        <div class="intro-panel" data-reveal="left">
-          <img class="intro-screenshot" src="" alt="DiPGOS portfolio overview" loading="lazy" data-img-light=""
-            data-img-dark="">
-        </div>
-
-        <div class="intro-text" data-reveal="right">
-          <span class="eyebrow">The OS for Construction</span>
-          <h2 class="intro-big-line" id="intro-headline"></h2>
-          <p class="intro-body" id="intro-para"></p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================
-       PRODUCTS
-       ========================================================= -->
-  <section id="products" class="section-pad">
-    <div class="container">
-      <div class="section-header centered" data-reveal>
-        <span class="eyebrow">Three Studios, One Core</span>
-        <h2 class="section-title">The Full <em>Project Lifecycle</em></h2>
-        <p class="section-lead" id="products-intro"></p>
-      </div>
-
-      <div class="products-grid" id="products-grid"></div>
-    </div>
-  </section>
-
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       PHYSICAL AI
-       ========================================================= -->
-  <section id="ai-section" class="section-pad">
-    <div class="container">
-      <div class="section-header centered" data-reveal>
-        <span class="eyebrow">Physical AI</span>
-        <h2 class="section-title">Physically &amp; Operationally Aware<em> Intelligence</em></h2>
-        <p class="section-lead">
-          A system that reflects reality – AI that is Physics-informed, context-aware & designed with an understanding
-          of how things work.
-        </p>
-      </div>
-
-      <div class="ai-grid" id="ai-grid"></div>
-    </div>
-  </section>
-
-  <!-- <div class="flow-divider"></div> -->
-
-  <!-- =========================================================
-       CTA
-       ========================================================= -->
-  <section id="cta" class="section-pad">
-    <div class="container">
-      <div class="cta-panel" data-reveal>
-        <h2 class="cta-title">Ready to <em>transform</em><br>your projects?</h2>
-        <p class="cta-sub">Experience the power of a unified Project Operating System. Join the firms already delivering
-          smarter.</p>
-        <div class="cta-btns">
-          <a href="mailto:kamran@industechsol.com" class="btn btn-primary">
-            <span class="material-symbols-outlined">mail</span>
-            Contact Sales
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="footer-brand-name">Indus Technology Solution</div>
-          <p class="footer-tagline-text" id="footer-tagline"></p>
-        </div>
-        <div>
-          <h4 class="footer-col-title">Platform</h4>
-          <ul class="footer-links" id="footer-product-links"></ul>
-        </div>
-        <div>
-          <h4 class="footer-col-title">Legal</h4>
-          <ul class="footer-links" id="footer-legal-links"></ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p class="footer-copy" id="footer-copy"></p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="main.js" defer></script>
+</main>
+<script src="main.js" defer></script>
 </body>
-
 </html>
