@@ -4,7 +4,7 @@
   "private": true,
   "description": "Indus Technology Solutions marketing site. Static, no build step.",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test \"tests/**/*.test.mjs\"",
     "test:assets": "node --test tests/assets.test.mjs",
     "test:structure": "node --test tests/structure.test.mjs",
     "test:browser": "node --test tests/browser.test.mjs",

@@ -61,10 +61,20 @@ test('keyboard focus paints a visible ring', async () => {
   await p.keyboard.press('Tab');
   const ring = await p.evaluate(() => {
     const s = getComputedStyle(document.activeElement);
-    return { w: parseFloat(s.outlineWidth), style: s.outlineStyle, tag: document.activeElement.tagName };
+    return {
+      w: parseFloat(s.outlineWidth),
+      style: s.outlineStyle,
+      color: s.outlineColor,
+      tag: document.activeElement.tagName,
+    };
   });
   assert.notEqual(ring.tag, 'BODY', 'Tab should move focus off body');
-  assert.ok(ring.w > 0, `expected a focus ring, got outline-width ${ring.w}`);
   assert.notEqual(ring.style, 'none');
+  // Chromium's default UA focus outline also has non-zero width and a
+  // non-'none' style, so those two checks alone pass even without the
+  // site's own :focus-visible rule. Pin the exact amber colour and width
+  // from styles.css so the test actually fails when that rule is missing.
+  assert.equal(ring.w, 2, `expected the amber focus ring at 2px, got outline-width ${ring.w}`);
+  assert.equal(ring.color, 'rgb(232, 160, 32)', `expected amber outline colour, got ${ring.color}`);
   await p.context().close();
 });
