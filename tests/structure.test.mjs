@@ -64,3 +64,23 @@ test('the hero landmark and nav exist with correct anchors', async () => {
     assert.ok(html.includes(`href="#${id}"`), `nav is missing a link to #${id}`);
   }
 });
+
+test('heading levels never skip', async () => {
+  const html = await read('index.html');
+  const levels = [...html.matchAll(/<h([1-6])\b/g)].map((m) => Number(m[1]));
+  assert.equal(levels[0], 1, 'document must open with an h1');
+  assert.equal(levels.filter((l) => l === 1).length, 1, 'exactly one h1');
+  for (let i = 1; i < levels.length; i++) {
+    assert.ok(levels[i] <= levels[i - 1] + 1, `h${levels[i - 1]} followed by h${levels[i]} skips a level`);
+  }
+});
+
+test('the mailto contract is present and complete', async () => {
+  const html = await read('index.html');
+  const pairs = [...html.matchAll(/data-u="([^"]+)"\s+data-d="([^"]+)"/g)];
+  assert.equal(pairs.length, 2, 'expected exactly two obfuscated contact anchors');
+  for (const [, u, d] of pairs) {
+    assert.equal(u, 'kamran');
+    assert.equal(d, 'industechsol.com');
+  }
+});
