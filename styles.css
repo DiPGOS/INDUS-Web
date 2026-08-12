@@ -752,6 +752,20 @@ b        { color: var(--bone); font-weight: 700; }
 .footer__copy  { font: 400 12.5px/1 var(--sans); color: var(--dim); }
 .footer__motto { font: italic 400 13px/1 var(--serif); color: var(--dim); }
 
+/* --- scroll reveal ------------------------------------------------
+   Hidden state lives in CSS, gated on the .js root class set by an
+   inline head script. The prototype set this from JS, which flashed
+   content and left the page invisible if the script failed.
+   ------------------------------------------------------------------ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(34px);
+  transition: opacity .85s cubic-bezier(.22, .61, .36, 1),
+              transform .85s cubic-bezier(.22, .61, .36, 1);
+}
+.js [data-reveal].is-visible { opacity: 1; transform: none; }
+.js [data-reveal].is-instant { opacity: 1; transform: none; transition: none; }
+
 /* ============================================================
    Responsive
    Nav flips at 860px — deliberately not a tier boundary.

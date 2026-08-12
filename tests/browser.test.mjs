@@ -203,3 +203,39 @@ test('the hamburger replaces inline links below 860px', async () => {
     'closed mobile panel must be off-screen or hidden');
   await narrow.context().close();
 });
+
+test('content is fully visible with JavaScript disabled', async () => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const hidden = await p.$$eval('[data-reveal]',
+    (els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
+  assert.equal(hidden, 0, 'no-JS visitors must see every reveal element');
+  await ctx.close();
+});
+
+test('above-the-fold reveals are visible immediately, without animating in', async () => {
+  const p = await page();
+  assert.equal(await css(p, '.hero__title', 'opacity'), '1');
+  await p.context().close();
+});
+
+test('below-the-fold reveals start hidden and reveal on scroll', async () => {
+  const p = await page();
+  const sel = '.section--company .section__title--company';
+  assert.equal(await css(p, sel, 'opacity'), '0', 'should start hidden');
+  await p.$eval(sel, (el) => el.scrollIntoView());
+  await p.waitForFunction(
+    (s) => getComputedStyle(document.querySelector(s)).opacity === '1', sel, { timeout: 4000 });
+  await p.context().close();
+});
+
+test('reduced-motion visitors get everything visible with no transition', async () => {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const hidden = await p.$$eval('[data-reveal]',
+    (els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
+  assert.equal(hidden, 0);
+  await ctx.close();
+});
