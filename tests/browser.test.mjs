@@ -301,6 +301,61 @@ test('with JS disabled below 860px, nav links render normally and stay reachable
   await ctx.close();
 });
 
+// m10: m5 gated the panel's *container* (.nav__links) and the toggle on
+// .js, but left the panel's own .nav__link/.nav__cta sizing (padding: 16px
+// 0, font-size: 17px, ...) ungated. Below 860px without JS, those
+// vertical-panel rules still won the cascade over the base row rules (same
+// specificity, later in source order) and applied to links laid out as a
+// normal horizontal row — inflating the sticky nav 69px -> 99px and
+// widening the row far past the viewport (390px -> scrollWidth 600, 210px
+// of overflow; 320px -> 280px of overflow). The m5 test above only checks
+// `box.width > 0 && box.height > 0`, which an off-screen box satisfies, so
+// it missed this entirely.
+//
+// Fix: gate .nav__link/.nav__cta's mobile-panel sizing on .js too, matching
+// their container, so it only ever applies when the panel actually exists.
+//
+// This does NOT make the no-JS row fit inside 390px/320px: a full-text row
+// of 4 nav links + a CTA next to the brand mark is ~560-580px wide at
+// minimum at any readable size and does not wrap (see the comment above
+// this media query — the no-JS fallback is deliberately "the
+// un-media-queried, always-visible default: a horizontal row", not a
+// responsive one). That residual overflow is pre-existing, present even at
+// the correct base (desktop) sizing, and independent of this bug — closing
+// it would mean either wrapping the row (which breaks the ~69px nav height
+// asserted below) or a different layout mechanism, neither of which this
+// fix's scope authorizes. This test instead targets the bug's actual root
+// cause directly (the vertical-panel sizing leaking through) rather than
+// the confounded overflow number.
+for (const width of [390, 320]) {
+  test(`with JS disabled at ${width}px, nav links use their horizontal-row sizing, not the vertical-panel sizing`, async () => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width, height: 900 } });
+    const p = await ctx.newPage();
+    await p.goto(server.url, { waitUntil: 'load' });
+
+    const linkStyle = await p.$eval('.nav__link', (el) => {
+      const s = getComputedStyle(el);
+      return { paddingTop: s.paddingTop, fontSize: s.fontSize };
+    });
+    assert.equal(linkStyle.paddingTop, '0px',
+      'nav__link is carrying the vertical-panel\'s 16px padding without JS');
+    assert.equal(linkStyle.fontSize, '14.5px',
+      'nav__link is carrying the vertical-panel\'s 17px font-size without JS');
+
+    const navHeight = await p.$eval('.nav', (el) => el.getBoundingClientRect().height);
+    assert.ok(navHeight <= 80,
+      `sticky nav is ${navHeight.toFixed(1)}px tall at ${width}px — expected ~69-70px, not the vertical panel's ~99px`);
+
+    // The first link (flush after the brand) must land inside the
+    // viewport, not merely have a non-zero size — the gap the m5 test left.
+    const firstBox = await p.locator('.nav a[href="#conviction"]').first().boundingBox();
+    assert.ok(firstBox && firstBox.x >= 0 && firstBox.x + firstBox.width <= width,
+      `first nav link falls outside the ${width}px viewport (x=${firstBox && firstBox.x}, right=${firstBox && firstBox.x + firstBox.width})`);
+
+    await ctx.close();
+  });
+}
+
 // m6: the open panel's natural height (~303px) plus body.nav-locked's
 // overflow:hidden strands the CTA off-screen with no way to reach it below
 // roughly 342px of viewport height. Reproduced at 568x320. The panel now

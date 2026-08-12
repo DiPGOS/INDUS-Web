@@ -852,12 +852,12 @@ b        { color: var(--bone); font-weight: 700; }
     visibility: visible;
     transform: translateY(0);
   }
-  .nav__link {
+  .js .nav__link {
     padding: 16px 0;
     font-size: 17px;
     border-bottom: 1px solid rgba(var(--rule-rgb), .1);
   }
-  .nav__cta { margin: 20px 0 0; text-align: center; padding: 15px 20px; font-size: 14px; }
+  .js .nav__cta { margin: 20px 0 0; text-align: center; padding: 15px 20px; font-size: 14px; }
   .nav__link--active::after { display: none; }
 
   .nav--open .nav__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
