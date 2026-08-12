@@ -119,3 +119,35 @@ test('the foundation panel carries the amber top border', async () => {
   assert.equal(await css(p, '.foundation', 'backgroundColor'), 'rgb(18, 35, 63)');
   await p.context().close();
 });
+
+test('the AI stack uses the primary amber card and tinted layers', async () => {
+  const p = await page();
+  assert.equal(await css(p, '.stack__card--primary', 'backgroundColor'), 'rgb(232, 160, 32)');
+  assert.equal(await css(p, '.stack__card--primary .stack__title', 'color'), 'rgb(18, 35, 63)');
+  assert.equal(await css(p, '.stack__card--primary .stack__sub', 'color'), 'rgb(58, 44, 12)');
+  await p.context().close();
+});
+
+test('company and AI sections use their designed backgrounds', async () => {
+  const p = await page();
+  assert.equal(await css(p, '.section--ai', 'backgroundColor'), 'rgb(11, 24, 44)');
+  assert.equal(await css(p, '.section--company', 'backgroundColor'), 'rgb(18, 35, 63)');
+  await p.context().close();
+});
+
+test('the contact CTA is an amber pill', async () => {
+  const p = await page();
+  assert.equal(await css(p, '.contact__cta', 'backgroundColor'), 'rgb(232, 160, 32)');
+  assert.equal(await css(p, '.contact__cta', 'color'), 'rgb(10, 20, 36)');
+  assert.equal(await css(p, '.contact__cta', 'borderRadius'), '999px');
+  await p.context().close();
+});
+
+test('the footer lays out three columns plus a full-width bottom bar', async () => {
+  const p = await page();
+  assert.equal((await css(p, '.footer', 'gridTemplateColumns')).split(' ').length, 12);
+  assert.equal(await css(p, '.footer__bottom', 'gridColumnStart'), '1');
+  const cols = await p.$$eval('.footer__col', (els) => els.length);
+  assert.equal(cols, 2, 'expected Explore and Contact columns');
+  await p.context().close();
+});
