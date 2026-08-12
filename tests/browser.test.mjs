@@ -288,7 +288,11 @@ test('the mobile menu opens, closes on link, and closes on Escape', async () => 
 
 test('the active nav link tracks the scrolled section', async () => {
   const p = await page();
-  await p.$eval('#ai', (el) => el.scrollIntoView());
+  // `html { scroll-behavior: smooth }` makes the default behavior:'auto'
+  // inherit an animated scroll (CSSOM), so force an instant jump here —
+  // otherwise the active-link update rides on an animation duration that
+  // races the 4000ms timeout below.
+  await p.$eval('#ai', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
   await p.waitForFunction(
     () => document.querySelector('.nav__link--active')?.getAttribute('href') === '#ai',
     null, { timeout: 4000 });
