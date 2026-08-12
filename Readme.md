@@ -8,7 +8,7 @@ GitHub Pages.
 
 | Path | Purpose |
 |---|---|
-| `index.html` | All markup and copy. Seven landmarks, no inline styles. |
+| `index.html` | All markup and copy. Five landmarks (banner, two nav, main, contentinfo), no inline styles. |
 | `styles.css` | Every visual rule. Tokens → reset → keyframes → components → responsive. |
 | `main.js` | Reveal observer, mobile nav, active link, contact assembly, year. |
 | `assets/` | Three SVGs, the command-center WebP, favicons, OG card. |

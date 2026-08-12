@@ -34,7 +34,17 @@
   /* layout */
   --max: 1280px;
   --nav-h: 72px;          /* the design's scroll-margin-top, NOT the measured
-                             nav height (~60px). Keep the two decoupled. */
+                             nav height. Measured nav height is 69-70px
+                             (varies by breakpoint, browser rounding), so the
+                             real clearance between an anchor-scrolled
+                             section and the sticky nav's bottom edge is only
+                             ~1.6-3.5px — thin, not the ~12px this pairing
+                             might suggest. Nothing overlaps today because
+                             every section has generous internal padding
+                             before its heading, but do not grow the nav
+                             (e.g. .nav__inner padding) without re-checking
+                             this margin; see the browser test that guards
+                             it. Keep the two values decoupled. */
   --gutter: clamp(24px, 6vw, 72px);
   --pad-y: clamp(96px, 13vw, 180px);
 }
@@ -84,6 +94,24 @@ p { margin: 0; }
 .hi      { color: var(--bone); }
 .hi-soft { color: var(--text-mid); }
 b        { color: var(--bone); font-weight: 700; }
+
+/* Visually hidden, still in the accessibility tree — the standard
+   clip-based technique (not display:none/visibility:hidden, which both
+   remove a node from the tree; not width/height:0 alone, which some
+   AT/browser combinations still collapse). Used to pair a decorative,
+   aria-hidden glyph (e.g. the dotless-ı wordmark) with its real word,
+   since ARIA 1.2 does not let aria-label name a roleless element. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* --- wordmark -------------------------------------------------- */
 .wordmark {
@@ -658,7 +686,7 @@ b        { color: var(--bone); font-weight: 700; }
 .meta__label {
   font: 700 11px/1 var(--sans);
   letter-spacing: 2px;
-  color: var(--dim);
+  color: var(--steel);
   text-transform: uppercase;
   margin-bottom: 9px;
 }
@@ -745,7 +773,7 @@ b        { color: var(--bone); font-weight: 700; }
 .footer__links { display: flex; flex-direction: column; gap: 11px; }
 .footer__link { font: 400 14.5px/1 var(--sans); color: var(--steel); }
 .footer__link:hover { color: var(--bone); }
-.footer__note { font: 400 13px/1.5 var(--sans); color: var(--dim); }
+.footer__note { font: 400 13px/1.5 var(--sans); color: var(--steel); }
 .footer__bottom {
   grid-column: 1 / -1;
   margin-top: clamp(20px, 3vw, 34px);
@@ -758,7 +786,7 @@ b        { color: var(--bone); font-weight: 700; }
   flex-wrap: wrap;
 }
 .footer__copy  { font: 400 12.5px/1 var(--sans); color: var(--dim); }
-.footer__motto { font: italic 400 13px/1 var(--serif); color: var(--dim); }
+.footer__motto { font: italic 400 13px/1 var(--serif); color: var(--steel); }
 
 /* --- scroll reveal ------------------------------------------------
    Hidden state lives in CSS, gated on the .js root class set by an
@@ -780,10 +808,18 @@ b        { color: var(--bone); font-weight: 700; }
    ============================================================ */
 
 @media (max-width: 859.98px) {
-  .nav__toggle { display: block; }
+  /* Both toggle and hidden-panel state are gated on .js (set by the inline
+     <head> script — see the [data-reveal] rules above for the same
+     pattern). The toggle's open/close behaviour lives entirely in
+     main.js, so without JS it would be an inert button sitting in front
+     of a permanently visibility:hidden panel — zero reachable nav links.
+     Gating both means a no-JS visitor instead gets the toggle hidden and
+     .nav__links falling back to its un-media-queried, always-visible
+     default (a horizontal row) — every link present and reachable. */
+  .js .nav__toggle { display: block; }
   .nav__inner { justify-content: space-between; }
 
-  .nav__links {
+  .js .nav__links {
     /* absolute, NOT fixed: the panel must hang below the nav bar.
        On a fixed element `top:100%` resolves against the viewport and
        would drop the panel off the bottom of the screen. `.nav` is
@@ -803,6 +839,12 @@ b        { color: var(--bone); font-weight: 700; }
     transform: translateY(-8px);
     opacity: 0;
     visibility: hidden;
+    /* Bounded to the viewport space below the nav, with its own scrollbar:
+       on a short viewport (e.g. 320px tall) the open panel's natural
+       height (~303px) plus body.nav-locked's overflow:hidden would strand
+       the CTA off-screen with no way to reach it. */
+    max-height: calc(100vh - var(--nav-h));
+    overflow-y: auto;
     transition: opacity .22s ease, transform .22s ease, visibility .22s;
   }
   .nav--open .nav__links {

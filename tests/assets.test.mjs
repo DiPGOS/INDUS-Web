@@ -34,6 +34,15 @@ test('og-card.png is 1200x300', async () => {
   assert.equal(buf.readUInt32BE(20), 300);
 });
 
+test('favicon.png is 180x180 (m8: it is served as apple-touch-icon, not decoded at source size)', async () => {
+  const buf = await readFile(new URL('favicon.png', A));
+  assert.equal(buf.subarray(1, 4).toString('latin1'), 'PNG');
+  assert.equal(buf.readUInt32BE(16), 180);
+  assert.equal(buf.readUInt32BE(20), 180);
+  const bytes = await sizeOf('favicon.png');
+  assert.ok(bytes < 20 * 1024, `favicon.png is ${bytes} bytes, budget 20 KB for a 180x180 icon`);
+});
+
 test('the three SVGs are copied verbatim, not re-encoded', async () => {
   for (const f of ['constellation-dark.svg', 'dipgos-mark-light.svg', 'i-dot.svg']) {
     const txt = await readFile(new URL(f, A), 'utf8');

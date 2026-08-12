@@ -54,6 +54,78 @@ test('the hero reserves space for its bottom strip', async () => {
   await p.context().close();
 });
 
+// I4: --nav-h (72px, the scroll-margin-top every <section> uses) is a fixed
+// design token decoupled from the nav's real rendered height (measured
+// 69-70px — see the comment on --nav-h in styles.css). The gap between them
+// is the true clearance an anchor-jumped section lands with under the
+// sticky nav, and it is thin: ~1.6-3.5px. A section's own top edge is what
+// scroll-margin-top actually controls, so that is the tight assertion that
+// would catch a nav grown taller than --nav-h. Each section's heading sits
+// far below that (100s of px, thanks to section padding + the eyebrow row),
+// so it is checked too — it is what a person actually looks at — but on its
+// own it would not detect the nav-height regression this test exists to
+// guard against.
+const NAV_ANCHOR_IDS = ['conviction', 'dipgos', 'ai', 'company', 'contact'];
+
+async function navClearance(p, id) {
+  return p.evaluate((id) => {
+    const nav = document.querySelector('.nav');
+    const section = document.getElementById(id);
+    // Instant, not the default (animated) scrollIntoView(): html has
+    // scroll-behavior:smooth, which would race this measurement against an
+    // in-flight scroll animation (the same trap that bit two earlier tests
+    // in this file — see the below-the-fold-reveals and active-link tests).
+    section.scrollIntoView({ behavior: 'instant', block: 'start' });
+    const heading = section.querySelector('h1, h2, .contact__title');
+    return {
+      navBottom: nav.getBoundingClientRect().bottom,
+      sectionTop: section.getBoundingClientRect().top,
+      headingTop: heading.getBoundingClientRect().top,
+    };
+  }, id);
+}
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 900 }]) {
+  test(`anchor-scrolled sections clear the sticky nav at ${viewport.width}px`, async () => {
+    const p = await page({ viewport });
+    for (const id of NAV_ANCHOR_IDS) {
+      const { navBottom, sectionTop, headingTop } = await navClearance(p, id);
+      assert.ok(headingTop >= navBottom - 0.5,
+        `#${id} heading top ${headingTop.toFixed(1)}px is above the nav's bottom edge ${navBottom.toFixed(1)}px`);
+      assert.ok(sectionTop >= navBottom - 0.5,
+        `#${id} section top ${sectionTop.toFixed(1)}px is above the nav's bottom edge ${navBottom.toFixed(1)}px — ` +
+        `the sticky nav's real height now exceeds --nav-h`);
+    }
+    await p.context().close();
+  });
+}
+
+// m9: ARIA 1.2 forbids naming a roleless element (a plain <span>), so an
+// aria-label on one is dropped and AT falls back to reading the element's
+// literal text content — here the dotless-ı glyph the wordmark is built
+// from, not a real word. Fixed by hiding the decorative glyph
+// (aria-hidden) and pairing it with a .sr-only span carrying the real
+// word. Verified via the accessible-name/tree the browser actually
+// exposes (Playwright's ariaSnapshot), not by re-reading the markup.
+test('the DiPGOS and Indus wordmarks expose real words to assistive tech, not the dotless glyph', async () => {
+  const p = await page();
+
+  const lockupSnap = await p.locator('.lockup').ariaSnapshot();
+  assert.match(lockupSnap, /DiPGOS/, 'lockup must expose the word "DiPGOS"');
+  assert.doesNotMatch(lockupSnap, /[ıİ]/, 'the decorative dotless-glyph must not reach the accessibility tree');
+
+  const footerBrandSnap = await p.locator('.footer__brand').ariaSnapshot();
+  assert.match(footerBrandSnap, /Indus/, 'footer brand must expose the word "Indus"');
+  assert.doesNotMatch(footerBrandSnap, /[ıİ]/, 'the decorative dotless-glyph must not reach the accessibility tree');
+
+  // The nav brand link already worked correctly (aria-label on an anchor,
+  // which does support naming, unlike a bare span) — pin its accessible
+  // name too so a future edit can't silently regress it the same way.
+  await p.getByRole('link', { name: 'Indus — home', exact: true }).waitFor({ state: 'attached' });
+
+  await p.context().close();
+});
+
 test('keyboard focus paints a visible ring', async () => {
   const p = await page();
   // Tab, not .focus() — programmatic focus does not reliably match
@@ -204,6 +276,52 @@ test('the hamburger replaces inline links below 860px', async () => {
   await narrow.context().close();
 });
 
+// m5: below 860px, the toggle's open/close behaviour lives entirely in
+// main.js. If the hidden-panel CSS applied unconditionally, a no-JS visitor
+// would get an inert button in front of a permanently invisible link list —
+// zero reachable navigation. Both the toggle's display and the panel's
+// hidden state are gated on the .js class (set by an inline <head> script),
+// so without JS the panel falls back to its default, always-visible layout.
+test('with JS disabled below 860px, nav links render normally and stay reachable', async () => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+
+  assert.equal(await css(p, '.nav__toggle', 'display'), 'none',
+    'toggle has no working handler without JS and must stay hidden, not inert');
+  assert.equal(await css(p, '.nav__links', 'visibility'), 'visible',
+    'nav links must not be hidden — there is no JS to ever reveal them');
+
+  const hrefs = await p.$$eval('.nav__link, .nav__cta', (els) => els.map((e) => e.getAttribute('href')));
+  assert.deepEqual(hrefs, ['#conviction', '#dipgos', '#ai', '#company', '#contact']);
+  for (const href of hrefs) {
+    const box = await p.locator(`.nav a[href="${href}"]`).first().boundingBox();
+    assert.ok(box && box.width > 0 && box.height > 0, `link ${href} is not visible/reachable without JS`);
+  }
+  await ctx.close();
+});
+
+// m6: the open panel's natural height (~303px) plus body.nav-locked's
+// overflow:hidden strands the CTA off-screen with no way to reach it below
+// roughly 342px of viewport height. Reproduced at 568x320. The panel now
+// carries max-height + overflow-y:auto; prove it end-to-end by actually
+// clicking the CTA — Playwright's click() auto-scrolls the target into view
+// within its nearest scrollable ancestor and fails if it cannot, so this is
+// a real reachability check, not just a CSS-property assertion.
+test('the open mobile panel stays reachable on short viewports', async () => {
+  const p = await page({ viewport: { width: 568, height: 320 } });
+  await p.click('#nav-toggle');
+  assert.equal(await p.$eval('.nav', (el) => el.classList.contains('nav--open')), true);
+
+  assert.equal(await css(p, '.nav__links', 'overflowY'), 'auto');
+  const panelBox = await p.$eval('.nav__links', (el) => el.getBoundingClientRect());
+  assert.ok(panelBox.height <= 320 + 0.5,
+    `open panel height ${panelBox.height}px exceeds the 320px viewport — the CTA can be pushed off-screen`);
+
+  await p.click('.nav__cta');
+  await p.context().close();
+});
+
 test('content is fully visible with JavaScript disabled', async () => {
   const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
   const p = await ctx.newPage();
@@ -250,6 +368,38 @@ test('the contact links resolve to a real mailto after JS runs', async () => {
   assert.equal(hrefs.length, 2);
   for (const h of hrefs) assert.equal(h, 'mailto:kamran@industechsol.com');
   await p.context().close();
+});
+
+// m7: Safari < 14 has no addEventListener on MediaQueryList (only the older
+// addListener). setupNav() used to call it unguarded as its last statement,
+// so on that browser the whole IIFE aborted before setupContact() ran and
+// the mailto: was never assembled. Simulate that browser by handing
+// setupNav()'s matchMedia query a fake MediaQueryList with addListener but
+// no addEventListener — real Chromium's own MediaQueryList (used by every
+// other matchMedia() call in main.js, e.g. reduced-motion) is untouched.
+test('main.js survives a MediaQueryList without addEventListener (old Safari)', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.addInitScript(() => {
+    var real = window.matchMedia.bind(window);
+    window.matchMedia = function (query) {
+      var mql = real(query);
+      if (query !== '(min-width: 860px)') return mql;
+      return {
+        matches: mql.matches,
+        media: mql.media,
+        addListener: function (fn) { mql.addListener(fn); },
+        removeListener: function (fn) { mql.removeListener(fn); },
+        // deliberately no addEventListener/removeEventListener
+      };
+    };
+  });
+  await p.goto(server.url, { waitUntil: 'load' });
+  const hrefs = await p.$$eval('[data-u][data-d]', (els) => els.map((e) => e.getAttribute('href')));
+  assert.equal(hrefs.length, 2);
+  for (const h of hrefs) assert.equal(h, 'mailto:kamran@industechsol.com',
+    'setupContact() must still run even when setupNav() hits a missing browser API');
+  await ctx.close();
 });
 
 test('with JS disabled the contact links stay harmless, never dead', async () => {

@@ -76,9 +76,17 @@
     });
 
     // Leaving the mobile range with the panel open would strand the lock.
-    window.matchMedia('(min-width: 860px)').addEventListener('change', function (e) {
-      if (e.matches) setOpen(false);
-    });
+    // Safari < 14 has no addEventListener on MediaQueryList — only the
+    // older addListener — and calling the missing method throws, which
+    // (unguarded) used to abort this whole function before it returned,
+    // taking every module queued after it down too. Feature-detect both.
+    var mql = window.matchMedia('(min-width: 860px)');
+    var onRangeChange = function (e) { if (e.matches) setOpen(false); };
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', onRangeChange);
+    } else if (typeof mql.addListener === 'function') {
+      mql.addListener(onRangeChange);
+    }
   }
 
   /* ---------------------------------------------------------------
@@ -132,9 +140,25 @@
     if (el) el.textContent = String(new Date().getFullYear());
   }
 
-  setupReveal();
-  setupNav();
-  setupActiveLink();
-  setupContact();
-  setupYear();
+  // Each module is independent (see the file banner) and every module here
+  // touches a different, separately-critical piece of the page (reveal
+  // animation, mobile nav, active link, the mailto assembly, the year).
+  // An uncaught throw in one must never take the rest down with it — e.g.
+  // one brittle browser API call previously aborted setupNav() before
+  // setupContact() ran, silently disabling the site's only conversion path.
+  // Run every module through the same guard so that failure mode can't
+  // recur, regardless of which module or browser API causes it.
+  function run(setup) {
+    try {
+      setup();
+    } catch (e) {
+      if (window.console && console.error) console.error(e);
+    }
+  }
+
+  run(setupReveal);
+  run(setupNav);
+  run(setupActiveLink);
+  run(setupContact);
+  run(setupYear);
 })();
