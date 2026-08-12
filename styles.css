@@ -751,3 +751,114 @@ b        { color: var(--bone); font-weight: 700; }
 }
 .footer__copy  { font: 400 12.5px/1 var(--sans); color: var(--dim); }
 .footer__motto { font: italic 400 13px/1 var(--serif); color: var(--dim); }
+
+/* ============================================================
+   Responsive
+   Nav flips at 860px — deliberately not a tier boundary.
+   ============================================================ */
+
+@media (max-width: 859.98px) {
+  .nav__toggle { display: block; }
+  .nav__inner { justify-content: space-between; }
+
+  .nav__links {
+    /* absolute, NOT fixed: the panel must hang below the nav bar.
+       On a fixed element `top:100%` resolves against the viewport and
+       would drop the panel off the bottom of the screen. `.nav` is
+       position:sticky, so it is the containing block for this. */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px clamp(20px, 5vw, 48px) 28px;
+    background: rgba(10, 20, 36, .96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(var(--rule-rgb), .12);
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .22s ease, transform .22s ease, visibility .22s;
+  }
+  .nav--open .nav__links {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .nav__link {
+    padding: 16px 0;
+    font-size: 17px;
+    border-bottom: 1px solid rgba(var(--rule-rgb), .1);
+  }
+  .nav__cta { margin: 20px 0 0; text-align: center; padding: 15px 20px; font-size: 14px; }
+
+  .nav--open .nav__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav--open .nav__bar:nth-child(2) { opacity: 0; }
+  .nav--open .nav__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  body.nav-locked { overflow: hidden; }
+}
+
+/* --- tablet: 700–1099px ------------------------------------------- */
+@media (max-width: 1099.98px) {
+  .loop    { grid-template-columns: repeat(3, 1fr); }
+  .fn-grid { grid-template-columns: repeat(2, 1fr); }
+  .trio    { grid-template-columns: repeat(2, 1fr); }
+
+  .split, .ai-grid, .company { grid-template-columns: 1fr; }
+  .split__col--a, .split__col--b,
+  .stack, .ai-prose,
+  .company__label, .company__body { grid-column: 1 / -1; }
+
+  .footer { grid-template-columns: repeat(6, 1fr); }
+  .footer__brand { grid-column: 1 / -1; }
+  .footer__col:nth-of-type(1) { grid-column: 1 / span 3; }
+  .footer__col:nth-of-type(2) { grid-column: 4 / span 3; }
+
+  .hero__title { letter-spacing: -1.4px; }
+  .contact__title { letter-spacing: -1px; }
+}
+
+/* --- mobile: <700px ------------------------------------------------ */
+@media (max-width: 699.98px) {
+  .loop, .fn-grid, .trio { grid-template-columns: 1fr; }
+
+  .footer { grid-template-columns: 1fr; }
+  .footer__col:nth-of-type(1),
+  .footer__col:nth-of-type(2) { grid-column: 1 / -1; }
+  .footer__bottom { justify-content: flex-start; }
+
+  .hero__inner { padding-bottom: clamp(150px, 34vw, 190px); }
+  .hero__title { letter-spacing: -1px; }
+  .hero__mark  { right: -22%; width: 92vw; }
+  .contact__title { letter-spacing: -.6px; }
+
+  .lockup__tag { border-left: 0; padding-left: 0; }
+  .foundation__chips { flex-direction: column; }
+  .chip { flex: 1 1 auto; }
+  .company__meta { gap: 28px; }
+}
+
+/* --- short viewports: keep the hero from crushing ------------------- */
+@media (max-height: 620px) {
+  .hero { min-height: auto; }
+  .hero__inner { padding-top: clamp(56px, 9vw, 90px); }
+}
+
+/* ============================================================
+   Reduced motion — the design tool's reduceMotion prop, done right
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .underline::after { transform: scaleX(1); }
+  .loop-card__bar   { opacity: 1; transform: scaleX(1); }
+  .js [data-reveal] { opacity: 1 !important; transform: none !important; }
+}

@@ -154,3 +154,52 @@ test('the footer lays out three columns plus a full-width bottom bar', async () 
   assert.equal(await css(p, '.footer__brand', 'gridColumnEnd'), 'span 5');
   await p.context().close();
 });
+
+const WIDTHS = [390, 768, 1024, 1280, 1920];
+
+test('no horizontal overflow at any target width', async () => {
+  for (const width of WIDTHS) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const overflow = await p.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    assert.ok(overflow <= 1, `horizontal overflow of ${overflow}px at ${width}px`);
+    await p.context().close();
+  }
+});
+
+test('loop and function grids collapse per tier', async () => {
+  const cols = async (width, sel) => {
+    const p = await page({ viewport: { width, height: 900 } });
+    const n = (await css(p, sel, 'gridTemplateColumns')).split(' ').length;
+    await p.context().close();
+    return n;
+  };
+  assert.equal(await cols(1280, '.loop'), 5);
+  assert.equal(await cols(900,  '.loop'), 3);
+  assert.equal(await cols(390,  '.loop'), 1);
+  assert.equal(await cols(1280, '.fn-grid'), 3);
+  assert.equal(await cols(900,  '.fn-grid'), 2);
+  assert.equal(await cols(390,  '.fn-grid'), 1);
+});
+
+test('twelve-column splits stack below 1100px', async () => {
+  const p = await page({ viewport: { width: 900, height: 900 } });
+  for (const sel of ['.split', '.ai-grid', '.company']) {
+    assert.equal((await css(p, sel, 'gridTemplateColumns')).split(' ').length, 1,
+      `${sel} should be single-column at 900px`);
+  }
+  await p.context().close();
+});
+
+test('the hamburger replaces inline links below 860px', async () => {
+  const wide = await page({ viewport: { width: 900, height: 900 } });
+  assert.equal(await css(wide, '.nav__toggle', 'display'), 'none');
+  await wide.context().close();
+
+  const narrow = await page({ viewport: { width: 800, height: 900 } });
+  assert.notEqual(await css(narrow, '.nav__toggle', 'display'), 'none');
+  const links = await narrow.$eval('.nav__links', (el) => getComputedStyle(el).transform);
+  assert.ok(links !== 'none' || await css(narrow, '.nav__links', 'visibility') === 'hidden',
+    'closed mobile panel must be off-screen or hidden');
+  await narrow.context().close();
+});
