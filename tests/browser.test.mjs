@@ -78,3 +78,44 @@ test('keyboard focus paints a visible ring', async () => {
   assert.equal(ring.color, 'rgb(232, 160, 32)', `expected amber outline colour, got ${ring.color}`);
   await p.context().close();
 });
+
+test('loop cards sit five across on desktop, with Act in amber', async () => {
+  const p = await page();
+  assert.equal(
+    (await css(p, '.loop', 'gridTemplateColumns')).split(' ').length, 5,
+    'expected 5 loop columns at 1440px');
+  assert.equal(await css(p, '.loop-card--act', 'backgroundColor'), 'rgb(232, 160, 32)');
+  assert.equal(await css(p, '.loop-card--act .loop-card__title', 'color'), 'rgb(10, 20, 36)');
+  assert.equal(await css(p, '.loop-card--act .loop-card__body', 'color'), 'rgb(58, 44, 12)');
+  await p.context().close();
+});
+
+test('loop glow bars are staggered by 0/.5/1/1.5s', async () => {
+  const p = await page();
+  const delays = await p.$$eval('.loop-card__bar',
+    (els) => els.map((e) => getComputedStyle(e).animationDelay));
+  assert.deepEqual(delays, ['0s', '0.5s', '1s', '1.5s']);
+  await p.context().close();
+});
+
+test('function cards sit three across on desktop', async () => {
+  const p = await page();
+  assert.equal((await css(p, '.fn-grid', 'gridTemplateColumns')).split(' ').length, 3);
+  await p.context().close();
+});
+
+test('the conviction split uses the 6 / 5 twelve-column layout', async () => {
+  const p = await page();
+  assert.equal((await css(p, '.split', 'gridTemplateColumns')).split(' ').length, 12);
+  assert.equal(await css(p, '.split__col--a', 'gridColumnStart'), '1');
+  assert.equal(await css(p, '.split__col--b', 'gridColumnStart'), '8');
+  await p.context().close();
+});
+
+test('the foundation panel carries the amber top border', async () => {
+  const p = await page();
+  assert.equal(await css(p, '.foundation', 'borderTopWidth'), '3px');
+  assert.equal(await css(p, '.foundation', 'borderTopColor'), 'rgb(232, 160, 32)');
+  assert.equal(await css(p, '.foundation', 'backgroundColor'), 'rgb(18, 35, 63)');
+  await p.context().close();
+});
