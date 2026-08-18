@@ -44,6 +44,19 @@ computed styles, responsive tiers, no-JS, reduced motion, keyboard).
   `styles.css`. Hex literals outside that block fail the test suite.
 - **No inline styles.** `index.html` carrying a `style=` attribute fails
   the test suite.
+- **Motion tokens.** Durations, easings, reveal travel and hover lift live
+  in the `/* motion */` group on `:root`, so the whole feel is tunable from
+  one block. Everything the motion system added reads from there, with one
+  deliberate exception — the command centre's `1s` signature entrance, which
+  is a one-off. Animations that predate the tokens (the ambient loops
+  `floatY`, `drift`, `corepulse`, `loopglow` and `bob`, plus two older nav
+  transitions) still carry their own values; they were left alone rather
+  than churned. `main.js` holds exactly one motion number, the parallax
+  range, which it hands to CSS as a custom property.
+- **Motion state is classes: JS toggles, CSS interprets.** `.is-visible`
+  and `.is-instant` on `[data-reveal]`, `.is-live` on an ambient container,
+  `.nav--scrolled` on the nav, and the older `.nav--open` on the mobile
+  panel. No motion decision lives in JavaScript.
 - **The contact address is never in the source.** It is assembled at
   runtime from `data-u` / `data-d`. Adding a literal `mailto:` fails the
   test suite.
@@ -51,7 +64,9 @@ computed styles, responsive tiers, no-JS, reduced motion, keyboard).
   The nav flips to a hamburger at 860px, which is deliberately not a
   tier boundary.
 - **Every animation** must be disabled under
-  `@media (prefers-reduced-motion: reduce)`.
+  `@media (prefers-reduced-motion: reduce)`, and every hover lift must sit
+  inside `@media (hover: hover)` so a tap cannot strand an element in its
+  raised state.
 
 ## Provenance
 
