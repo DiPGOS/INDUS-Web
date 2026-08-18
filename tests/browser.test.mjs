@@ -822,6 +822,10 @@ test('the nav compacts once the viewport leaves the hero', async () => {
     await p.$eval('.nav', (el) => el.classList.contains('nav--scrolled')), false,
     'not scrolled at the top of the hero');
   assert.equal(await css(p, '.nav__inner', 'paddingTop'), '16px');
+  // Compaction is only half of it: the bar also solidifies and lifts.
+  assert.equal(await css(p, '.nav', 'backgroundColor'), 'rgba(10, 20, 36, 0.72)');
+  assert.equal(await css(p, '.nav', 'borderBottomColor'), 'rgba(157, 176, 196, 0.12)');
+  assert.equal(await css(p, '.nav', 'boxShadow'), 'none');
 
   await p.$eval('#dipgos', (el) => el.scrollIntoView({ behavior: 'instant', block: 'start' }));
   await p.waitForFunction(
@@ -830,6 +834,12 @@ test('the nav compacts once the viewport leaves the hero', async () => {
   await p.waitForFunction(
     () => getComputedStyle(document.querySelector('.nav__inner')).paddingTop === '11px',
     null, { timeout: 3000 });
+  // The surface transitions over --dur-base, so let it land before reading.
+  await p.waitForFunction(
+    () => getComputedStyle(document.querySelector('.nav')).backgroundColor === 'rgba(10, 20, 36, 0.9)',
+    null, { timeout: 3000 });
+  assert.equal(await css(p, '.nav', 'borderBottomColor'), 'rgba(157, 176, 196, 0.2)');
+  assert.equal(await css(p, '.nav', 'boxShadow'), 'rgba(0, 0, 0, 0.9) 0px 10px 30px -18px');
   await p.context().close();
 });
 
