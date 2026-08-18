@@ -121,6 +121,26 @@
   }
 
   /* ---------------------------------------------------------------
+     Nav scroll state
+     A 1px sentinel at the top of the hero, not a scroll listener.
+     Without IntersectionObserver the nav simply keeps its default
+     appearance — cosmetic, not broken.
+     --------------------------------------------------------------- */
+  function setupNavState() {
+    var nav = document.querySelector('.nav');
+    var sentinel = document.querySelector('.nav-sentinel');
+    if (!nav || !sentinel || !('IntersectionObserver' in window)) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        nav.classList.toggle('nav--scrolled', !entry.isIntersecting);
+      });
+    }, { threshold: 0 });
+
+    io.observe(sentinel);
+  }
+
+  /* ---------------------------------------------------------------
      Active nav link
      --------------------------------------------------------------- */
   function setupActiveLink() {
@@ -190,6 +210,7 @@
   run(setupReveal);
   run(setupAmbient);
   run(setupNav);
+  run(setupNavState);
   run(setupActiveLink);
   run(setupContact);
   run(setupYear);

@@ -171,6 +171,9 @@ b        { color: var(--bone); font-weight: 700; }
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(var(--rule-rgb), .12);
+  transition: background-color var(--dur-base) var(--ease-quick),
+              border-color var(--dur-base) var(--ease-quick),
+              box-shadow var(--dur-base) var(--ease-quick);
 }
 .nav__inner {
   max-width: var(--max);
@@ -181,6 +184,26 @@ b        { color: var(--bone); font-weight: 700; }
   gap: 24px;
   padding: 16px clamp(20px, 5vw, 48px);
 }
+.nav__inner { transition: padding var(--dur-base) var(--ease-quick); }
+
+/* A 1px sentinel at the top of the hero drives .nav--scrolled: one
+   observer, no scroll handler, no rAF throttle. Compaction makes the bar
+   shorter, so it only ever increases the anchor clearance the --nav-h
+   tests measure. */
+.nav-sentinel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.nav--scrolled {
+  background: rgba(10, 20, 36, .90);
+  border-bottom-color: rgba(var(--rule-rgb), .20);
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .9);
+}
+.nav--scrolled .nav__inner { padding-block: 11px; }
 .nav__brand { display: flex; align-items: baseline; gap: 10px; }
 .nav__links {
   display: flex;

@@ -723,3 +723,20 @@ test('ambient loops run unconditionally when the observer cannot', async () => {
   assert.ok(live, 'every ambient container should be live without an observer');
   await ctx.close();
 });
+
+test('the nav compacts once the viewport leaves the hero', async () => {
+  const p = await page();
+  assert.equal(
+    await p.$eval('.nav', (el) => el.classList.contains('nav--scrolled')), false,
+    'not scrolled at the top of the hero');
+  assert.equal(await css(p, '.nav__inner', 'paddingTop'), '16px');
+
+  await p.$eval('#dipgos', (el) => el.scrollIntoView({ behavior: 'instant', block: 'start' }));
+  await p.waitForFunction(
+    () => document.querySelector('.nav').classList.contains('nav--scrolled'),
+    null, { timeout: 3000 });
+  await p.waitForFunction(
+    () => getComputedStyle(document.querySelector('.nav__inner')).paddingTop === '11px',
+    null, { timeout: 3000 });
+  await p.context().close();
+});
