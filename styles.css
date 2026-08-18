@@ -700,8 +700,13 @@ b        { color: var(--bone); font-weight: 700; }
   border: 1px solid rgba(var(--rule-rgb), .22);
   box-shadow: 0 50px 110px -46px rgba(0, 0, 0, .85);
 }
-/* scale(1.04) gives the ±10px of travel somewhere to come from — without
-   it, the parallax would expose a gap at the top or bottom of the frame. */
+/* scale(1.04) is where the parallax travel comes from: it overflows the
+   frame by 2% of the image's height at each edge, and `overflow: hidden`
+   above crops it. That headroom scales with the viewport, so main.js caps
+   its travel to it rather than assuming a flat 10px always fits — below
+   ~1100px it does not, and the shortfall shows as a sliver of page
+   background inside the frame. Do not raise 1.04 to buy room: it would
+   visibly crop the screenshot. */
 .frame img {
   width: 100%;
   height: auto;

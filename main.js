@@ -104,7 +104,7 @@
     var img = frame && frame.querySelector('img');
     if (!img || reduce || !('IntersectionObserver' in window)) return;
 
-    var RANGE = 10;          // px of travel either side of centre
+    var RANGE = 10;          // px of travel either side of centre, at most
     var ticking = false;
     var attached = false;
 
@@ -115,7 +115,13 @@
       // -1 with the frame below the viewport, 0 dead centre, +1 above it.
       var progress = (rect.top + rect.height / 2 - vh / 2) / (vh / 2 + rect.height / 2);
       progress = Math.max(-1, Math.min(1, progress));
-      img.style.setProperty('--parallax', (progress * RANGE).toFixed(2) + 'px');
+      // The overflow that hides this travel comes from .frame img's
+      // scale(1.04) — 2% of the rendered height at each edge, which
+      // shrinks with the viewport while RANGE does not. Below roughly
+      // 1100px the flat range outruns it and exposes page background
+      // inside the frame, so take whichever is smaller.
+      var range = Math.min(RANGE, rect.height * 0.02);
+      img.style.setProperty('--parallax', (progress * range).toFixed(2) + 'px');
     }
 
     function onScroll() {

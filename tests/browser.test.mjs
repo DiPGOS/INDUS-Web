@@ -850,6 +850,53 @@ test('the command centre parallaxes only while it is on screen', async () => {
   const moved = parseFloat(await parallax());
   assert.notEqual(moved, centred, 'scrolling should move the image');
   assert.ok(Math.abs(moved) <= 10, `offset must stay inside the 10px range, got ${moved}`);
+
+  // "only while": once the frame is gone the scroll handler is detached,
+  // so further scrolling must leave the last written value untouched.
+  await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await p.waitForTimeout(250);
+  const parked = parseFloat(await parallax());
+  await p.evaluate(() => window.scrollBy(0, -220));
+  await p.waitForTimeout(250);
+  assert.equal(parseFloat(await parallax()), parked,
+    'the offset must not keep updating once the frame has left the viewport');
+  await p.context().close();
+});
+
+test('the parallax never travels further than the frame scale can hide', async () => {
+  // scale(1.04) buys 2% of the image's height as headroom at each edge.
+  // A flat 10px range outruns that on small viewports and opens a sliver
+  // of page background inside the frame's rounded, hairline border.
+  const p = await page({ viewport: { width: 390, height: 844 } });
+  await p.$eval('.frame', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(
+    () => document.querySelector('.frame img').style.getPropertyValue('--parallax') !== '',
+    null, { timeout: 3000 });
+
+  // Let the 1s frame entrance finish: mid-transition the frame is still
+  // at scale(.965), so its height — and the headroom derived from it —
+  // is not yet the one the visitor ends up looking at.
+  await p.waitForTimeout(1400);
+
+  // Walk the frame across the whole viewport so every point of the travel
+  // is sampled, not just the two the happy-path test happens to hit. Read
+  // the offset and the height it has to hide inside in the same evaluate.
+  const seen = [];
+  for (let i = 0; i < 14; i += 1) {
+    await p.evaluate(() => window.scrollBy(0, -80));
+    await p.waitForTimeout(60);
+    seen.push(await p.evaluate(() => ({
+      offset: parseFloat(document.querySelector('.frame img').style.getPropertyValue('--parallax')),
+      height: document.querySelector('.frame').getBoundingClientRect().height,
+    })));
+  }
+
+  assert.ok(seen.some((s) => Math.abs(s.offset) > 0), 'the parallax should still move at 390px');
+  for (const { offset, height } of seen) {
+    const limit = height * 0.02 + 0.01;   // +toFixed(2) rounding
+    assert.ok(Math.abs(offset) <= limit,
+      `travelled ${offset}px against ${limit.toFixed(2)}px of headroom on a ${height}px frame`);
+  }
   await p.context().close();
 });
 
