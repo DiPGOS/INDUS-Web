@@ -837,3 +837,35 @@ test('reduced motion leaves the command centre perfectly still', async () => {
     'no parallax may be written under prefers-reduced-motion');
   await ctx.close();
 });
+
+test('the ghost numeral clears the eyebrow it used to run through', async () => {
+  for (const width of [1440, 700, 390]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const box = await p.evaluate(() => {
+      const g = document.querySelector('.section--conviction .ghost');
+      const e = document.querySelector('.section--conviction .eyebrow');
+      return {
+        ghostTop: g.getBoundingClientRect().top,
+        eyebrowBottom: e.getBoundingClientRect().bottom,
+      };
+    });
+    assert.ok(box.ghostTop >= box.eyebrowBottom,
+      `at ${width}px the ghost starts at ${box.ghostTop}, above the eyebrow's ${box.eyebrowBottom}`);
+    await p.context().close();
+  }
+});
+
+test('rules and bars draw in with their section', async () => {
+  const p = await page();
+  const scaleX = (sel) => p.$eval(sel, (el) => {
+    const t = getComputedStyle(el).transform;
+    return t === 'none' ? 1 : new DOMMatrixReadOnly(t).a;
+  });
+  assert.equal(await scaleX('.statement__bar'), 0, 'retracted below the fold');
+  await p.$eval('.statement', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(() => {
+    const t = getComputedStyle(document.querySelector('.statement__bar')).transform;
+    return t === 'none' || new DOMMatrixReadOnly(t).a > 0.9;
+  }, null, { timeout: 4000 });
+  await p.context().close();
+});

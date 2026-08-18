@@ -433,9 +433,9 @@ b        { color: var(--bone); font-weight: 700; }
 .ghost {
   position: absolute;
   left: clamp(-30px, -2vw, -14px);
-  top: clamp(56px, 8vw, 110px);
+  top: clamp(165px, 19vw, 270px);
   font: 600 clamp(150px, 26vw, 420px)/0.8 var(--serif);
-  color: rgba(232, 160, 32, .05);
+  color: rgba(var(--amber-rgb), .035);
   letter-spacing: -8px;
   pointer-events: none;
   user-select: none;
@@ -991,6 +991,19 @@ b        { color: var(--bone); font-weight: 700; }
   transition: none;
 }
 
+/* Rules and bars draw in from the left with their section. */
+.js .eyebrow__rule, .js .sublabel__rule, .js .statement__bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease-out) 120ms;
+}
+.js [data-reveal].is-visible .eyebrow__rule,
+.js [data-reveal].is-visible .sublabel__rule,
+.js [data-reveal].is-visible .statement__bar,
+.js [data-reveal].is-instant .eyebrow__rule,
+.js [data-reveal].is-instant .sublabel__rule,
+.js [data-reveal].is-instant .statement__bar { transform: scaleX(1); }
+
 /* ============================================================
    Interaction
    Before this, only the nav links and the two CTAs answered a pointer —
@@ -1236,4 +1249,5 @@ b        { color: var(--bone); font-weight: 700; }
   .nav__cta:active, .contact__cta:active, .hero__cta:active,
   .fn-card:hover .fn-card__dot,
   .frame:hover { translate: none !important; scale: none !important; }
+  .eyebrow__rule, .sublabel__rule, .statement__bar { transform: scaleX(1) !important; }
 }
