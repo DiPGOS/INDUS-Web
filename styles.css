@@ -107,6 +107,18 @@ p { margin: 0; }
 @keyframes bob      { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(7px); opacity: 1; } }
 @keyframes loopglow { 0%, 100% { opacity: .14; transform: scaleX(.35); } 50% { opacity: 1; transform: scaleX(1); } }
 
+/* Ambient loops idle until their container is on screen. They used to run
+   forever — competing with reading, and burning compositor time on four
+   elements nobody was looking at. main.js adds and removes .is-live. */
+.hero__mark, .hero__orb, .lockup__mark, .loop-card__bar { animation-play-state: paused; }
+.hero.is-live   .hero__mark,
+.hero.is-live   .hero__orb,
+.lockup.is-live .lockup__mark,
+.loop.is-live   .loop-card__bar {
+  animation-play-state: running;
+  will-change: transform, opacity;
+}
+
 /* --- shared inline accents ------------------------------------ */
 .accent  { color: var(--amber); }
 .hi      { color: var(--bone); }
@@ -247,6 +259,9 @@ b        { color: var(--bone); font-weight: 700; }
   height: auto;
   opacity: .11;
   animation: floatY 9s ease-in-out infinite;
+  animation-play-state: paused; /* .is-live overrides; the shorthand above
+    resets play-state to its initial "running", so it must be reasserted
+    here — see the gate block at the end of the keyframes section. */
   pointer-events: none;
 }
 .hero__orb {
@@ -257,6 +272,7 @@ b        { color: var(--bone); font-weight: 700; }
   height: 460px;
   background: radial-gradient(circle, rgba(232, 160, 32, .12), transparent 66%);
   animation: drift 22s ease-in-out infinite;
+  animation-play-state: paused; /* see .hero__mark above */
   pointer-events: none;
 }
 .hero__inner {
@@ -432,6 +448,7 @@ b        { color: var(--bone); font-weight: 700; }
   width: clamp(40px, 4.6vw, 58px);
   height: auto;
   animation: corepulse 4s ease-in-out infinite;
+  animation-play-state: paused; /* see .hero__mark above */
 }
 .lockup__word {
   font: 700 clamp(30px, 4vw, 50px)/1 var(--serif);
@@ -506,6 +523,7 @@ b        { color: var(--bone); font-weight: 700; }
   border-radius: 3px;
   transform-origin: left;
   animation: loopglow 3.2s ease-in-out infinite;
+  animation-play-state: paused; /* see .hero__mark above */
 }
 .loop-card:nth-child(1) .loop-card__bar { animation-delay: 0s; }
 .loop-card:nth-child(2) .loop-card__bar { animation-delay: .5s; }

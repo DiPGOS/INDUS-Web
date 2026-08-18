@@ -49,6 +49,34 @@
   }
 
   /* ---------------------------------------------------------------
+     Ambient motion
+     The four infinite loops (floatY, drift, corepulse, loopglow) idle at
+     animation-play-state:paused and only run while their container is on
+     screen. Unlike the reveal observer this one removes the class again
+     on exit — that is the entire point.
+     --------------------------------------------------------------- */
+  function setupAmbient() {
+    var els = Array.prototype.slice.call(
+      document.querySelectorAll('.hero, .loop, .lockup'));
+    if (!els.length) return;
+
+    // Paused forever is a worse failure than always running, so anything
+    // that stops the observer working leaves every container live.
+    if (reduce || !('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('is-live'); });
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        entry.target.classList.toggle('is-live', entry.isIntersecting);
+      });
+    }, { threshold: 0 });
+
+    els.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------------------------------------------------------------
      Mobile navigation
      --------------------------------------------------------------- */
   function setupNav() {
@@ -160,6 +188,7 @@
   }
 
   run(setupReveal);
+  run(setupAmbient);
   run(setupNav);
   run(setupActiveLink);
   run(setupContact);

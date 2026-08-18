@@ -695,3 +695,31 @@ test('the underline is drawn for no-JS and reduced-motion visitors', async () =>
     await ctx.close();
   }
 });
+
+test('ambient loops idle offscreen and run on screen', async () => {
+  const p = await page();
+  const state = (sel) => css(p, sel, 'animationPlayState');
+  assert.equal(await state('.hero__mark'), 'running', 'the hero is on screen at load');
+  assert.equal(await state('.loop-card__bar'), 'paused', 'the loop is far below the fold');
+
+  await p.$eval('.loop', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(
+    () => getComputedStyle(document.querySelector('.loop-card__bar')).animationPlayState === 'running',
+    null, { timeout: 3000 });
+  assert.equal(await state('.hero__mark'), 'paused', 'the hero has left the viewport');
+  await p.context().close();
+});
+
+test('ambient loops run unconditionally when the observer cannot', async () => {
+  // Paused forever is a worse failure than always running, so both the
+  // reduced-motion path and a missing IntersectionObserver must leave
+  // every container live.
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.addInitScript(() => { delete window.IntersectionObserver; });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const live = await p.$$eval('.hero, .loop, .lockup',
+    (els) => els.every((e) => e.classList.contains('is-live')));
+  assert.ok(live, 'every ambient container should be live without an observer');
+  await ctx.close();
+});
