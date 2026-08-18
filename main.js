@@ -42,7 +42,10 @@
     });
 
     // Failsafe: never leave content hidden, whatever the observer does.
-    setTimeout(function () { els.forEach(function (el) { show(el, false); }); }, 3600);
+    // Instant, not animated — a failsafe firing means the visitor is
+    // nowhere near this element, so animating it in is a pop they did
+    // not ask for, from content they cannot see.
+    setTimeout(function () { els.forEach(function (el) { show(el, true); }); }, 3600);
   }
 
   /* ---------------------------------------------------------------

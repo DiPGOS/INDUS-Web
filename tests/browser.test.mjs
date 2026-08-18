@@ -638,3 +638,26 @@ test('staggered children are visible with no JS and under reduced motion', async
     await ctx.close();
   }
 });
+
+test('the reveal failsafe shows below-fold content without animating it', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  // Neuter IntersectionObserver so it never fires. The constructor must
+  // still exist: setupReveal's `!('IntersectionObserver' in window)`
+  // branch would show everything immediately and bypass the failsafe
+  // this test exists to exercise.
+  await ctx.addInitScript(() => {
+    window.IntersectionObserver = function () {
+      return { observe() {}, unobserve() {}, disconnect() {} };
+    };
+  });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+
+  const sel = '.section--company .section__title--company';
+  assert.equal(await css(p, sel, 'opacity'), '0', 'hidden before the failsafe fires');
+  await p.waitForFunction(
+    (s) => getComputedStyle(document.querySelector(s)).opacity === '1', sel, { timeout: 6000 });
+  assert.match(await css(p, sel, 'transitionDuration'), /^0s/,
+    'the failsafe must use .is-instant, not animate unseen content into view');
+  await ctx.close();
+});
