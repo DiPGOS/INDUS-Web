@@ -11,7 +11,7 @@
      Scroll reveal
      Ported from the design prototype's setupReveal(), same numbers:
      threshold .1, rootMargin -6% bottom, 92% first-paint cutoff,
-     3.6s failsafe.
+     3.6s failsafe — which fires only if the observer never ran.
      --------------------------------------------------------------- */
   function setupReveal() {
     var els = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
@@ -27,7 +27,12 @@
     }
 
     var vh = window.innerHeight || 800;
+    // observe() queues an initial observation for every target whether it
+    // intersects or not, so this flips within a frame in any browser whose
+    // observer works at all — and stays false in one whose does not.
+    var observerLive = false;
     var io = new IntersectionObserver(function (entries) {
+      observerLive = true;
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         show(entry.target, false);
@@ -41,11 +46,22 @@
       else io.observe(el);
     });
 
-    // Failsafe: never leave content hidden, whatever the observer does.
-    // Instant, not animated — a failsafe firing means the visitor is
-    // nowhere near this element, so animating it in is a pop they did
-    // not ask for, from content they cannot see.
-    setTimeout(function () { els.forEach(function (el) { show(el, true); }); }, 3600);
+    // Failsafe for a broken observer, not for a slow visitor. Its job is
+    // "never leave content hidden whatever the observer does", so it fires
+    // only when the observer has never called back at all — stubbed,
+    // policy-blocked or otherwise inert. Firing it on a bare timer instead
+    // would flatten the page out from under anyone still reading the hero
+    // at 3.6s: every reveal jumps to .is-instant (transition: none) and the
+    // cascades, sweeps, line draws and frame entrance below never play.
+    // Instant, not animated — if this fires, nothing on the page is being
+    // tracked, so animating is a pop from content nobody can see.
+    setTimeout(function () {
+      if (observerLive) return;
+      els.forEach(function (el) {
+        if (el.classList.contains('is-visible') || el.classList.contains('is-instant')) return;
+        show(el, true);
+      });
+    }, 3600);
   }
 
   /* ---------------------------------------------------------------

@@ -679,6 +679,35 @@ test('the reveal failsafe shows below-fold content without animating it', async 
   await ctx.close();
 });
 
+test('idling past the failsafe window still leaves the motion system live', async () => {
+  // The failsafe exists for a broken observer, not a slow reader. A
+  // visitor who spends four seconds on the hero before scrolling must
+  // still get the choreography, not a pre-flattened page.
+  const p = await page();
+  await p.waitForTimeout(4200);          // 3.6s failsafe + margin
+
+  const state = () => p.$eval('.loop', (el) => ({
+    visible: el.classList.contains('is-visible'),
+    instant: el.classList.contains('is-instant'),
+  }));
+  assert.deepEqual(await state(), { visible: false, instant: false },
+    'the failsafe must not touch content the working observer still owns');
+
+  await p.$eval('.loop', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(
+    () => document.querySelector('.loop').classList.contains('is-visible'),
+    null, { timeout: 3000 });
+
+  const durations = await p.$$eval('.loop > *',
+    (els) => els.map((el) => getComputedStyle(el).transitionDuration));
+  assert.ok(durations.length >= 4, `expected the loop cards, got ${durations.length}`);
+  for (const d of durations) {
+    assert.ok(parseFloat(d) > 0,
+      `a stagger child animated with transition-duration ${d} after the failsafe window`);
+  }
+  await p.context().close();
+});
+
 // getComputedStyle on the pseudo returns a matrix string, or the keyword
 // 'none' when no transform applies. DOMMatrixReadOnly throws on 'none',
 // so treat that as the fully-drawn state. Inlined at each call site
