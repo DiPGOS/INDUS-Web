@@ -800,3 +800,40 @@ test('cards answer the pointer, and reduced motion stills them', async () => {
     'reduced motion must leave the card exactly where it is');
   await ctx.close();
 });
+
+test('the command centre parallaxes only while it is on screen', async () => {
+  const p = await page();
+  const parallax = () => p.$eval('.frame img',
+    (el) => el.style.getPropertyValue('--parallax'));
+  assert.equal(await parallax(), '',
+    'nothing should be written before the frame is reached');
+
+  await p.$eval('.frame', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(
+    () => document.querySelector('.frame img').style.getPropertyValue('--parallax') !== '',
+    null, { timeout: 3000 });
+
+  const centred = parseFloat(await parallax());
+  assert.ok(Math.abs(centred) < 3, `near centre the offset should be small, got ${centred}`);
+
+  await p.evaluate(() => window.scrollBy(0, -300));
+  await p.waitForTimeout(250);
+  const moved = parseFloat(await parallax());
+  assert.notEqual(moved, centred, 'scrolling should move the image');
+  assert.ok(Math.abs(moved) <= 10, `offset must stay inside the 10px range, got ${moved}`);
+  await p.context().close();
+});
+
+test('reduced motion leaves the command centre perfectly still', async () => {
+  const ctx = await browser.newContext({
+    reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  await p.$eval('.frame', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.evaluate(() => window.scrollBy(0, -300));
+  await p.waitForTimeout(400);
+  assert.equal(
+    await p.$eval('.frame img', (el) => el.style.getPropertyValue('--parallax')), '',
+    'no parallax may be written under prefers-reduced-motion');
+  await ctx.close();
+});

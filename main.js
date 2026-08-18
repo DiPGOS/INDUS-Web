@@ -77,6 +77,54 @@
   }
 
   /* ---------------------------------------------------------------
+     Command-centre parallax
+     The one motion number that lives in JS. It is handed to CSS as a
+     custom property, so composition and easing still live in styles.css.
+     The scroll handler is attached only while the frame is on screen and
+     removed the moment it leaves.
+     --------------------------------------------------------------- */
+  function setupParallax() {
+    var frame = document.querySelector('.frame');
+    var img = frame && frame.querySelector('img');
+    if (!img || reduce || !('IntersectionObserver' in window)) return;
+
+    var RANGE = 10;          // px of travel either side of centre
+    var ticking = false;
+    var attached = false;
+
+    function paint() {
+      ticking = false;
+      var rect = frame.getBoundingClientRect();
+      var vh = window.innerHeight || 800;
+      // -1 with the frame below the viewport, 0 dead centre, +1 above it.
+      var progress = (rect.top + rect.height / 2 - vh / 2) / (vh / 2 + rect.height / 2);
+      progress = Math.max(-1, Math.min(1, progress));
+      img.style.setProperty('--parallax', (progress * RANGE).toFixed(2) + 'px');
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(paint);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting === attached) return;
+        attached = entry.isIntersecting;
+        if (attached) {
+          window.addEventListener('scroll', onScroll, { passive: true });
+          paint();
+        } else {
+          window.removeEventListener('scroll', onScroll);
+        }
+      });
+    }, { threshold: 0 });
+
+    io.observe(frame);
+  }
+
+  /* ---------------------------------------------------------------
      Mobile navigation
      --------------------------------------------------------------- */
   function setupNav() {
@@ -209,6 +257,7 @@
 
   run(setupReveal);
   run(setupAmbient);
+  run(setupParallax);
   run(setupNav);
   run(setupNavState);
   run(setupActiveLink);

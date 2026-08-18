@@ -700,7 +700,29 @@ b        { color: var(--bone); font-weight: 700; }
   border: 1px solid rgba(var(--rule-rgb), .22);
   box-shadow: 0 50px 110px -46px rgba(0, 0, 0, .85);
 }
-.frame img { width: 100%; height: auto; display: block; }
+/* scale(1.04) gives the ±10px of travel somewhere to come from — without
+   it, the parallax would expose a gap at the top or bottom of the frame. */
+.frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: translate3d(0, var(--parallax, 0px), 0) scale(1.04);
+}
+
+/* `scale`, not `transform`: the reveal owns `transform` and sets it to
+   none at (0,3,0), which this selector cannot outrank. Keeping hover on
+   the independent property means one plain selector works everywhere,
+   with or without JS. */
+.frame {
+  transition: scale var(--dur-base) var(--ease-quick),
+              border-color var(--dur-base) var(--ease-quick);
+}
+@media (hover: hover) {
+  .frame:hover {
+    scale: 1.008;
+    border-color: rgba(var(--amber-rgb), .3);
+  }
+}
 
 .trio {
   margin-top: clamp(28px, 3.5vw, 40px);
@@ -918,8 +940,28 @@ b        { color: var(--bone); font-weight: 700; }
   transition: opacity var(--dur-slow) var(--ease-out),
               transform var(--dur-slow) var(--ease-out);
 }
+
+/* The command centre is the page's proof, so it does not enter like a
+   paragraph: it scales up as its shadow blooms. Placed above the
+   .is-visible / .is-instant rules on purpose — those share this rule's
+   (0,3,0) specificity, and they must win. */
+.js .frame[data-reveal] {
+  transform: scale(.965);
+  /* The last two carry the hover state (Step 5); this rule outranks the
+     bare .frame transition, so they have to be repeated here or hovering
+     would snap once JS is on. */
+  transition: opacity 1s var(--ease-emph),
+              transform 1s var(--ease-emph),
+              box-shadow 1s var(--ease-emph),
+              scale var(--dur-base) var(--ease-quick),
+              border-color var(--dur-base) var(--ease-quick);
+  box-shadow: 0 20px 60px -40px rgba(0, 0, 0, .85);
+}
+
 .js [data-reveal].is-visible { opacity: 1; transform: none; }
 .js [data-reveal].is-instant { opacity: 1; transform: none; transition: none; }
+.js .frame[data-reveal].is-visible,
+.js .frame[data-reveal].is-instant { box-shadow: 0 50px 110px -46px rgba(0, 0, 0, .85); }
 
 /* Staggered children. The index comes from :nth-child and never from an
    inline style attribute — the structure suite fails the build on any
