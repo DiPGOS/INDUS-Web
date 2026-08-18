@@ -611,3 +611,30 @@ test('motion tokens resolve and drive the block reveal', async () => {
   assert.equal(await css(p, sel, 'transform'), 'matrix(1, 0, 0, 1, 0, 24)');
   await p.context().close();
 });
+
+test('staggered children carry strictly increasing transition delays', async () => {
+  const p = await page();
+  for (const sel of ['.loop', '.fn-grid', '.trio']) {
+    const delays = await p.$$eval(`${sel} > *`,
+      (els) => els.map((e) => parseFloat(getComputedStyle(e).transitionDelay)));
+    assert.ok(delays.length >= 3, `${sel} should have several staggered children`);
+    assert.equal(delays[0], 0, `${sel} first child must not be delayed`);
+    for (let i = 1; i < delays.length; i++) {
+      assert.ok(delays[i] > delays[i - 1],
+        `${sel} child ${i} delay ${delays[i]}s must exceed ${delays[i - 1]}s`);
+    }
+  }
+  await p.context().close();
+});
+
+test('staggered children are visible with no JS and under reduced motion', async () => {
+  for (const opts of [{ javaScriptEnabled: false }, { reducedMotion: 'reduce' }]) {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
+    const pg = await ctx.newPage();
+    await pg.goto(server.url, { waitUntil: 'load' });
+    const hidden = await pg.$$eval('[data-reveal-stagger] > *',
+      (els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
+    assert.equal(hidden, 0, `hidden staggered children with ${JSON.stringify(opts)}`);
+    await ctx.close();
+  }
+});

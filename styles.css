@@ -824,6 +824,34 @@ b        { color: var(--bone); font-weight: 700; }
 .js [data-reveal].is-visible { opacity: 1; transform: none; }
 .js [data-reveal].is-instant { opacity: 1; transform: none; transition: none; }
 
+/* Staggered children. The index comes from :nth-child and never from an
+   inline style attribute — the structure suite fails the build on any
+   `style="` in index.html. Eight covers the largest container in the
+   document (.fn-grid, six children); a ninth would inherit --d: 0 and
+   land with the first, so extend this block if a grid grows. */
+.js [data-reveal-stagger] > * {
+  --d: 0;
+  opacity: 0;
+  transform: translateY(var(--rise-sm));
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+  transition-delay: calc(var(--d) * var(--stagger));
+}
+.js [data-reveal-stagger] > :nth-child(2) { --d: 1; }
+.js [data-reveal-stagger] > :nth-child(3) { --d: 2; }
+.js [data-reveal-stagger] > :nth-child(4) { --d: 3; }
+.js [data-reveal-stagger] > :nth-child(5) { --d: 4; }
+.js [data-reveal-stagger] > :nth-child(6) { --d: 5; }
+.js [data-reveal-stagger] > :nth-child(7) { --d: 6; }
+.js [data-reveal-stagger] > :nth-child(8) { --d: 7; }
+
+.js [data-reveal-stagger].is-visible > * { opacity: 1; transform: none; }
+.js [data-reveal-stagger].is-instant > * {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
 /* ============================================================
    Responsive
    Nav flips at 860px — deliberately not a tier boundary.
@@ -948,4 +976,5 @@ b        { color: var(--bone); font-weight: 700; }
   .underline::after { transform: scaleX(1); }
   .loop-card__bar   { opacity: 1; transform: scaleX(1); }
   .js [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .js [data-reveal-stagger] > * { opacity: 1 !important; transform: none !important; }
 }
