@@ -443,10 +443,27 @@ test('content is fully visible with JavaScript disabled', async () => {
   await ctx.close();
 });
 
-test('above-the-fold reveals are visible immediately, without animating in', async () => {
+test('above-the-fold content completes its entrance and never waits on JS', async () => {
+  // The hero used to paint at opacity 1 with no entrance at all, and this
+  // test pinned that exact mechanism. It now cascades — title, lead,
+  // actions, strip, 120ms apart — on a CSS animation that starts at first
+  // paint. The invariant worth protecting is unchanged: above-the-fold
+  // content is never left hidden and never depends on deferred JS. Only
+  // the mechanism it asserts has moved.
   const p = await page();
-  assert.equal(await css(p, '.hero__title', 'opacity'), '1');
+  await p.waitForFunction(
+    () => getComputedStyle(document.querySelector('.hero__title')).opacity === '1',
+    null, { timeout: 1200 });
   await p.context().close();
+
+  for (const opts of [{ reducedMotion: 'reduce' }, { javaScriptEnabled: false }]) {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
+    const pg = await ctx.newPage();
+    await pg.goto(server.url, { waitUntil: 'load' });
+    assert.equal(await css(pg, '.hero__title', 'opacity'), '1',
+      `hero title not painted immediately with ${JSON.stringify(opts)}`);
+    await ctx.close();
+  }
 });
 
 test('below-the-fold reveals start hidden and reveal on scroll', async () => {
@@ -738,5 +755,22 @@ test('the nav compacts once the viewport leaves the hero', async () => {
   await p.waitForFunction(
     () => getComputedStyle(document.querySelector('.nav__inner')).paddingTop === '11px',
     null, { timeout: 3000 });
+  await p.context().close();
+});
+
+test('the hero offers both a primary and a secondary action', async () => {
+  const p = await page();
+  const links = await p.$$eval('.hero__actions a', (els) => els.map((e) => ({
+    href: e.getAttribute('href'),
+    u: e.getAttribute('data-u'),
+    text: e.textContent.trim(),
+  })));
+  assert.equal(links.length, 2, 'expected a primary and a secondary hero CTA');
+  assert.deepEqual(links.map((l) => l.href), ['#dipgos', '#contact']);
+  // A third obfuscated mailto would break the structure suite's
+  // exactly-two contract, so the secondary sends people to the contact
+  // section, which carries the real address.
+  assert.deepEqual(links.map((l) => l.u), [null, null]);
+  for (const l of links) assert.ok(l.text.length > 0, 'hero CTAs need labels');
   await p.context().close();
 });

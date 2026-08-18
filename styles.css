@@ -106,6 +106,7 @@ p { margin: 0; }
 @keyframes underline{ to { transform: scaleX(1); } }
 @keyframes bob      { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(7px); opacity: 1; } }
 @keyframes loopglow { 0%, 100% { opacity: .14; transform: scaleX(.35); } 50% { opacity: 1; transform: scaleX(1); } }
+@keyframes riseIn   { from { opacity: 0; transform: translateY(var(--rise-lg)); } to { opacity: 1; transform: none; } }
 
 /* Ambient loops idle until their container is on screen. They used to run
    forever — competing with reading, and burning compositor time on four
@@ -275,12 +276,12 @@ b        { color: var(--bone); font-weight: 700; }
 .hero__bg { opacity: .42; }
 .hero__mark {
   position: absolute;
-  right: -9%;
+  right: -4%;
   top: 47%;
   transform: translateY(-50%);
   width: min(720px, 56vw);
   height: auto;
-  opacity: .11;
+  opacity: .14;
   animation: floatY 9s ease-in-out infinite;
   animation-play-state: paused; /* .is-live overrides; the shorthand above
     resets play-state to its initial "running", so it must be reasserted
@@ -322,6 +323,54 @@ b        { color: var(--bone); font-weight: 700; }
   color: var(--text-mid);
   text-wrap: pretty;
 }
+.hero__actions {
+  margin-top: clamp(30px, 4vw, 44px);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hero__cta {
+  background: var(--amber);
+  color: var(--ink);
+  font: 800 15px/1 var(--sans);
+  padding: 17px 30px;
+  border-radius: 999px;
+  /* `translate` and `scale`, not `transform` — see the Interaction section
+     in Task 8 for why the two channels are kept separate. */
+  transition: translate var(--dur-quick) var(--ease-quick),
+              scale var(--dur-quick) var(--ease-quick),
+              background-color var(--dur-quick) var(--ease-quick),
+              color var(--dur-quick) var(--ease-quick),
+              box-shadow var(--dur-quick) var(--ease-quick);
+}
+.hero__cta:hover, .hero__cta:focus-visible { background: var(--amber-hi); color: var(--ink); }
+/* 16px/29px, not 17px/30px: the 1px border makes up the difference, so
+   both pills render the same height and the row sits on one baseline. */
+.hero__cta--ghost {
+  background: transparent;
+  border: 1px solid rgba(var(--amber-rgb), .55);
+  color: var(--amber-soft);
+  font-weight: 700;
+  padding: 16px 29px;
+}
+/* Must follow .hero__cta:hover — same specificity (0,2,0), so source
+   order is what stops the ghost pill filling solid amber on hover. */
+.hero__cta--ghost:hover, .hero__cta--ghost:focus-visible {
+  background: rgba(var(--amber-rgb), .12);
+  color: var(--amber-hi);
+}
+
+/* The hero enters on a CSS animation rather than through the reveal
+   observer: CSS animations start at first paint, so above-the-fold
+   content never waits on deferred JS. Without the .js class the hero
+   simply paints static. */
+.js .hero__title,
+.js .hero__lead,
+.js .hero__actions,
+.js .hero__strip { animation: riseIn var(--dur-hero) var(--ease-emph) both; }
+.js .hero__lead    { animation-delay: 120ms; }
+.js .hero__actions { animation-delay: 240ms; }
+.js .hero__strip   { animation-delay: 360ms; }
 .hero__strip {
   position: absolute;
   left: 0;
