@@ -770,6 +770,21 @@ test('ambient loops run unconditionally when the observer cannot', async () => {
   await ctx.close();
 });
 
+test('ambient loops keep running with no JavaScript at all', async () => {
+  // Without JS nothing ever adds .is-live, so a pause that is not gated
+  // on .js strands all four loops at their 0% keyframe forever — the
+  // glow bars frozen as dim 35%-width stubs under every loop card.
+  const ctx = await browser.newContext({
+    viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  for (const sel of ['.hero__mark', '.hero__orb', '.lockup__mark', '.loop-card__bar']) {
+    assert.equal(await css(p, sel, 'animationPlayState'), 'running',
+      `${sel} must animate for a visitor who never gets the .is-live toggle`);
+  }
+  await ctx.close();
+});
+
 test('the nav compacts once the viewport leaves the hero', async () => {
   const p = await page();
   assert.equal(
