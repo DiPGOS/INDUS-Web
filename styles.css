@@ -955,10 +955,14 @@ b        { color: var(--bone); font-weight: 700; }
    on a site whose whole claim is that the system responds.
 
    Two rules hold throughout:
-   1. every :hover is paired with :focus-visible, so the keyboard gets
-      the same affordance;
-   2. every transform-based lift sits inside @media (hover: hover), so a
-      tap does not strand a card in its raised state.
+   1. every :hover that conveys information is paired with :focus-visible
+      (or :focus-within), so the keyboard gets the same affordance. The
+      card and chip hovers are decorative only — their text is always in
+      the DOM — and those elements contain no focusable descendant, so
+      :focus-within on them can never match; the global :focus-visible
+      ring covers everything reachable.
+   2. every transform-based effect sits inside @media (hover: hover), so a
+      tap does not strand an element in its hovered state.
 
    Elevation animates as a pseudo-element's opacity, never box-shadow
    directly — box-shadow cannot be composited.
@@ -996,7 +1000,6 @@ b        { color: var(--bone); font-weight: 700; }
 /* Already amber — brighten rather than recolour a border that isn't there. */
 .loop-card--act:hover, .stack__card--primary:hover { filter: brightness(1.06); }
 .fn-card__dot { transition: scale var(--dur-base) var(--ease-quick); }
-.fn-card:hover .fn-card__dot { scale: 1.5; }
 
 @media (hover: hover) {
   .loop-card:hover, .fn-card:hover, .stack__card:hover, .chip:hover,
@@ -1006,6 +1009,9 @@ b        { color: var(--bone); font-weight: 700; }
   }
   .loop-card:hover::after, .fn-card:hover::after,
   .stack__card:hover::after, .chip:hover::after { opacity: 1; }
+  /* Inside the guard with the lifts: it is a transform channel too, and a
+     sticky-hover tap would otherwise strand the dot at 1.5x. */
+  .fn-card:hover .fn-card__dot { scale: 1.5; }
 }
 
 /* Link underlines wipe in from the left. Scoped off the active nav link,
