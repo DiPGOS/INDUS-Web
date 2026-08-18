@@ -47,6 +47,24 @@
                              it. Keep the two values decoupled. */
   --gutter: clamp(24px, 6vw, 72px);
   --pad-y: clamp(96px, 13vw, 180px);
+
+  /* motion — every animated rule in this file reads from here, so the
+     whole feel is tunable from one block. --amber-rgb duplicates --amber
+     as an rgb triplet so new glows can compose the shipped accent with
+     alpha; edit the two together. */
+  --ease-out:   cubic-bezier(.22, .61, .36, 1);   /* the original reveal curve */
+  --ease-emph:  cubic-bezier(.16, 1, .3, 1);      /* signature entrances */
+  --ease-quick: cubic-bezier(.4, 0, .2, 1);       /* hover, press, nav state */
+  --dur-quick:  180ms;
+  --dur-base:   320ms;
+  --dur-slow:   720ms;
+  --dur-hero:   820ms;
+  --stagger:     70ms;
+  --rise-sm:     18px;                            /* staggered children */
+  --rise:        24px;                            /* block reveal */
+  --rise-lg:     28px;                            /* hero cascade */
+  --lift:        -3px;
+  --amber-rgb:  232, 160, 32;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -799,9 +817,9 @@ b        { color: var(--bone); font-weight: 700; }
    ------------------------------------------------------------------ */
 .js [data-reveal] {
   opacity: 0;
-  transform: translateY(34px);
-  transition: opacity .85s cubic-bezier(.22, .61, .36, 1),
-              transform .85s cubic-bezier(.22, .61, .36, 1);
+  transform: translateY(var(--rise));
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
 }
 .js [data-reveal].is-visible { opacity: 1; transform: none; }
 .js [data-reveal].is-instant { opacity: 1; transform: none; transition: none; }

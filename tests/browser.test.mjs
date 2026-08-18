@@ -590,3 +590,24 @@ test('every interactive element is reachable by keyboard', async () => {
   assert.ok(reached.size >= count - 1, `tab reached ${reached.size} of ${count} controls`);
   await p.context().close();
 });
+
+test('motion tokens resolve and drive the block reveal', async () => {
+  const p = await page();
+  const tok = (n) => p.evaluate(
+    (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), n);
+  assert.equal(await tok('--dur-slow'), '720ms');
+  assert.equal(await tok('--dur-hero'), '820ms');
+  assert.equal(await tok('--stagger'), '70ms');
+  assert.equal(await tok('--rise'), '24px');
+  assert.equal(await tok('--rise-sm'), '18px');
+  assert.equal(await tok('--rise-lg'), '28px');
+  assert.equal(await tok('--lift'), '-3px');
+  assert.equal(await tok('--amber-rgb'), '232, 160, 32');
+
+  // A below-the-fold reveal still carries its pre-reveal state, now at the
+  // tightened 24px / 720ms values rather than the original 34px / 850ms.
+  const sel = '.section--company .section__title--company';
+  assert.equal(await css(p, sel, 'transitionDuration'), '0.72s, 0.72s');
+  assert.equal(await css(p, sel, 'transform'), 'matrix(1, 0, 0, 1, 0, 24)');
+  await p.context().close();
+});
