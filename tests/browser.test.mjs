@@ -271,6 +271,37 @@ test('footer columns stack correctly below the desktop tier', async () => {
   assert.equal(await at(390, '.footer__col--contact', 'gridColumnEnd'), '-1');
 });
 
+test('footer links are as wide as their text, so their underline is too', async () => {
+  // .footer__links is a column flex, which stretches each link to the
+  // column's full width. The hover ::after is left:0/right:0, so an
+  // unconstrained link draws an amber rule across the whole column —
+  // 290px of hairline under 56px of "DiPGOS".
+  for (const width of [1440, 390]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const r = await p.evaluate(() => {
+      const range = document.createRange();
+      return {
+        links: [...document.querySelectorAll('.footer__link')].map((a) => {
+          range.selectNodeContents(a);
+          return { text: a.textContent.trim(),
+                   box: a.getBoundingClientRect().width,
+                   ink: range.getBoundingClientRect().width };
+        }),
+        noteLines: [...document.querySelectorAll('.footer__note')]
+          .map((n) => Math.round(n.getBoundingClientRect().height / 19.5)),
+      };
+    });
+    for (const { text, box, ink } of r.links) {
+      assert.ok(ink > 0, `"${text}" measured no text`);
+      assert.ok(box - ink < 2,
+        `at ${width}px "${text}" is ${box.toFixed(1)}px wide over ${ink.toFixed(1)}px of text`);
+    }
+    // The sibling notes must keep the full column and their line count.
+    assert.deepEqual(r.noteLines, [1, 1], `footer notes wrapped at ${width}px`);
+    await p.context().close();
+  }
+});
+
 const WIDTHS = [390, 768, 1024, 1280, 1920];
 
 test('no horizontal overflow at any target width', async () => {

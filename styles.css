@@ -227,7 +227,8 @@ b        { color: var(--bone); font-weight: 700; }
   color: var(--steel);
   white-space: nowrap;
 }
-.nav__link:hover { color: var(--bone); }
+.nav__link:hover,
+.nav__link:focus-visible { color: var(--bone); }
 .nav__link--active { color: var(--bone); }
 .nav__link--active::after {
   content: '';
@@ -245,7 +246,8 @@ b        { color: var(--bone); font-weight: 700; }
   white-space: nowrap;
   margin-left: clamp(4px, 1vw, 16px);
 }
-.nav__cta:hover { background: var(--amber); color: var(--ink); }
+.nav__cta:hover,
+.nav__cta:focus-visible { background: var(--amber); color: var(--ink); }
 
 /* toggle is hidden until the 860px nav breakpoint (Task 8) */
 .nav__toggle {
@@ -920,8 +922,17 @@ b        { color: var(--bone); font-weight: 700; }
   margin-bottom: 16px;
 }
 .footer__links { display: flex; flex-direction: column; gap: 11px; }
-.footer__link { font: 400 14.5px/1 var(--sans); color: var(--steel); }
-.footer__link:hover { color: var(--bone); }
+/* align-self, because a column flex stretches its items to the full cross
+   size: without it the link's box is the whole column and its hover
+   ::after — left: 0; right: 0 — draws an amber rule right across it. The
+   nav links need no equivalent; that flex runs in a row. */
+.footer__link {
+  font: 400 14.5px/1 var(--sans);
+  color: var(--steel);
+  align-self: start;
+}
+.footer__link:hover,
+.footer__link:focus-visible { color: var(--bone); }
 .footer__note { font: 400 13px/1.5 var(--sans); color: var(--steel); }
 .footer__bottom {
   grid-column: 1 / -1;
