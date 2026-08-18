@@ -661,3 +661,37 @@ test('the reveal failsafe shows below-fold content without animating it', async 
     'the failsafe must use .is-instant, not animate unseen content into view');
   await ctx.close();
 });
+
+// getComputedStyle on the pseudo returns a matrix string, or the keyword
+// 'none' when no transform applies. DOMMatrixReadOnly throws on 'none',
+// so treat that as the fully-drawn state. Inlined at each call site
+// rather than shared — Playwright serializes each of these separately.
+const underlineScale = (pg) => pg.evaluate(() => {
+  const t = getComputedStyle(document.querySelector('.underline'), '::after').transform;
+  return t === 'none' ? 1 : new DOMMatrixReadOnly(t).a;
+});
+
+test('the underline sweeps when its heading reveals, not at page load', async () => {
+  const p = await page();
+  assert.equal(await underlineScale(p), 0,
+    'undrawn while the conviction heading is still below the fold');
+
+  await p.$eval('#conviction .section__title--xl',
+    (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForFunction(() => {
+    const t = getComputedStyle(document.querySelector('.underline'), '::after').transform;
+    return t === 'none' || new DOMMatrixReadOnly(t).a > 0.9;
+  }, null, { timeout: 4000 });
+  await p.context().close();
+});
+
+test('the underline is drawn for no-JS and reduced-motion visitors', async () => {
+  for (const opts of [{ javaScriptEnabled: false }, { reducedMotion: 'reduce' }]) {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
+    const pg = await ctx.newPage();
+    await pg.goto(server.url, { waitUntil: 'load' });
+    assert.equal(await underlineScale(pg), 1,
+      `underline not drawn with ${JSON.stringify(opts)}`);
+    await ctx.close();
+  }
+});

@@ -373,10 +373,17 @@ b        { color: var(--bone); font-weight: 700; }
   height: 4px;
   background: var(--amber);
   border-radius: 4px;
-  transform: scaleX(0);
   transform-origin: left center;
-  animation: underline 1s cubic-bezier(.22, .61, .36, 1) .4s 1 forwards;
 }
+/* Drawn by default, so a visitor without JS never loses the emphasis.
+   The .js gate retracts it and the reveal that brings the heading on
+   screen sweeps it in. It used to fire on a .4s delay from page load —
+   seven screens above where anyone could see it. */
+.js .underline::after { transform: scaleX(0); }
+.js [data-reveal].is-visible .underline::after {
+  animation: underline var(--dur-hero) var(--ease-out) 350ms 1 forwards;
+}
+.js [data-reveal].is-instant .underline::after { transform: scaleX(1); }
 
 .split {
   margin-top: clamp(50px, 7vw, 90px);
@@ -973,7 +980,10 @@ b        { color: var(--bone); font-weight: 700; }
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
-  .underline::after { transform: scaleX(1); }
+  /* !important, not a higher-specificity selector: `.js .underline::after`
+     retracts the rule to scaleX(0) and a reduced-motion visitor may never
+     get .is-visible on the heading to bring it back. */
+  .underline::after { transform: scaleX(1) !important; }
   .loop-card__bar   { opacity: 1; transform: scaleX(1); }
   .js [data-reveal] { opacity: 1 !important; transform: none !important; }
   .js [data-reveal-stagger] > * { opacity: 1 !important; transform: none !important; }
