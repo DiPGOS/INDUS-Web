@@ -9,8 +9,8 @@ GitHub Pages.
 | Path | Purpose |
 |---|---|
 | `index.html` | All markup and copy. Five landmarks (banner, two nav, main, contentinfo), no inline styles. |
-| `styles.css` | Every visual rule. Tokens → reset → keyframes → components → responsive. |
-| `main.js` | Reveal observer, mobile nav, active link, contact assembly, year. |
+| `styles.css` | Every visual rule. Tokens → reset → keyframes → components → interaction → responsive. |
+| `main.js` | Reveal observer, ambient gating, command-centre parallax, mobile nav, nav scroll state, active link, contact assembly, year. |
 | `assets/` | Three SVGs, the command-center WebP, favicons, OG card. |
 | `CNAME` | `industechsol.com`. |
 
@@ -46,13 +46,23 @@ computed styles, responsive tiers, no-JS, reduced motion, keyboard).
   the test suite.
 - **Motion tokens.** Durations, easings, reveal travel and hover lift live
   in the `/* motion */` group on `:root`, so the whole feel is tunable from
-  one block. Everything the motion system added reads from there, with one
-  deliberate exception — the command centre's `1s` signature entrance, which
-  is a one-off. Animations that predate the tokens (the ambient loops
+  one block. Every duration and easing this motion system added reads from
+  there, as do its reveal travel and hover lift, with two one-off
+  exceptions written at their single call site: the command centre's `1s`
+  signature entrance and the `1px` press offset — the reduced-motion
+  block's `.001ms` is a kill switch, not a duration. Short **choreography
+  delays** are deliberately not tokenised — the hero cascade's
+  `120ms` / `240ms` / `360ms`, the underline sweep's `350ms` and the `120ms`
+  on the rule and bar draws are written inline at their point of use,
+  where the sequence they encode reads in one place. The one delay that is
+  a token is the grid stagger step, `--stagger`, which every staggered
+  child multiplies. Animations that predate the tokens (the ambient loops
   `floatY`, `drift`, `corepulse`, `loopglow` and `bob`, plus two older nav
   transitions) still carry their own values; they were left alone rather
-  than churned. `main.js` holds exactly one motion number, the parallax
-  range, which it hands to CSS as a custom property.
+  than churned. `main.js` holds one motion number, the parallax range,
+  which it hands to CSS as a custom property, and one geometric constant
+  that caps it — the 2% of frame height that `.frame img`'s `scale(1.04)`
+  leaves to travel through.
 - **Motion state is classes: JS toggles, CSS interprets.** `.is-visible`
   and `.is-instant` on `[data-reveal]`, `.is-live` on an ambient container,
   `.nav--scrolled` on the nav, and the older `.nav--open` on the mobile
