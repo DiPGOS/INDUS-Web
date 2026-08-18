@@ -774,3 +774,29 @@ test('the hero offers both a primary and a secondary action', async () => {
   for (const l of links) assert.ok(l.text.length > 0, 'hero CTAs need labels');
   await p.context().close();
 });
+
+test('cards answer the pointer, and reduced motion stills them', async () => {
+  const p = await page();
+  await p.$eval('.loop', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await (await p.$('.loop-card')).hover();
+  // The lift rides the independent `translate` property, never `transform` —
+  // `transform` belongs to the reveal, whose .is-visible rule outranks any
+  // practical hover selector at (0,3,0).
+  await p.waitForFunction(
+    () => getComputedStyle(document.querySelector('.loop-card')).translate !== 'none',
+    null, { timeout: 2000 });
+  const lifted = await css(p, '.loop-card', 'translate');
+  assert.match(lifted, /-3px$/, `expected a 3px upward lift, got ${lifted}`);
+  await p.context().close();
+
+  const ctx = await browser.newContext({
+    reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const rp = await ctx.newPage();
+  await rp.goto(server.url, { waitUntil: 'load' });
+  await rp.$eval('.loop', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await (await rp.$('.loop-card')).hover();
+  await rp.waitForTimeout(400);
+  assert.equal(await css(rp, '.loop-card', 'translate'), 'none',
+    'reduced motion must leave the card exactly where it is');
+  await ctx.close();
+});

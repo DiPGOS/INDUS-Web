@@ -950,6 +950,105 @@ b        { color: var(--bone); font-weight: 700; }
 }
 
 /* ============================================================
+   Interaction
+   Before this, only the nav links and the two CTAs answered a pointer —
+   on a site whose whole claim is that the system responds.
+
+   Two rules hold throughout:
+   1. every :hover is paired with :focus-visible, so the keyboard gets
+      the same affordance;
+   2. every transform-based lift sits inside @media (hover: hover), so a
+      tap does not strand a card in its raised state.
+
+   Elevation animates as a pseudo-element's opacity, never box-shadow
+   directly — box-shadow cannot be composited.
+
+   Every hover state here rides the independent `translate` and `scale`
+   properties rather than the `transform` shorthand. `transform` belongs
+   to the reveal: `.js [data-reveal-stagger].is-visible > *` sets it to
+   `none` at (0,3,0), which outranks any practical hover selector, and
+   .loop-card / .fn-card / .stack__card / .trio__col are all direct
+   children of stagger containers. Keeping the two channels on separate
+   properties removes the collision instead of escalating specificity at
+   every call site — and lets the two compose.
+   ============================================================ */
+
+.loop-card, .fn-card, .stack__card, .chip {
+  position: relative;
+  transition: translate var(--dur-base) var(--ease-quick),
+              border-color var(--dur-base) var(--ease-quick),
+              filter var(--dur-base) var(--ease-quick);
+}
+.loop-card::after, .fn-card::after, .stack__card::after, .chip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 24px 50px -28px rgba(0, 0, 0, .95);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-quick);
+}
+.loop-card:hover, .fn-card:hover, .stack__card:hover,
+.loop-card:focus-within, .fn-card:focus-within, .stack__card:focus-within {
+  border-color: rgba(var(--amber-rgb), .38);
+}
+/* Already amber — brighten rather than recolour a border that isn't there. */
+.loop-card--act:hover, .stack__card--primary:hover { filter: brightness(1.06); }
+.fn-card__dot { transition: scale var(--dur-base) var(--ease-quick); }
+.fn-card:hover .fn-card__dot { scale: 1.5; }
+
+@media (hover: hover) {
+  .loop-card:hover, .fn-card:hover, .stack__card:hover, .chip:hover,
+  .loop-card:focus-within, .fn-card:focus-within,
+  .stack__card:focus-within, .chip:focus-within {
+    translate: 0 var(--lift);
+  }
+  .loop-card:hover::after, .fn-card:hover::after,
+  .stack__card:hover::after, .chip:hover::after { opacity: 1; }
+}
+
+/* Link underlines wipe in from the left. Scoped off the active nav link,
+   which already renders a persistent amber rule from its own ::after. */
+.nav__link, .footer__link { position: relative; }
+.nav__link:not(.nav__link--active)::after,
+.footer__link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -5px;
+  height: 1px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-base) var(--ease-quick);
+}
+.nav__link:not(.nav__link--active):hover::after,
+.nav__link:not(.nav__link--active):focus-visible::after,
+.footer__link:hover::after,
+.footer__link:focus-visible::after { transform: scaleX(1); }
+
+.nav__cta, .contact__cta {
+  transition: translate var(--dur-quick) var(--ease-quick),
+              scale var(--dur-quick) var(--ease-quick),
+              background-color var(--dur-quick) var(--ease-quick),
+              color var(--dur-quick) var(--ease-quick),
+              box-shadow var(--dur-quick) var(--ease-quick);
+}
+@media (hover: hover) {
+  .nav__cta:hover, .contact__cta:hover, .hero__cta:hover {
+    translate: 0 var(--lift);
+  }
+}
+.contact__cta:hover, .contact__cta:focus-visible,
+.hero__cta:hover, .hero__cta:focus-visible {
+  box-shadow: 0 18px 40px -18px rgba(var(--amber-rgb), .55);
+}
+.nav__cta:active, .contact__cta:active, .hero__cta:active {
+  translate: 0 1px;
+  scale: .98;
+}
+
+/* ============================================================
    Responsive
    Nav flips at 860px — deliberately not a tier boundary.
    ============================================================ */
@@ -1006,6 +1105,9 @@ b        { color: var(--bone); font-weight: 700; }
   }
   .js .nav__cta { margin: 20px 0 0; text-align: center; padding: 15px 20px; font-size: 14px; }
   .nav__link--active::after { display: none; }
+  /* The panel's links already carry a border-bottom; a wipe underneath it
+     would read as a double rule. */
+  .js .nav__link::after { display: none; }
 
   .nav--open .nav__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .nav--open .nav__bar:nth-child(2) { opacity: 0; }
@@ -1068,7 +1170,9 @@ b        { color: var(--bone); font-weight: 700; }
   *, *::before, *::after {
     animation-duration: .001ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: .001ms !important;
     transition-duration: .001ms !important;
+    transition-delay: .001ms !important;
   }
   /* !important, not a higher-specificity selector: `.js .underline::after`
      retracts the rule to scaleX(0) and a reduced-motion visitor may never
@@ -1077,4 +1181,11 @@ b        { color: var(--bone); font-weight: 700; }
   .loop-card__bar   { opacity: 1; transform: scaleX(1); }
   .js [data-reveal] { opacity: 1 !important; transform: none !important; }
   .js [data-reveal-stagger] > * { opacity: 1 !important; transform: none !important; }
+  .loop-card:hover, .fn-card:hover, .stack__card:hover, .chip:hover,
+  .loop-card:focus-within, .fn-card:focus-within,
+  .stack__card:focus-within, .chip:focus-within,
+  .nav__cta:hover, .contact__cta:hover, .hero__cta:hover,
+  .nav__cta:active, .contact__cta:active, .hero__cta:active,
+  .fn-card:hover .fn-card__dot,
+  .frame:hover { translate: none !important; scale: none !important; }
 }
