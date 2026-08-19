@@ -74,12 +74,18 @@ mechanism stays free as long as the symptom stays fixed.
   where the sequence they encode reads in one place. The one delay that is
   a token is the grid stagger step, `--stagger`, which every staggered
   child multiplies. Animations that predate the tokens (the ambient loops
-  `floatY`, `drift`, `corepulse`, `loopglow` and `bob`, plus two older nav
-  transitions) still carry their own values; they were left alone rather
-  than churned. `main.js` holds one motion number, the parallax range,
+  `floatY`, `drift`, `corepulse`, `loopglow`, `spin` and `bob`, plus two
+  older nav transitions) still carry their own values; they were left alone
+  rather than churned. `main.js` holds one motion number, the parallax range,
   which it hands to CSS as a custom property, and one geometric constant
   that caps it — the 2% of frame height that `.frame img`'s `scale(1.04)`
   leaves to travel through.
+- **The hero mark floats and turns on separate channels.** `floatY` drives
+  `transform`; `spin` drives the independent `rotate` property. Two loops on
+  one element, neither overwriting the other, and one
+  `animation-play-state` still gates both. The mark is eight-fold
+  symmetric, so a 150s revolution re-registers every 18.75s and reads as
+  drift rather than a logo going round.
 - **Motion state is classes: JS toggles, CSS interprets.** `.is-visible`
   and `.is-instant` on `[data-reveal]`, `.is-live` on an ambient container,
   `.nav--scrolled` on the nav, and the older `.nav--open` on the mobile

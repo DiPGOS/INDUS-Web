@@ -777,9 +777,17 @@ test('the underline is drawn for no-JS and reduced-motion visitors', async () =>
   }
 });
 
+// animationPlayState is a per-animation list, and .hero__mark carries two
+// (floatY on transform, spin on rotate). Collapse it: the invariant is that
+// every animation on the element is gated together, not that there is one.
+const playState = async (p, sel) => {
+  const states = new Set((await css(p, sel, 'animationPlayState')).split(',').map((s) => s.trim()));
+  return states.size === 1 ? [...states][0] : `mixed: ${[...states].join(' + ')}`;
+};
+
 test('ambient loops idle offscreen and run on screen', async () => {
   const p = await page();
-  const state = (sel) => css(p, sel, 'animationPlayState');
+  const state = (sel) => playState(p, sel);
   assert.equal(await state('.hero__mark'), 'running', 'the hero is on screen at load');
   assert.equal(await state('.loop-card__bar'), 'paused', 'the loop is far below the fold');
 
@@ -814,7 +822,7 @@ test('ambient loops keep running with no JavaScript at all', async () => {
   const p = await ctx.newPage();
   await p.goto(server.url, { waitUntil: 'load' });
   for (const sel of ['.hero__mark', '.hero__orb', '.lockup__mark', '.loop-card__bar']) {
-    assert.equal(await css(p, sel, 'animationPlayState'), 'running',
+    assert.equal(await playState(p, sel), 'running',
       `${sel} must animate for a visitor who never gets the .is-live toggle`);
   }
   await ctx.close();
@@ -1251,4 +1259,48 @@ test('the tablet loop leaves no short row', async () => {
     }
     await p.context().close();
   }
+});
+
+test('the hero mark turns as well as floats, and the two stay independent', async () => {
+  // floatY owns `transform`; spin owns `rotate`. Keeping them on separate
+  // channels is what lets one 9s loop and one 150s loop compose without
+  // either overwriting the other, and it is why the ambient pause needs no
+  // new plumbing: animation-play-state covers every animation on the element.
+  const p = await page();
+  const read = () => p.$eval('.hero__mark', (el) => {
+    const cs = getComputedStyle(el);
+    return { names: cs.animationName, rotate: parseFloat(cs.rotate) || 0, transform: cs.transform };
+  });
+
+  const first = await read();
+  assert.match(first.names, /floatY/, 'the float is gone');
+  assert.match(first.names, /spin/, 'the mark does not turn');
+  assert.notEqual(first.transform, 'none', 'floatY should still be driving transform');
+
+  await p.waitForTimeout(1500);
+  const later = await read();
+  assert.ok(later.rotate > first.rotate,
+    `rotate stalled at ${first.rotate}deg while the hero was on screen`);
+
+  // ...and it freezes with every other ambient loop once the hero scrolls away.
+  await p.$eval('.loop', (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
+  await p.waitForTimeout(700);
+  const parked = await read();
+  await p.waitForTimeout(1300);
+  const stillParked = await read();
+  assert.equal(stillParked.rotate, parked.rotate,
+    'the mark kept turning after the hero left the viewport');
+  await p.context().close();
+});
+
+test('reduced motion leaves the hero mark still', async () => {
+  const ctx = await browser.newContext({
+    reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const rot = () => p.$eval('.hero__mark', (el) => getComputedStyle(el).rotate);
+  const a = await rot();
+  await p.waitForTimeout(1200);
+  assert.equal(await rot(), a, `the mark turned under reduced motion (${a} -> ${await rot()})`);
+  await ctx.close();
 });

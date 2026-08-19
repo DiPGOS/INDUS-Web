@@ -126,6 +126,13 @@ p { margin: 0; }
 
 /* --- keyframes ------------------------------------------------ */
 @keyframes floatY   { 0%, 100% { transform: translateY(0); }        50% { transform: translateY(-12px); } }
+/* `rotate`, not `transform`: floatY already owns transform on .hero__mark,
+   and the two are separate channels for the same reason the hover states
+   below keep translate and scale off the shorthand. Composing them means
+   neither has to know the other exists. The mark's ink reaches radius 101
+   in a 200-unit box centred on 100,100, so it turns about its own centre
+   with no wobble and sweeps nothing new into frame. */
+@keyframes spin     { to { rotate: 360deg; } }
 @keyframes corepulse{ 0%, 100% { opacity: .5; }                     50% { opacity: 1; } }
 @keyframes drift    { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(1.08); } }
 @keyframes underline{ to { background-size: 100% 4px; } }
@@ -151,7 +158,7 @@ p { margin: 0; }
 .lockup.is-live .lockup__mark,
 .loop.is-live   .loop-card__bar {
   animation-play-state: running;
-  will-change: transform, opacity;
+  will-change: transform, rotate, opacity;
 }
 
 /* --- shared inline accents ------------------------------------ */
@@ -327,7 +334,12 @@ b        { color: var(--bone); font-weight: 700; }
   width: min(720px, 56vw);
   height: auto;
   opacity: .14;
-  animation: floatY 9s ease-in-out infinite;
+  /* 9s of float against 150s of turn: the periods never line up, so the two
+     never repeat together and the drift reads as orbital rather than
+     mechanical. Both are paused offscreen by the one .is-live rule above —
+     animation-play-state covers every animation on the element. */
+  animation: floatY 9s ease-in-out infinite,
+             spin 150s linear infinite;
   pointer-events: none;
 }
 .hero__orb {
