@@ -22,7 +22,9 @@
   --text-hi: #dbe3ec;
   --text-mid: #c1cdda;
   --steel: #9DB0C4;
-  --dim: #6b7d92;
+  --dim: #7A8CA1;      /* AA at small sizes: 5.5:1 on --ink, 5.2:1 on --navy.
+                          #6b7d92 measured 4.37 / 4.21 and carried six
+                          small-text roles, all of them under the floor. */
 
   /* rules — used at .12 / .14 / .16 / .18 / .22 / .28 alpha */
   --rule-rgb: 157, 176, 196;
@@ -65,6 +67,7 @@
   --rise-lg:     28px;                            /* hero cascade */
   --lift:        -3px;
   --amber-rgb:  232, 160, 32;
+  --ink-rgb:     10, 20, 36;                      /* --ink, for the nav washes */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -92,7 +95,29 @@ a:hover { color: var(--amber-hi); }
   border-radius: 2px;
 }
 
-::selection { background: rgba(232, 160, 32, .24); }
+::selection { background: rgba(var(--amber-rgb), .24); }
+
+/* Fixed, not absolute: the nav is sticky, so an absolutely-positioned skip
+   link scrolls away and stops being the first thing Tab reaches. Hidden by
+   transform rather than display, which would take it out of the tab order
+   entirely — the one thing it must never leave. */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 80;
+  transform: translateY(-200%);
+  background: var(--amber);
+  color: var(--ink);
+  font: 700 13px/1 var(--sans);
+  padding: 13px 20px;
+  border-radius: 999px;
+  transition: transform var(--dur-quick) var(--ease-quick);
+}
+/* :focus, not :focus-visible. The link sits off-screen, so there is no
+   pointer path to it and nothing to suppress — and the one control that
+   must never fail to appear should not depend on a heuristic. */
+.skip-link:focus { transform: translateY(0); color: var(--ink); }
 
 img { max-width: 100%; }
 
@@ -103,7 +128,7 @@ p { margin: 0; }
 @keyframes floatY   { 0%, 100% { transform: translateY(0); }        50% { transform: translateY(-12px); } }
 @keyframes corepulse{ 0%, 100% { opacity: .5; }                     50% { opacity: 1; } }
 @keyframes drift    { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(1.08); } }
-@keyframes underline{ to { transform: scaleX(1); } }
+@keyframes underline{ to { background-size: 100% 4px; } }
 @keyframes bob      { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(7px); opacity: 1; } }
 @keyframes loopglow { 0%, 100% { opacity: .14; transform: scaleX(.35); } 50% { opacity: 1; transform: scaleX(1); } }
 @keyframes riseIn   { from { opacity: 0; transform: translateY(var(--rise-lg)); } to { opacity: 1; transform: none; } }
@@ -177,7 +202,7 @@ b        { color: var(--bone); font-weight: 700; }
   position: sticky;
   top: 0;
   z-index: 60;
-  background: rgba(10, 20, 36, .72);
+  background: rgba(var(--ink-rgb), .72);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(var(--rule-rgb), .12);
@@ -209,7 +234,7 @@ b        { color: var(--bone); font-weight: 700; }
   pointer-events: none;
 }
 .nav--scrolled {
-  background: rgba(10, 20, 36, .90);
+  background: rgba(var(--ink-rgb), .90);
   border-bottom-color: rgba(var(--rule-rgb), .20);
   box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .9);
 }
@@ -230,15 +255,18 @@ b        { color: var(--bone); font-weight: 700; }
 .nav__link:hover,
 .nav__link:focus-visible { color: var(--bone); }
 .nav__link--active { color: var(--bone); }
+/* Absolute, matching the hover wipe's geometry exactly. As an in-flow
+   block it added 6px to the link's height, so the flex row re-centred and
+   the label jumped 3px every time the scrolled section changed. */
 .nav__link--active::after {
   content: '';
-  display: block;
+  position: absolute;
+  left: 0; right: 0; bottom: -5px;
   height: 1px;
-  margin-top: 5px;
   background: var(--amber);
 }
 .nav__cta {
-  border: 1px solid rgba(232, 160, 32, .55);
+  border: 1px solid rgba(var(--amber-rgb), .55);
   color: var(--amber-soft);
   font: 700 13px/1 var(--sans);
   padding: 11px 20px;
@@ -273,7 +301,13 @@ b        { color: var(--bone); font-weight: 700; }
   position: relative;
   overflow: hidden;
   background: var(--ink);
-  min-height: calc(100vh - 60px);
+  /* 60px matched neither --nav-h nor the nav's real 69-70px, so the hero
+     ended ~10px below the fold and cropped its own strip on load. --nav-h is
+     72px against a 70px bar, which errs 2px short — under the fold is
+     invisible, over it clips. svh, not vh, so a phone's retracting toolbar
+     cannot reintroduce the same overshoot; the vh line is the fallback. */
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h));
   display: flex;
 }
 .hero__bg, .section__bg {
@@ -302,7 +336,7 @@ b        { color: var(--bone); font-weight: 700; }
   top: 24%;
   width: min(560px, 52%);
   height: 460px;
-  background: radial-gradient(circle, rgba(232, 160, 32, .12), transparent 66%);
+  background: radial-gradient(circle, rgba(var(--amber-rgb), .12), transparent 66%);
   animation: drift 22s ease-in-out infinite;
   pointer-events: none;
 }
@@ -433,7 +467,15 @@ b        { color: var(--bone); font-weight: 700; }
 .section__title--xl {
   max-width: 1180px;
   font-size: clamp(38px, 7.2vw, 92px);
-  line-height: 1.03;
+  /* 1.03 is the design's leading and it holds at every size above ~48px.
+     The floor exists for .underline: once the phrase wraps — which it does
+     below ~430px, where this clamp bottoms out at 38px — the first
+     fragment's rule needs room to sit under it without cutting through the
+     ascenders of the line beneath. Gelasio at 38px measures a 48px em box
+     with 6px of headroom above its tallest glyph, and the rule reaches
+     .11em + 4px past that box, so 50px is the smallest advance that clears
+     it. Above a 48px font 1.03em wins and nothing changes. */
+  line-height: max(1.03em, 50px);
   letter-spacing: -1.6px;
 }
 
@@ -456,29 +498,40 @@ b        { color: var(--bone); font-weight: 700; }
 }
 .section--conviction .eyebrow { margin-bottom: clamp(34px, 4.5vw, 54px); }
 .eyebrow__num   { font: 700 13px/1 var(--sans); letter-spacing: 2px; color: var(--amber); }
-.eyebrow__rule  { width: 26px; height: 1px; background: rgba(232, 160, 32, .5); flex: 0 0 auto; }
+.eyebrow__rule  { width: 26px; height: 1px; background: rgba(var(--amber-rgb), .5); flex: 0 0 auto; }
 .eyebrow__label { font: 700 13px/1 var(--sans); letter-spacing: 3px; color: var(--steel); text-transform: uppercase; }
 .eyebrow__label--amber { color: var(--amber); letter-spacing: 3.4px; }
 
-.underline { position: relative; white-space: nowrap; color: var(--amber); }
-.underline::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -6px;
-  height: 4px;
-  background: var(--amber);
-  border-radius: 4px;
-  transform-origin: left center;
+/* The rule is a background on the phrase, not an absolutely-positioned
+   ::after. An ::after stretched left:0/right:0 only reads as an underline
+   while the phrase stays on one line, and `white-space: nowrap` was what
+   held it there — which is why "machine that builds it" (373px wide at the
+   clamp's 38px floor) ran off the right edge of every phone under ~430px,
+   clipped in silence by the section's own overflow:hidden. A background
+   with box-decoration-break:clone gives each line fragment its own rule, so
+   the phrase wraps like any other text. The offset is in em so it tracks
+   the heading's clamp instead of the flat 6px that only suited 92px type;
+   see the looser --xl line-height in the mobile tier, which is the leading
+   a wrapped fragment's rule needs. */
+.underline {
+  color: var(--amber);
+  padding-bottom: .11em;
+  background-image: linear-gradient(var(--amber), var(--amber));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 4px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 /* Drawn by default, so a visitor without JS never loses the emphasis.
    The .js gate retracts it and the reveal that brings the heading on
    screen sweeps it in. It used to fire on a .4s delay from page load —
    seven screens above where anyone could see it. */
-.js .underline::after { transform: scaleX(0); }
-.js [data-reveal].is-visible .underline::after {
+.js .underline { background-size: 0 4px; }
+.js [data-reveal].is-visible .underline {
   animation: underline var(--dur-hero) var(--ease-out) 350ms 1 forwards;
 }
-.js [data-reveal].is-instant .underline::after { transform: scaleX(1); }
+.js [data-reveal].is-instant .underline { background-size: 100% 4px; }
 
 .split {
   margin-top: clamp(50px, 7vw, 90px);
@@ -570,7 +623,7 @@ b        { color: var(--bone); font-weight: 700; }
   color: var(--amber);
   text-transform: uppercase;
 }
-.sublabel__rule { width: 20px; height: 1px; background: rgba(232, 160, 32, .65); flex: 0 0 auto; }
+.sublabel__rule { width: 20px; height: 1px; background: rgba(var(--amber-rgb), .65); flex: 0 0 auto; }
 
 .prose {
   max-width: 820px;
@@ -648,7 +701,7 @@ b        { color: var(--bone); font-weight: 700; }
   position: relative;
   overflow: hidden;
   background: var(--slate);
-  border: 1px solid rgba(232, 160, 32, .3);
+  border: 1px solid rgba(var(--amber-rgb), .3);
   border-top: 3px solid var(--amber);
   border-radius: 16px;
   padding: clamp(26px, 3vw, 36px) clamp(24px, 3vw, 40px);
@@ -742,7 +795,7 @@ b        { color: var(--bone); font-weight: 700; }
 }
 .trio__col {
   min-width: 0;
-  border-top: 1px solid rgba(232, 160, 32, .4);
+  border-top: 1px solid rgba(var(--amber-rgb), .4);
   padding-top: 18px;
 }
 .trio__label {
@@ -840,12 +893,11 @@ b        { color: var(--bone); font-weight: 700; }
 }
 .meta__name { font: 500 clamp(17px, 1.9vw, 20px)/1.3 var(--serif); color: var(--bone); }
 .meta__role { font: 400 14px/1.4 var(--sans); color: var(--steel); }
-.company__meta .meta:last-child .meta__role { font-size: 15px; line-height: 1.6; }
 
 /* --- close / contact ---------------------------------------------- */
 .contact {
   background: linear-gradient(180deg, var(--ink) 0%, var(--ink-deep) 100%);
-  padding: clamp(100px, 14vw, 180px) var(--gutter) 0;
+  padding: clamp(100px, 14vw, 180px) var(--gutter) clamp(66px, 9vw, 110px);
   border-top: 1px solid rgba(var(--rule-rgb), .1);
 }
 .contact > .section__bg { opacity: .5; }
@@ -856,7 +908,7 @@ b        { color: var(--bone); font-weight: 700; }
   transform: translate(-50%, -50%);
   width: min(720px, 90%);
   height: 440px;
-  background: radial-gradient(circle, rgba(232, 160, 32, .13), transparent 66%);
+  background: radial-gradient(circle, rgba(var(--amber-rgb), .13), transparent 66%);
   pointer-events: none;
 }
 .contact__inner { position: relative; max-width: 1080px; margin: 0 auto; text-align: center; }
@@ -880,6 +932,11 @@ b        { color: var(--bone); font-weight: 700; }
   justify-content: center;
   flex-wrap: wrap;
 }
+.contact__fallback {
+  margin-top: clamp(22px, 3vw, 30px);
+  font: 400 14.5px/1.6 var(--sans);
+  color: var(--text-mid);
+}
 .contact__cta {
   background: var(--amber);
   color: var(--ink);
@@ -887,13 +944,21 @@ b        { color: var(--bone); font-weight: 700; }
   padding: 17px 30px;
   border-radius: 999px;
 }
-.contact__cta:hover { background: var(--amber-hi); color: var(--ink); }
+.contact__cta:hover,
+.contact__cta:focus-visible { background: var(--amber-hi); color: var(--ink); }
 
 /* --- footer -------------------------------------------------------- */
 .footer {
   position: relative;
+  overflow: hidden;
+  background: var(--ink-deep);
+  padding: 0 var(--gutter);
+}
+.footer > .section__bg { opacity: .5; }
+.footer__inner {
+  position: relative;
   max-width: var(--max);
-  margin: clamp(66px, 9vw, 110px) auto 0;
+  margin: 0 auto;
   padding: clamp(40px, 5vw, 58px) 0 34px;
   border-top: 1px solid rgba(var(--rule-rgb), .16);
   display: grid;
@@ -933,7 +998,7 @@ b        { color: var(--bone); font-weight: 700; }
 }
 .footer__link:hover,
 .footer__link:focus-visible { color: var(--bone); }
-.footer__note { font: 400 13px/1.5 var(--sans); color: var(--steel); }
+.footer__note { font: 400 13px/1.5 var(--sans); color: var(--dim); }
 .footer__bottom {
   grid-column: 1 / -1;
   margin-top: clamp(20px, 3vw, 34px);
@@ -1158,7 +1223,7 @@ b        { color: var(--bone); font-weight: 700; }
     align-items: stretch;
     gap: 0;
     padding: 8px clamp(20px, 5vw, 48px) 28px;
-    background: rgba(10, 20, 36, .96);
+    background: rgba(var(--ink-rgb), .96);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(var(--rule-rgb), .12);
@@ -1198,16 +1263,14 @@ b        { color: var(--bone); font-weight: 700; }
 
 /* --- tablet: 700–1099px ------------------------------------------- */
 @media (max-width: 1099.98px) {
-  .loop    { grid-template-columns: repeat(3, 1fr); }
   .fn-grid { grid-template-columns: repeat(2, 1fr); }
-  .trio    { grid-template-columns: repeat(2, 1fr); }
 
   .split, .ai-grid, .company { grid-template-columns: 1fr; }
   .split__col--a, .split__col--b,
   .stack, .ai-prose,
   .company__label, .company__body { grid-column: 1 / -1; }
 
-  .footer { grid-template-columns: repeat(6, 1fr); }
+  .footer__inner { grid-template-columns: repeat(6, 1fr); }
   .footer__brand { grid-column: 1 / -1; }
   .footer__col--explore { grid-column: 1 / span 3; }
   .footer__col--contact { grid-column: 4 / span 3; }
@@ -1216,11 +1279,24 @@ b        { color: var(--bone); font-weight: 700; }
   .contact__title { letter-spacing: -1px; }
 }
 
+/* The living loop is five cards, which is why it does not simply drop to
+   three tracks here: that leaves 04 and 05 sharing a row with an empty
+   third cell. Six tracks divide evenly by both 2 and 3, so row one runs
+   01-02-03 at two tracks each and row two runs 04-05 at three, and the
+   block keeps a flush right edge. The trio stays three across for the same
+   reason — at two it stranded "Decision intelligence" alone. */
+@media (min-width: 700px) and (max-width: 1099.98px) {
+  .loop { grid-template-columns: repeat(6, 1fr); }
+  .loop-card { grid-column: span 2; }
+  .loop-card:nth-child(4),
+  .loop-card:nth-child(5) { grid-column: span 3; }
+}
+
 /* --- mobile: <700px ------------------------------------------------ */
 @media (max-width: 699.98px) {
   .loop, .fn-grid, .trio { grid-template-columns: 1fr; }
 
-  .footer { grid-template-columns: 1fr; }
+  .footer__inner { grid-template-columns: 1fr; }
   .footer__col--explore,
   .footer__col--contact { grid-column: 1 / -1; }
   .footer__bottom { justify-content: flex-start; }
@@ -1234,6 +1310,21 @@ b        { color: var(--bone); font-weight: 700; }
   .foundation__chips { flex-direction: column; }
   .chip { flex: 1 1 auto; }
   .company__meta { gap: 28px; }
+}
+
+/* --- wide but short: the hero's own content overruns the fold -------- */
+/* The min-height arithmetic is right at every tier now, but the hero's
+   vertical rhythm is measured in vw while the room it gets is measured in
+   vh — so on a wide, short laptop the content alone ran past the fold and
+   took the scroll strip with it: 35px over at 1280x800, 93px at 1366x768,
+   still one of the most common screens in use. Trim the vertical padding
+   once height, not width, is the binding constraint. Scoped above the
+   mobile tier, which sizes its padding to a taller two-line strip. */
+@media (min-width: 700px) and (max-height: 860px) {
+  .hero__inner {
+    padding-top: clamp(56px, 7vh, 84px);
+    padding-bottom: clamp(110px, 15vh, 140px);
+  }
 }
 
 /* --- short viewports: keep the hero from crushing ------------------- */
@@ -1257,7 +1348,7 @@ b        { color: var(--bone); font-weight: 700; }
   /* !important, not a higher-specificity selector: `.js .underline::after`
      retracts the rule to scaleX(0) and a reduced-motion visitor may never
      get .is-visible on the heading to bring it back. */
-  .underline::after { transform: scaleX(1) !important; }
+  .underline { background-size: 100% 4px !important; }
   .loop-card__bar   { opacity: 1; transform: scaleX(1); }
   .js [data-reveal] { opacity: 1 !important; transform: none !important; }
   .js [data-reveal-stagger] > * { opacity: 1 !important; transform: none !important; }

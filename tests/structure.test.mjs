@@ -110,3 +110,43 @@ test('the total shipped payload stays under 1 MB', async () => {
   }
   assert.ok(total < 1024 * 1024, `shipped payload is ${Math.round(total / 1024)} KB, budget 1024 KB`);
 });
+
+test('the brand is set as Indus, never INDUS', async () => {
+  // The hero lead and the meta description shouted it; every other mention —
+  // title, og tags, footer, copyright, legal entities — did not.
+  const html = await read('index.html');
+  const shouted = [...html.matchAll(/INDUS/g)].map((m) => html.slice(Math.max(0, m.index - 40), m.index + 45));
+  assert.deepEqual(shouted, [], `"INDUS" appears in: ${shouted.join(' | ')}`);
+});
+
+test('the legal entities are named in one place', async () => {
+  // They ran in section 04 and again in the footer, word for word. The footer
+  // is where they belong; 04 is about the people.
+  const html = await read('index.html');
+  assert.equal(html.match(/Indus Technologies LLC/g).length, 1);
+  assert.equal(html.match(/Indus Technology Solutions \(Pvt\) Ltd/g).length, 1);
+});
+
+test('the keyboard entry point exists and points at main', async () => {
+  const html = await read('index.html');
+  assert.match(html, /<a class="skip-link" href="#content">/,
+    'no skip link ahead of the six nav tab stops');
+  assert.match(html, /<main id="content" tabindex="-1">/,
+    'the skip link needs a focusable target');
+});
+
+test('the contentinfo footer sits outside main', async () => {
+  const html = await read('index.html');
+  const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+  assert.ok(!main.includes('role="contentinfo"'),
+    'contentinfo must be a top-level landmark');
+  assert.ok(html.indexOf('</main>') < html.indexOf('role="contentinfo"'),
+    'the footer must come after </main>');
+});
+
+test('the no-JS contact fallback names an address without writing one', async () => {
+  const html = await read('index.html');
+  assert.match(html, /<noscript><p class="contact__fallback">/);
+  assert.ok(html.includes('kamran (at) industechsol.com'),
+    'the fallback must name a reachable address');
+});

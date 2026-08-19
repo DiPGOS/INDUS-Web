@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Indus — The Project Operating System for Engineering &amp; Construction</title>
-<meta name="description" content="INDUS is rebuilding how the world builds — a single operating system where every part of a project connects, so the project itself can think and act.">
+<meta name="description" content="Indus is rebuilding how the world builds — a single operating system where every part of a project connects, so the project itself can think and act.">
 <meta name="theme-color" content="#0A1424">
 <meta name="color-scheme" content="dark">
 <link rel="canonical" href="https://industechsol.com/">
@@ -31,6 +31,8 @@
 </head>
 <body>
 
+<a class="skip-link" href="#content">Skip to content</a>
+
 <header class="nav">
   <div class="nav__inner">
     <a class="nav__brand" href="#top" aria-label="Indus — home">
@@ -53,7 +55,7 @@
   </div>
 </header>
 
-<main>
+<main id="content" tabindex="-1">
 
 <section class="hero" id="top">
   <div class="nav-sentinel" aria-hidden="true"></div>
@@ -63,7 +65,7 @@
 
   <div class="hero__inner">
     <h1 class="hero__title">The world needs a new way to <span class="accent">build</span>.</h1>
-    <p class="hero__lead">We can’t house, power and connect eight billion people with the fractured way the world builds today. <b>INDUS</b>&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
+    <p class="hero__lead">We can’t house, power and connect eight billion people with the fractured way the world builds today. <b>Indus</b>&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
     <div class="hero__actions">
       <a class="hero__cta" href="#dipgos">See DiPGOS</a>
       <a class="hero__cta hero__cta--ghost" href="#contact">Get in touch</a>
@@ -106,6 +108,7 @@
 </section>
 
 <section class="section section--dipgos" id="dipgos">
+  <div class="ghost" aria-hidden="true">02</div>
   <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
   <div class="section__inner">
     <div class="eyebrow" data-reveal>
@@ -174,7 +177,7 @@
         <div class="fn-card"><div class="fn-card__head"><span class="fn-card__dot" aria-hidden="true"></span><h4 class="fn-card__title">Document Manager</h4></div><p>The right revision, tied to the work.</p></div>
       </div>
 
-      <div class="arrow-label" aria-hidden="true">↓&nbsp;&nbsp;every function runs on one foundation&nbsp;&nbsp;↓</div>
+      <div class="arrow-label"><span aria-hidden="true">↓&nbsp;&nbsp;</span>every function runs on one foundation<span aria-hidden="true">&nbsp;&nbsp;↓</span></div>
 
       <div class="foundation">
         <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
@@ -224,6 +227,7 @@
 </section>
 
 <section class="section section--ai" id="ai">
+  <div class="ghost" aria-hidden="true">03</div>
   <div class="section__inner">
     <div class="eyebrow" data-reveal>
       <span class="eyebrow__num">03</span>
@@ -238,7 +242,7 @@
           <h3 class="stack__title">Applied AI — human in command</h3>
           <p class="stack__sub">AI does the heavy lifting; your engineers stay in command.</p>
         </div>
-        <div class="stack__connector" aria-hidden="true">↑&nbsp;&nbsp;stands on&nbsp;&nbsp;↑</div>
+        <div class="stack__connector"><span aria-hidden="true">↑&nbsp;&nbsp;</span>stands on<span aria-hidden="true">&nbsp;&nbsp;↑</span></div>
         <div class="stack__card">
           <h3 class="stack__title">Semantic &amp; knowledge layer</h3>
           <p class="stack__sub">The meaning and context of your project.</p>
@@ -263,6 +267,7 @@
 </section>
 
 <section class="section section--company" id="company">
+  <div class="ghost" aria-hidden="true">04</div>
   <div class="section__inner company">
     <div class="company__label" data-reveal>
       <div class="eyebrow">
@@ -279,10 +284,6 @@
           <div class="meta__label">Founded by</div>
           <div class="meta__name">M. Kamran Basit</div>
           <div class="meta__role">Founder &amp; CEO</div>
-        </div>
-        <div class="meta">
-          <div class="meta__label">Entities</div>
-          <div class="meta__role">Indus Technology Solutions (Pvt) Ltd<br>Indus Technologies LLC · USA</div>
         </div>
       </div>
     </div>
@@ -303,9 +304,16 @@
     <div class="contact__actions" data-reveal>
       <a class="contact__cta" href="#contact" data-u="kamran" data-d="industechsol.com">Contact Us</a>
     </div>
+    <noscript><p class="contact__fallback">JavaScript is off, so this button can’t open your mail app. Write to <b>kamran (at) industechsol.com</b>.</p></noscript>
   </div>
 
-  <footer class="footer" role="contentinfo">
+</section>
+
+</main>
+
+<footer class="footer" role="contentinfo">
+  <img class="section__bg" src="assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <div class="footer__inner">
     <div class="footer__brand">
       <span class="wordmark wordmark--footer" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot" aria-hidden="true"></span></span>ndus</span><span class="sr-only">Indus</span>
       <p class="footer__tagline">Shaping the Future of Engineering &amp; Construction</p>
@@ -334,10 +342,9 @@
       <span class="footer__copy">© <span id="year">2026</span> Indus Technology Solutions. All rights reserved.</span>
       <span class="footer__motto">The project thinks; the human commands.</span>
     </div>
-  </footer>
-</section>
+  </div>
+</footer>
 
-</main>
 <script src="main.js" defer></script>
 </body>
 </html>

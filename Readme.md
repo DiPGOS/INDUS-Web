@@ -8,7 +8,7 @@ GitHub Pages.
 
 | Path | Purpose |
 |---|---|
-| `index.html` | All markup and copy. Five landmarks (banner, two nav, main, contentinfo), no inline styles. |
+| `index.html` | All markup and copy. Five landmarks (banner, two nav, main, contentinfo), a skip link ahead of them, no inline styles. |
 | `styles.css` | Every visual rule. Tokens → reset → keyframes → components → interaction → responsive. |
 | `main.js` | Reveal observer, ambient gating, command-centre parallax, mobile nav, nav scroll state, active link, contact assembly, year. |
 | `assets/` | Three SVGs, the command-center WebP, favicons, OG card. |
@@ -38,10 +38,27 @@ Three suites: `assets` (existence, dimensions, byte budgets), `structure`
 (HTML/CSS invariants, parsed as text), and `browser` (Playwright —
 computed styles, responsive tiers, no-JS, reduced motion, keyboard).
 
+The browser suite ends with a block of tests named for the design-audit
+defects they guard: the hero staying inside the fold, the conviction
+headline staying inside its column on a phone, the nav row not moving when
+a link goes active, every text colour clearing WCAG AA against its
+composited background, and the rest. Each asserts the visible symptom
+rather than the mechanism that currently produces it, so rewriting the
+mechanism stays free as long as the symptom stays fixed.
+
 ## Design conventions
 
 - **Tokens only.** Every colour is a custom property on `:root` in
   `styles.css`. Hex literals outside that block fail the test suite.
+  Where a colour needs alpha, compose it from the rgb triplet that pairs
+  with it -- `--amber-rgb` with `--amber`, `--ink-rgb` with `--ink` -- and
+  edit the pair together. `rgba(232, 160, 32, .5)` written out longhand is
+  the same colour declared twice.
+- **Contrast is a floor, not a preference.** `--dim` is as dark as the
+  small-text greys go, and it sits where it does because six roles use it
+  at 11-13px and AA needs 4.5:1 against `--navy`. A browser test walks the
+  composited background behind every text node and fails on anything under
+  the floor.
 - **No inline styles.** `index.html` carrying a `style=` attribute fails
   the test suite.
 - **Motion tokens.** Durations, easings, reveal travel and hover lift live
@@ -69,10 +86,26 @@ computed styles, responsive tiers, no-JS, reduced motion, keyboard).
   panel. No motion decision lives in JavaScript.
 - **The contact address is never in the source.** It is assembled at
   runtime from `data-u` / `data-d`. Adding a literal `mailto:` fails the
-  test suite.
+  test suite. Because that leaves both CTAs pointing at `#contact` when
+  JavaScript is off - a link to the section they already sit in - a
+  `<noscript>` block in the contact section spells the address out in a
+  form no naive scraper reads and no test forbids.
 - **Breakpoints:** desktop ≥1100px, tablet 700–1099px, mobile <700px.
   The nav flips to a hamburger at 860px, which is deliberately not a
-  tier boundary.
+  tier boundary. One rule keys off viewport *height* instead of width:
+  the hero trims its vertical padding under 860px tall, because its rhythm is
+  measured in `vw` while the room it gets is measured in `vh`, and on a
+  wide, short laptop (1366x768) the two disagree by ~90px.
+- **The hero owns the first screen exactly.** `min-height` is
+  `calc(100svh - var(--nav-h))`: `svh` so a phone's retracting toolbar
+  cannot reintroduce an overshoot, and `--nav-h` (72px) against a 70px bar
+  so the error runs 2px short. Short is invisible; long crops the hero's
+  own scroll strip.
+- **The underlined phrase wraps.** `.underline` paints its rule as a
+  background with `box-decoration-break: clone`, not as a stretched
+  `::after`, so every line fragment gets its own. `.section__title--xl`
+  carries a `line-height` floor for the same reason: the rule needs room to
+  sit under a fragment without cutting through the line below.
 - **Every animation** must be disabled under
   `@media (prefers-reduced-motion: reduce)`, and every hover lift must sit
   inside `@media (hover: hover)` so a tap cannot strand an element in its

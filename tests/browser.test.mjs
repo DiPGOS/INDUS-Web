@@ -218,7 +218,7 @@ test('the contact CTA is an amber pill', async () => {
 
 test('the footer lays out three columns plus a full-width bottom bar', async () => {
   const p = await page();
-  assert.equal((await css(p, '.footer', 'gridTemplateColumns')).split(' ').length, 12);
+  assert.equal((await css(p, '.footer__inner', 'gridTemplateColumns')).split(' ').length, 12);
   assert.equal(await css(p, '.footer__bottom', 'gridColumnStart'), '1');
   const cols = await p.$$eval('.footer__col', (els) => els.length);
   assert.equal(cols, 2, 'expected Explore and Contact columns');
@@ -322,7 +322,7 @@ test('loop and function grids collapse per tier', async () => {
     return n;
   };
   assert.equal(await cols(1280, '.loop'), 5);
-  assert.equal(await cols(900,  '.loop'), 3);
+  assert.equal(await cols(900,  '.loop'), 6);   // five cards over 2+2+2 / 3+3
   assert.equal(await cols(390,  '.loop'), 1);
   assert.equal(await cols(1280, '.fn-grid'), 3);
   assert.equal(await cols(900,  '.fn-grid'), 2);
@@ -739,13 +739,17 @@ test('idling past the failsafe window still leaves the motion system live', asyn
   await p.context().close();
 });
 
-// getComputedStyle on the pseudo returns a matrix string, or the keyword
-// 'none' when no transform applies. DOMMatrixReadOnly throws on 'none',
-// so treat that as the fully-drawn state. Inlined at each call site
-// rather than shared — Playwright serializes each of these separately.
+// The rule is the phrase's own background — background-size sweeps from
+// `0 4px` to `100% 4px` — so the drawn fraction is read off the element
+// rather than a pseudo's transform matrix. Chrome reports the width in
+// whichever unit is in play: `0px` retracted, a percentage mid-sweep,
+// `100%` once the animation lands. Normalise both to a 0..1 fraction.
 const underlineScale = (pg) => pg.evaluate(() => {
-  const t = getComputedStyle(document.querySelector('.underline'), '::after').transform;
-  return t === 'none' ? 1 : new DOMMatrixReadOnly(t).a;
+  const el = document.querySelector('.underline');
+  const w = getComputedStyle(el).backgroundSize.split(' ')[0];
+  return w.endsWith('%')
+    ? parseFloat(w) / 100
+    : parseFloat(w) / el.getBoundingClientRect().width;
 });
 
 test('the underline sweeps when its heading reveals, not at page load', async () => {
@@ -756,8 +760,8 @@ test('the underline sweeps when its heading reveals, not at page load', async ()
   await p.$eval('#conviction .section__title--xl',
     (el) => el.scrollIntoView({ behavior: 'instant', block: 'center' }));
   await p.waitForFunction(() => {
-    const t = getComputedStyle(document.querySelector('.underline'), '::after').transform;
-    return t === 'none' || new DOMMatrixReadOnly(t).a > 0.9;
+    const w = getComputedStyle(document.querySelector('.underline')).backgroundSize.split(' ')[0];
+    return w.endsWith('%') && parseFloat(w) > 90;
   }, null, { timeout: 4000 });
   await p.context().close();
 });
@@ -767,7 +771,7 @@ test('the underline is drawn for no-JS and reduced-motion visitors', async () =>
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
     const pg = await ctx.newPage();
     await pg.goto(server.url, { waitUntil: 'load' });
-    assert.equal(await underlineScale(pg), 1,
+    assert.ok(Math.abs((await underlineScale(pg)) - 1) < 0.02,
       `underline not drawn with ${JSON.stringify(opts)}`);
     await ctx.close();
   }
@@ -970,23 +974,6 @@ test('reduced motion leaves the command centre perfectly still', async () => {
   await ctx.close();
 });
 
-test('the ghost numeral clears the eyebrow it used to run through', async () => {
-  for (const width of [1440, 700, 390]) {
-    const p = await page({ viewport: { width, height: 900 } });
-    const box = await p.evaluate(() => {
-      const g = document.querySelector('.section--conviction .ghost');
-      const e = document.querySelector('.section--conviction .eyebrow');
-      return {
-        ghostTop: g.getBoundingClientRect().top,
-        eyebrowBottom: e.getBoundingClientRect().bottom,
-      };
-    });
-    assert.ok(box.ghostTop >= box.eyebrowBottom,
-      `at ${width}px the ghost starts at ${box.ghostTop}, above the eyebrow's ${box.eyebrowBottom}`);
-    await p.context().close();
-  }
-});
-
 test('rules and bars draw in with their section', async () => {
   const p = await page();
   const scaleX = (sel) => p.$eval(sel, (el) => {
@@ -1000,4 +987,268 @@ test('rules and bars draw in with their section', async () => {
     return t === 'none' || new DOMMatrixReadOnly(t).a > 0.9;
   }, null, { timeout: 4000 });
   await p.context().close();
+});
+
+/* ============================================================
+   Design audit — one test per defect the audit found, each
+   asserting the visible symptom rather than the mechanism that
+   currently produces it.
+   ============================================================ */
+
+test('the hero never pushes its own strip past the fold', async () => {
+  // min-height was calc(100vh - 60px) against a nav that renders 69-70px, so
+  // the hero ended ~10px below the fold at every tier and cropped the
+  // tagline strip on load. Erring short is invisible; erring long is not.
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 1512, height: 982 },
+                          { width: 1280, height: 800 }, { width: 1366, height: 768 },
+                          { width: 900, height: 1000 }, { width: 390, height: 844 }]) {
+    const p = await page({ viewport });
+    const { heroBottom, vh } = await p.evaluate(() => ({
+      heroBottom: document.querySelector('.hero').getBoundingClientRect().bottom,
+      vh: window.innerHeight,
+    }));
+    assert.ok(heroBottom <= vh + 0.5,
+      `at ${viewport.width}x${viewport.height} the hero ends ${(heroBottom - vh).toFixed(1)}px below the fold`);
+    await p.context().close();
+  }
+});
+
+test('the conviction headline stays inside its column on every phone', async () => {
+  // .underline used to carry white-space:nowrap so its ::after would read as
+  // one rule. "machine that builds it" is 373px at the heading clamp's 38px
+  // floor, so below ~430px it ran off the right edge — clipped in silence by
+  // the section's overflow:hidden, which is why no overflow test caught it.
+  for (const width of [430, 390, 360, 320]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const { phrase, heading } = await p.evaluate(() => ({
+      phrase: document.querySelector('.underline').getBoundingClientRect().right,
+      heading: document.querySelector('#conviction .section__title--xl').getBoundingClientRect().right,
+    }));
+    assert.ok(phrase <= heading + 1,
+      `at ${width}px the underlined phrase runs ${(phrase - heading).toFixed(0)}px past its heading`);
+    await p.context().close();
+  }
+});
+
+test('a wrapped underline rule clears the line beneath it', async () => {
+  // An inline fragment's client rect already includes the padding the rule
+  // sits in, and adjacent fragments' rects overlap whenever line-height is
+  // tighter than the font's em box — so the rects alone say nothing. What
+  // matters is the painted 4px band against the next line's tallest glyph,
+  // which is the font's ascent line less the headroom canvas reports.
+  const p = await page({ viewport: { width: 320, height: 900 } });
+  const m = await p.evaluate(() => {
+    const el = document.querySelector('.underline');
+    const rects = [...el.getClientRects()];
+    if (rects.length < 2) return null;             // did not wrap; nothing to clear
+    const cs = getComputedStyle(el);
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const tm = ctx.measureText(el.textContent);
+    const headroom = tm.fontBoundingBoxAscent - tm.actualBoundingBoxAscent;
+    return {
+      ruleBottom: rects[0].bottom,                 // padding included; the rule ends here
+      nextGlyphTop: rects[1].top + headroom,
+    };
+  });
+  assert.notEqual(m, null, 'expected the phrase to wrap at 320px');
+  assert.ok(m.nextGlyphTop >= m.ruleBottom,
+    `the rule ends at ${m.ruleBottom.toFixed(1)} and the next line's glyphs start at ` +
+    `${m.nextGlyphTop.toFixed(1)} — it cuts through them`);
+  await p.context().close();
+});
+
+test('marking a nav link active does not move the row', async () => {
+  // The marker used to be an in-flow block with margin-top:5px, so the link
+  // grew 6px, the centred flex row re-balanced, and the label jumped 3px
+  // every time the scrolled section changed.
+  const p = await page();
+  const measure = () => p.$eval('.nav__link', (el) => {
+    const r = el.getBoundingClientRect();
+    return { h: r.height, top: r.top };
+  });
+  const before = await measure();
+  await p.$eval('.nav__link', (el) => el.classList.add('nav__link--active'));
+  const after = await measure();
+  assert.ok(Math.abs(after.h - before.h) < 0.5,
+    `active link grew from ${before.h}px to ${after.h}px`);
+  assert.ok(Math.abs(after.top - before.top) < 0.5,
+    `active link shifted ${(after.top - before.top).toFixed(1)}px`);
+  await p.context().close();
+});
+
+test('every text colour clears WCAG AA against what sits behind it', async () => {
+  // Walks the composited background up the tree rather than trusting one
+  // element's own background-color. Gradient and image layers are not
+  // modelled — .contact ramps --ink to the darker --ink-deep, so treating it
+  // as --ink is the conservative read. --dim shipped at 4.37:1 across six
+  // small-text roles, every one of them under this floor.
+  const p = await page({ reducedMotion: 'reduce' });   // reveals resolved, nothing left at opacity 0
+  const failures = await p.evaluate(() => {
+    const lum = ([r, g, b]) => {
+      const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    };
+    const parse = (s) => (s.match(/[\d.]+/g) || []).slice(0, 4).map(Number);
+    const over = (fg, bg) => {
+      const a = fg[3] === undefined ? 1 : fg[3];
+      return [0, 1, 2].map((i) => fg[i] * a + bg[i] * (1 - a));
+    };
+    const bgOf = (el) => {
+      const stack = [];
+      for (let e = el; e && e !== document.documentElement; e = e.parentElement) {
+        const c = parse(getComputedStyle(e).backgroundColor);
+        if (c.length && (c[3] === undefined || c[3] > 0)) stack.push(c);
+      }
+      stack.push([10, 20, 36]);
+      let cur = stack.pop();
+      while (stack.length) cur = over(stack.pop(), cur);
+      return cur;
+    };
+    const out = [];
+    for (const el of document.querySelectorAll('body *')) {
+      if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+      if (el.closest('[aria-hidden="true"], .sr-only, .skip-link')) continue;
+      const cs = getComputedStyle(el);
+      if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+      const bg = bgOf(el);
+      const L1 = lum(over(parse(cs.color), bg));
+      const L2 = lum(bg);
+      const ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+      const size = parseFloat(cs.fontSize);
+      const need = size >= 24 || (size >= 18.66 && Number(cs.fontWeight) >= 700) ? 3 : 4.5;
+      if (ratio >= need) continue;
+      out.push(`${el.className || el.tagName} ${Math.round(size)}px ${cs.color} on rgb(${bg.map(Math.round)}) = ${ratio.toFixed(2)}:1, needs ${need}`);
+    }
+    return [...new Set(out)];
+  });
+  assert.deepEqual(failures, [], 'contrast failures:\n  ' + failures.join('\n  '));
+  await p.context().close();
+});
+
+test('contentinfo is a top-level landmark, not one buried in <main>', async () => {
+  const p = await page();
+  const nested = await p.$eval('footer[role="contentinfo"]', (el) => Boolean(el.closest('main')));
+  assert.equal(nested, false, 'the contentinfo footer is inside <main>');
+  assert.equal(await p.$$eval('footer[role="contentinfo"]', (els) => els.length), 1);
+  // The seam has to stay invisible now that section and footer are siblings:
+  // the footer picks up where the contact gradient ends.
+  assert.equal(await css(p, '.footer', 'backgroundColor'), 'rgb(7, 15, 28)');
+  await p.context().close();
+});
+
+test('the skip link is the first tab stop and shows itself on focus', async () => {
+  const p = await page();
+  await p.keyboard.press('Tab');
+  // It slides in over --dur-quick; measure where it lands, not mid-flight.
+  await p.waitForFunction(
+    () => document.querySelector('.skip-link').getBoundingClientRect().top >= 0,
+    null, { timeout: 2000 }).catch(() => {});
+  const state = await p.evaluate(() => {
+    const a = document.activeElement;
+    return { cls: a.className, top: a.getBoundingClientRect().top, target: a.getAttribute('href') };
+  });
+  assert.equal(state.cls, 'skip-link', 'the skip link is not the first thing Tab reaches');
+  assert.equal(state.target, '#content');
+  assert.ok(state.top >= 0, `focused skip link sits at ${state.top}px, off the top of the screen`);
+  assert.equal(await p.$eval('#content', (el) => el.tagName), 'MAIN');
+  await p.context().close();
+});
+
+test('the two relationship labels reach assistive tech', async () => {
+  // Both used to be aria-hidden whole, taking "stands on" and "every function
+  // runs on one foundation" with them — the only statement of how the AI
+  // stack and the foundation panel relate to what sits around them.
+  const p = await page();
+  const text = await p.evaluate(() => {
+    const read = (sel) => {
+      const el = document.querySelector(sel);
+      if (el.getAttribute('aria-hidden') === 'true') return null;
+      return [...el.childNodes]
+        .filter((n) => n.nodeType === 3 || n.getAttribute('aria-hidden') !== 'true')
+        .map((n) => n.textContent).join('').trim();
+    };
+    return { connector: read('.stack__connector'), arrow: read('.arrow-label') };
+  });
+  assert.equal(text.connector, 'stands on');
+  assert.equal(text.arrow, 'every function runs on one foundation');
+  await p.context().close();
+});
+
+test('with JS off the contact section still names a way to write', async () => {
+  // The CTA cannot assemble its mailto without JS, and #contact is the
+  // section it already sits in — so with no fallback the site's only
+  // conversion path is a link to itself.
+  const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto(server.url, { waitUntil: 'load' });
+  const note = await p.$eval('.contact__fallback', (el) => ({
+    text: el.textContent, visible: el.getBoundingClientRect().height > 0,
+  }));
+  assert.ok(note.visible, 'the no-JS fallback renders no box');
+  assert.match(note.text, /kamran \(at\) industechsol\.com/);
+  await ctx.close();
+  // ...and it must stay out of the way for everyone else.
+  const on = await page();
+  assert.equal(await on.$$eval('.contact__fallback', (els) => els.length), 0,
+    'the fallback leaked into the scripted page');
+  await on.context().close();
+});
+
+test('every numbered section carries its ghost numeral', async () => {
+  const p = await page();
+  const seen = await p.$$eval('.ghost', (els) => els.map((g) => ({
+    n: g.textContent.trim(),
+    section: g.closest('section').id,
+  })));
+  assert.deepEqual(seen, [
+    { n: '01', section: 'conviction' },
+    { n: '02', section: 'dipgos' },
+    { n: '03', section: 'ai' },
+    { n: '04', section: 'company' },
+  ], 'the ghost numeral must be a system, not a one-off in 01');
+  await p.context().close();
+});
+
+test('no ghost numeral runs through the eyebrow above it', async () => {
+  for (const width of [1440, 700, 390]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const rows = await p.$$eval('.ghost', (els) => els.map((g) => {
+      const e = g.closest('section').querySelector('.eyebrow');
+      return { id: g.closest('section').id,
+               ghostTop: g.getBoundingClientRect().top,
+               eyebrowBottom: e.getBoundingClientRect().bottom };
+    }));
+    for (const r of rows) {
+      assert.ok(r.ghostTop >= r.eyebrowBottom,
+        `at ${width}px #${r.id}'s ghost starts at ${r.ghostTop.toFixed(0)}, above its eyebrow's ${r.eyebrowBottom.toFixed(0)}`);
+    }
+    await p.context().close();
+  }
+});
+
+test('the tablet loop leaves no short row', async () => {
+  // Five cards over three tracks left 04 and 05 beside an empty cell.
+  for (const width of [900, 1000]) {
+    const p = await page({ viewport: { width, height: 900 } });
+    const rows = await p.$$eval('.loop-card', (els) => {
+      const byTop = new Map();
+      for (const el of els) {
+        const r = el.getBoundingClientRect();
+        const key = Math.round(r.top);
+        byTop.set(key, (byTop.get(key) || 0) + r.width);
+      }
+      return [...byTop.values()];
+    });
+    const { gridW, gap } = await p.$eval('.loop', (el) => ({
+      gridW: el.getBoundingClientRect().width,
+      gap: parseFloat(getComputedStyle(el).columnGap),
+    }));
+    assert.equal(rows.length, 2, `expected two rows at ${width}px, got ${rows.length}`);
+    for (const filled of rows) {
+      assert.ok(filled >= gridW - 2 * gap - 1,
+        `a row at ${width}px covers ${filled.toFixed(0)} of ${gridW.toFixed(0)}px`);
+    }
+    await p.context().close();
+  }
 });
