@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiPGOS by Indus: the operating system for megaprojects</title>
+<meta name="description" content="Every pour checked against the method, owned by a named engineer, and counted the day it happens. DiPGOS models how a megaproject is really built.">
+<meta name="theme-color" content="#0A1424">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400..700&amp;family=Kalam:wght@400&amp;display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* ============================================================
+   R2 · B · "The work front"
+   tokens → base → chrome → hero → the day (signature) → contrast
+   → screens → stakes → stack → model → record → company
+   → contact → sources → footer → motion → responsive
+   ============================================================ */
+:root {
+  /* surfaces */
+  --ink: #0A1424;
+  --deep: #060D18;        /* the system-state pane */
+  --navy: #0D1A2F;
+  --slate: #12233F;
+  --slate-hi: #1A2D4F;
+  /* text */
+  --bone: #F4F2EC;        /* headings, the one highlight level */
+  --text: #C3CEDB;        /* body: 11.6:1 on ink */
+  --steel: #9DB0C4;       /* secondary: 8.1:1 on ink, 8.6:1 on deep */
+  /* action: solid fill is only ever a button */
+  --amber: #E8A020;
+  --amber-hi: #FFC24D;
+  /* annotation: the product's brand blue on dark. Markers, outlines,
+     step numbers and footnotes, nothing else */
+  --blue: #3b82f6;
+  --blue-text: #8DB5FA;   /* blue as text: 8.4:1 on ink */
+  /* verdicts only */
+  --ok: #22c55e;
+  --bad: #ef4444;
+  --bad-text: #F87171;    /* 6.4:1 on deep */
+  /* the paper record sheet (a physical object, so it is paper-coloured) */
+  --paper: #ECE7DA;
+  --paper-rule: #A79E89;
+  --print: #1F2630;
+  --pen: #213C94;         /* ballpoint: 7.6:1 on paper */
+  /* rules */
+  --rule: rgba(157, 176, 196, .16);
+  --rule-strong: rgba(157, 176, 196, .32);
+
+  --serif: 'Gelasio', Georgia, serif;
+  --sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --hand: 'Kalam', 'Segoe Print', cursive;
+
+  /* the one label style */
+  --label: 600 .8125rem/1.4 var(--sans);
+
+  /* layout: one container for everything */
+  --max: 1280px;
+  --gutter: clamp(16px, 5vw, 72px);
+  --measure: 34em;        /* ≈ 65 characters of Hanken Grotesk */
+  --nav-h: 64px;
+  --section-y: clamp(72px, 9vw, 136px);
+  --radius: 10px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { overflow-x: clip; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font: 400 1.0625rem/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4 { margin: 0; color: var(--bone); font-weight: 600; }
+p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+section { scroll-margin-top: var(--nav-h); }
+::selection { background: rgba(232, 160, 32, .3); }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+.label { font: var(--label); color: var(--steel); }
+.hl { color: var(--bone); font-weight: 600; }
+.accent { color: var(--amber); }
+.tnum { font-variant-numeric: tabular-nums; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* footnotes: blue, because they are annotations */
+.fn { font: 700 .72em/0 var(--sans); vertical-align: super; margin-left: .08em; }
+.fn a {
+  color: var(--blue-text); text-decoration: none;
+  padding: 0 .12em; border-bottom: 1px solid rgba(141, 181, 250, .5);
+}
+.fn a:hover { color: var(--bone); border-color: var(--bone); }
+.fn + .fn { margin-left: .18em; }
+.dag { color: var(--steel); font-weight: 400; }
+
+/* owner-input placeholders */
+.todo { position: relative; outline: 1.5px dashed var(--amber); outline-offset: 3px; border-radius: 3px; }
+.todo--inline::after { display: none; }
+.todo-note { margin-left: 8px; font: 600 11px/1.3 var(--sans); letter-spacing: .02em; color: var(--amber); white-space: nowrap; vertical-align: .3em; }
+.todo::after {
+  content: attr(data-todo);
+  position: absolute; right: -4px; top: -1.7em;
+  font: 600 10px/1.4 var(--sans); letter-spacing: .02em;
+  color: var(--amber); background: var(--ink); padding: 0 5px;
+  white-space: nowrap; pointer-events: none;
+}
+
+/* ---- buttons ------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 22px; border-radius: 8px;
+  font: 600 1rem/1.35 var(--sans); text-decoration: none; text-align: center;
+  cursor: pointer; border: 1px solid transparent;
+}
+.btn--primary { background: var(--amber); color: var(--ink); }
+.btn--primary:hover { background: var(--amber-hi); }
+.btn--quiet { background: transparent; color: var(--bone); border-color: var(--rule-strong); }
+.btn--quiet:hover { border-color: var(--bone); }
+.btn--sm { min-height: 40px; padding: 0 16px; font-size: .9375rem; }
+
+/* ---- skip link & mock tag ----------------------------------- */
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 90;
+  transform: translateY(-200%);
+  background: var(--amber); color: var(--ink);
+  font: 700 .9375rem/1.35 var(--sans);
+  padding: 12px 18px; border-radius: 8px; text-decoration: none;
+}
+.skip-link:focus { transform: none; }
+.mock-tag {
+  position: fixed; left: 10px; bottom: 10px; z-index: 70;
+  display: inline-flex; align-items: center; min-height: 28px; padding: 3px 11px;
+  font: 500 .75rem/1.35 var(--sans); color: var(--steel);
+  background: rgba(10, 20, 36, .94); border: 1px solid var(--rule-strong);
+  border-radius: 999px; text-decoration: none;
+}
+.mock-tag:hover { color: var(--bone); }
+
+/* ---- wordmark ----------------------------------------------- */
+.wordmark {
+  white-space: nowrap; font: 600 26px/1.2 var(--serif);
+  color: var(--bone); letter-spacing: -.2px; text-decoration: none;
+}
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .12em; transform: translateX(-50%);
+  width: .30em; height: .30em;
+  background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+
+/* ---- nav ---------------------------------------------------- */
+.nav { position: sticky; top: 0; z-index: 60; background: var(--ink); border-bottom: 1px solid var(--rule); }
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.nav__links { display: flex; align-items: center; gap: 28px; }
+.nav__link {
+  position: relative; color: var(--steel); text-decoration: none;
+  font: 500 .9375rem/1.4 var(--sans); padding: 8px 0;
+}
+.nav__link:hover { color: var(--bone); }
+.nav__link[aria-current="true"] { color: var(--bone); }
+.nav__link[aria-current="true"]::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 2px;
+  height: 2px; background: var(--bone); border-radius: 2px;
+}
+.nav__toggle {
+  display: none; width: 44px; height: 44px;
+  background: none; border: 1px solid var(--rule-strong); border-radius: 8px;
+  color: var(--bone); cursor: pointer; align-items: center; justify-content: center;
+}
+.nav__toggle svg { width: 20px; height: 20px; }
+
+/* ---- screenshot crops with annotation overlays --------------
+   Every overlay is placed in image pixels (--x, --y, --w, --h);
+   a crop sets --cx --cy --cw --ch, so pins follow any crop.      */
+.shot {
+  --cx: 0; --cy: 0; --iw: 1912; --cw: var(--iw); --ch: 935;
+  position: relative; overflow: hidden;
+  aspect-ratio: var(--cw) / var(--ch);
+  background: #05090f;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule-strong);
+}
+.shot > img {
+  position: absolute; max-width: none; height: auto;
+  width: calc(var(--iw) / var(--cw) * 100%);
+  left: calc(var(--cx) / var(--cw) * -100%);
+  top: calc(var(--cy) / var(--ch) * -100%);
+}
+.box, .pin, .mask { position: absolute; }
+.box {
+  left: calc((var(--x) - var(--cx)) / var(--cw) * 100%);
+  top: calc((var(--y) - var(--cy)) / var(--ch) * 100%);
+  width: calc(var(--w) / var(--cw) * 100%);
+  height: calc(var(--h) / var(--ch) * 100%);
+  border: 2px solid var(--blue); border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, .16);
+  pointer-events: none;
+}
+.box--dash { border-style: dashed; box-shadow: none; }
+.mask {
+  left: calc((var(--x) - var(--cx)) / var(--cw) * 100%);
+  top: calc((var(--y) - var(--cy)) / var(--ch) * 100%);
+  width: calc(var(--w) / var(--cw) * 100%);
+  height: calc(var(--h) / var(--ch) * 100%);
+  background:
+    repeating-linear-gradient(135deg, rgba(157,176,196,.10) 0 1px, transparent 1px 7px),
+    #0F1C35;
+  display: grid; place-items: center;
+  font: 600 clamp(9px, .8vw, 12px)/1.3 var(--sans); color: var(--steel);
+  text-align: center;
+}
+.pin {
+  left: calc((var(--x) - var(--cx)) / var(--cw) * 100%);
+  top: calc((var(--y) - var(--cy)) / var(--ch) * 100%);
+  transform: translate(var(--tx, 0), -50%);
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 3px 10px 3px 7px;
+  background: var(--deep); color: var(--bone);
+  border: 2px solid var(--blue); border-radius: 999px;
+  font: 600 .8125rem/1.35 var(--sans); white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+.pin::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); flex: none; }
+.shot-cap { margin-top: 14px; max-width: var(--measure); font-size: .9375rem; line-height: 1.55; }
+.shot-cap .label { display: block; margin-bottom: 2px; }
+.key { color: var(--bone); font-weight: 600; }
+.key::before {
+  content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 8px 1px 4px;
+  border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 2px var(--deep), 0 0 0 4px var(--blue);
+}
+
+/* ---- hero: the command centre is the stage ------------------ */
+.hero { position: relative; --overlap: clamp(150px, calc(565px + 48.9vw - 100vh), 36vw); }
+.hero .shot { border-radius: 0; border: 0; }
+.hero .shot::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to top right, rgba(10,20,36,.95) 0%, rgba(10,20,36,.6) 34%, rgba(10,20,36,0) 62%),
+    linear-gradient(to top, rgba(10,20,36,.5) 0%, rgba(10,20,36,0) 24%);
+}
+.hero__panel { position: relative; z-index: 2; margin-top: calc(-1 * var(--overlap)); }
+.hero__copy {
+  position: relative; background: var(--ink);
+  max-width: min(58rem, 70vw);
+  padding: clamp(28px, 3vw, 44px) clamp(24px, 3.4vw, 52px) 0 0;
+}
+.hero__copy::before {
+  content: ""; position: absolute; top: 0; bottom: 0; right: 100%;
+  width: 50vw; background: var(--ink);
+}
+.hero__kicker { font: 500 1.0625rem/1.45 var(--sans); color: var(--steel); }
+.hero__title {
+  margin-top: 12px;
+  font: 600 clamp(2.125rem, 1rem + 2.9vw, 3.625rem)/1.1 var(--serif);
+  letter-spacing: -.02em; text-wrap: balance;
+}
+.hero__sub {
+  margin-top: 20px; max-width: var(--measure);
+  font: 500 clamp(1.125rem, 1rem + .35vw, 1.3125rem)/1.5 var(--sans); color: var(--bone);
+}
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.hero__proof { margin-top: 18px; font-size: .9375rem; color: var(--steel); }
+.hero__after {
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: 24px 64px; align-items: start;
+  padding-top: clamp(40px, 5vw, 64px);
+}
+.hero__lead { max-width: var(--measure); font-size: clamp(1.0625rem, 1rem + .25vw, 1.25rem); line-height: 1.6; }
+.hero__cap { font-size: .9375rem; line-height: 1.5; color: var(--steel); justify-self: end; max-width: 22rem; text-align: right; }
+
+/* ---- sections ----------------------------------------------- */
+.section { padding-block: var(--section-y); border-top: 1px solid var(--rule); }
+.h2 {
+  font: 600 clamp(2rem, 1.2rem + 2.5vw, 3.25rem)/1.14 var(--serif);
+  letter-spacing: -.015em; text-wrap: balance; max-width: 22ch;
+}
+.h3 { font: 600 clamp(1.5rem, 1.15rem + 1vw, 2.125rem)/1.3 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+.lead { font-size: clamp(1.125rem, 1rem + .35vw, 1.3125rem); line-height: 1.55; max-width: var(--measure); }
+.prose { max-width: var(--measure); }
+.prose + .prose { margin-top: 1em; }
+.small { font-size: .9375rem; line-height: 1.55; color: var(--steel); max-width: var(--measure); }
+
+/* ================================================================
+   THE DAY: the signature
+   ================================================================ */
+.day { padding-top: clamp(64px, 8vw, 120px); }
+.day__head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px clamp(32px, 4vw, 72px); align-items: end; }
+.day__title { font: 600 clamp(2.5rem, 1.4rem + 3.4vw, 4.5rem)/1.05 var(--serif); letter-spacing: -.02em; }
+.day__setup { max-width: var(--measure); }
+.wfname { color: var(--bone); font-weight: 600; white-space: nowrap; }
+.day__setup .small { margin-top: 8px; }
+
+.day__grid {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(32px, 4vw, 72px); margin-top: clamp(40px, 5vw, 72px);
+}
+.step {
+  min-height: 82vh; display: flex; flex-direction: column; justify-content: center;
+  padding-block: 24px;
+}
+.step:first-child { min-height: 62vh; justify-content: flex-start; padding-top: 10vh; }
+.step:last-child { min-height: 70vh; }
+.step__head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.step__n {
+  flex: none; align-self: center;
+  display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--blue); color: var(--bone); font: 700 .9375rem/1 var(--sans);
+}
+.step__time { font: 600 1.0625rem/1.3 var(--sans); color: var(--blue-text); font-variant-numeric: tabular-nums; }
+.step__title { font: 600 clamp(1.75rem, 1.3rem + 1vw, 2.375rem)/1.2 var(--serif); }
+.step__text { margin-top: 14px; max-width: 32em; }
+.step__text q { color: var(--bone); }
+.js .step .step__title, .js .step .step__text { color: var(--steel); }
+.js .step.is-active .step__title { color: var(--bone); }
+.js .step.is-active .step__text { color: var(--text); }
+.js .step:not(.is-active) .step__n { border-color: rgba(59,130,246,.5); }
+
+/* the sticky system-state pane */
+.day__stage { position: relative; }
+.pane {
+  position: sticky; top: calc(var(--nav-h) + 20px);
+  height: min(calc(100vh - var(--nav-h) - 40px), 760px);
+  display: grid; grid-template-rows: auto 1fr auto;
+  background: var(--deep); border: 1px solid var(--rule-strong); border-radius: 14px;
+  overflow: hidden;
+}
+.no-js .pane, html:not(.js) .pane { display: none; }
+.pane__bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 20px; border-bottom: 1px solid var(--rule);
+}
+.pane__op { font: 600 .9375rem/1.35 var(--sans); color: var(--bone); }
+.pane__wf { font-size: .875rem; line-height: 1.4; color: var(--steel); }
+.pane__clock { font: 600 1.625rem/1.2 var(--sans); color: var(--bone); font-variant-numeric: tabular-nums; }
+.pane__states { position: relative; display: grid; min-height: 0; padding: clamp(18px, 2vw, 28px); overflow: hidden; }
+.pane__states > .state { grid-area: 1 / 1; align-self: center; opacity: 0; visibility: hidden; }
+.pane[data-active="1"] .state[data-s="1"],
+.pane[data-active="2"] .state[data-s="2"],
+.pane[data-active="3"] .state[data-s="3"],
+.pane[data-active="4"] .state[data-s="4"],
+.pane[data-active="5"] .state[data-s="5"],
+.pane[data-active="6"] .state[data-s="6"] { opacity: 1; visibility: visible; }
+.pane__rail {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 1px solid var(--rule);
+}
+.pane__rail li {
+  padding: 10px 6px 12px; text-align: center;
+  font: 600 .8125rem/1.3 var(--sans); color: rgba(157,176,196,.55);
+  border-top: 2px solid transparent; margin-top: -1px;
+}
+.pane__rail li.is-done { color: var(--steel); border-top-color: rgba(59,130,246,.45); }
+.pane__rail li.is-now { color: var(--bone); border-top-color: var(--blue); }
+
+/* inline state cards (phones, tablets, no-JS; screen readers on desktop) */
+.step .state {
+  margin-top: 22px; padding: 18px;
+  background: var(--deep); border: 1px solid var(--rule-strong); border-radius: 12px;
+}
+
+/* ---- state 1: the paper sheet ------------------------------- */
+.sheet {
+  background: var(--paper); color: var(--print);
+  border-radius: 3px; padding: clamp(16px, 2.2vw, 26px);
+  box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 2px 0 rgba(0,0,0,.2);
+  transform: rotate(-.8deg);
+  font: 400 .8125rem/1.4 var(--sans);
+  max-width: 600px; margin-inline: auto; width: 100%;
+}
+.sheet__org { font-size: .75rem; line-height: 1.45; color: #3A4250; }
+.sheet__titlerow {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  margin-top: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--print);
+}
+.sheet__title { color: var(--print); font: 700 1rem/1.3 var(--sans); text-transform: uppercase; letter-spacing: .06em; }
+.sheet__code { font: 700 .875rem/1.3 var(--sans); letter-spacing: .04em; border: 1.5px solid var(--print); padding: 1px 6px; }
+.sheet__fields { display: grid; grid-template-columns: minmax(0, 3fr) repeat(3, minmax(0, 1fr)); gap: 0 14px; margin-top: 12px; }
+.sheet__fields > div { border-bottom: 1px solid var(--paper-rule); padding-bottom: 2px; }
+.sheet__fields dt { font-size: .6875rem; line-height: 1.3; color: #4A5260; }
+.sheet__fields dd { min-height: 1.6em; }
+.hand { font: 400 1.1875rem/1.25 var(--hand); color: var(--pen); }
+.sheet__fields .hand { font-size: 1.0625rem; }
+.sheet__checks { width: 100%; margin-top: 14px; border-collapse: collapse; }
+.sheet__checks th, .sheet__checks td { text-align: left; padding: 5px 8px; border: 1px solid var(--paper-rule); vertical-align: middle; }
+.sheet__checks th { font: 700 .6875rem/1.3 var(--sans); color: #3A4250; background: rgba(31,38,48,.06); }
+.sheet__checks td:nth-child(3) { width: 26%; }
+.sheet__note { margin-top: 12px; font-size: .75rem; font-weight: 600; font-style: italic; color: #3A4250; }
+.state__cap { margin-top: 14px; font-size: .8125rem; color: var(--steel); text-align: center; }
+
+/* ---- state 2: read and matched ------------------------------ */
+.snip {
+  background: var(--paper); color: var(--print); border-radius: 3px;
+  padding: 10px 14px 8px; transform: rotate(-.6deg);
+  box-shadow: 0 10px 24px rgba(0,0,0,.4);
+  display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline;
+  outline: 2px solid var(--blue); outline-offset: 5px;
+}
+.snip span { font-size: .6875rem; color: #4A5260; }
+.snip .hand { font-size: 1.0625rem; }
+.matchline {
+  display: flex; align-items: center; gap: 10px; margin: 16px 0 12px 22px;
+  font: 600 .8125rem/1.35 var(--sans); color: var(--blue-text);
+}
+.matchline::before { content: ""; width: 2px; height: 26px; background: var(--blue); flex: none; }
+.wf { border: 1px solid var(--rule-strong); border-left: 3px solid var(--blue); border-radius: 8px; padding: 12px 14px; }
+.wf__kind { font: var(--label); color: var(--steel); }
+.wf__name { font: 600 1.0625rem/1.4 var(--sans); color: var(--bone); }
+.wf__op { font-size: .875rem; color: var(--text); }
+.vals { margin-top: 14px; display: grid; gap: 0; }
+.vals li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline;
+  padding: 7px 2px; border-bottom: 1px solid var(--rule); font-size: .9375rem;
+}
+.vals b { color: var(--bone); font-weight: 600; font-variant-numeric: tabular-nums; }
+.vals .src { font-size: .8125rem; color: var(--steel); }
+.vals .src::before { content: "✓ "; color: var(--bone); }
+.s-note { margin-top: 12px; font-size: .875rem; color: var(--steel); }
+
+/* ---- state 3: the checks ------------------------------------ */
+.s-sum { font-size: .9375rem; color: var(--text); margin-bottom: 8px; }
+.s-sum b { color: var(--bone); }
+.checks { display: grid; }
+.ck {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; align-items: baseline;
+  padding: 12px 0 14px; border-bottom: 1px solid var(--rule);
+}
+.ck__name { font: 600 1rem/1.35 var(--sans); color: var(--bone); }
+.ck__vs { grid-column: 1; font-size: .875rem; color: var(--steel); font-variant-numeric: tabular-nums; }
+.v { grid-row: 1 / 3; grid-column: 2; align-self: center; font: 700 .9375rem/1.3 var(--sans); font-variant-numeric: tabular-nums; }
+.v--ok { color: var(--ok); }
+.v--bad { color: var(--bad-text); }
+.v::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+.v--ok::before { background: var(--ok); }
+.v--bad::before { background: var(--bad); }
+.gauge { grid-column: 1 / -1; position: relative; height: 26px; margin-top: 10px; }
+.gauge__track { position: absolute; left: 0; right: 0; top: 8px; height: 4px; border-radius: 2px; background: rgba(157,176,196,.18); }
+.gauge__margin {
+  position: absolute; top: 6px; height: 8px; border-radius: 2px;
+  left: var(--from); width: calc(var(--to) - var(--from));
+  transform-origin: left center;
+}
+.ck--ok .gauge__margin { background: rgba(34,197,94,.55); }
+.ck--bad .gauge__margin { background: var(--bad); }
+.gauge__lim { position: absolute; top: 0; left: var(--lim); width: 2px; height: 20px; background: var(--bone); transform: translateX(-1px); }
+.gauge__lim span { position: absolute; top: 19px; left: 50%; transform: translateX(-50%); font-size: .6875rem; color: var(--steel); white-space: nowrap; }
+.gauge__val {
+  position: absolute; top: 4px; left: var(--val); width: 12px; height: 12px; margin-left: -6px;
+  border-radius: 50%; background: var(--deep); border: 2.5px solid var(--bone);
+}
+
+/* ---- state 4: NCRs ------------------------------------------ */
+.ncrs { display: grid; gap: 10px; }
+.ncr {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 14px; align-items: baseline;
+  padding: 12px 14px; border: 1px solid var(--rule-strong); border-left: 3px solid var(--bad); border-radius: 8px;
+}
+.ncr__t { font: 600 1rem/1.35 var(--sans); color: var(--bone); }
+.ncr__m { font: 700 .9375rem/1.35 var(--sans); color: var(--bad-text); font-variant-numeric: tabular-nums; }
+.ncr__vs { font-size: .875rem; color: var(--steel); }
+.ncr__o { grid-column: 1 / -1; margin-top: 6px; font-size: .9375rem; color: var(--text); }
+.ncr__o b { color: var(--bone); font-weight: 600; }
+.s-okline { margin-top: 12px; font-size: .875rem; color: var(--steel); }
+.s-okline b { color: var(--ok); font-weight: 700; }
+
+/* ---- state 5: decided --------------------------------------- */
+.decision { border: 1px solid var(--rule-strong); border-left: 3px solid var(--blue); border-radius: 8px; padding: 14px 16px; }
+.decision__k { font: var(--label); color: var(--steel); }
+.decision__who { font: 600 1.125rem/1.35 var(--sans); color: var(--bone); }
+.decision__reason { margin-top: 12px; padding: 10px 12px; border: 1px dashed var(--rule-strong); border-radius: 6px; font-size: .875rem; color: var(--steel); }
+.decision__reason b { color: var(--bone); font-weight: 600; }
+.history { margin-top: 16px; display: grid; }
+.history li {
+  display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 12px;
+  padding: 6px 0 6px; border-left: 2px solid var(--rule-strong); padding-left: 14px; position: relative;
+  font-size: .9375rem;
+}
+.history li::before { content: ""; position: absolute; left: -5px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--deep); border: 2px solid var(--steel); }
+.history li:last-child::before { border-color: var(--blue); background: var(--blue); }
+.history time { color: var(--blue-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---- state 6: counted --------------------------------------- */
+.count { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px 28px; align-items: center; }
+.count__q { font: 600 clamp(3rem, 2rem + 3vw, 4.5rem)/1 var(--serif); color: var(--bone); font-variant-numeric: tabular-nums; }
+.count__q small { font: 600 .45em/1 var(--sans); color: var(--steel); margin-left: 4px; }
+.count__base { margin-top: 10px; font-size: .9375rem; color: var(--text); }
+.lift { width: 100%; height: auto; display: block; }
+.lift text { font-family: var(--sans); }
+.after { grid-column: 1 / -1; display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.after li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: .9375rem; }
+.after b { color: var(--bone); font-weight: 600; text-align: right; }
+
+/* ---- contrast: the same day, in a typical stack ------------- */
+.vs { margin-top: clamp(64px, 8vw, 120px); }
+.vs__grid {
+  margin-top: 32px;
+  display: grid; grid-template-columns: 9.5rem repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--rule-strong);
+}
+.vs__axis { display: contents; }
+.vs__axis span { padding: 12px 16px 12px 0; font: var(--label); color: var(--steel); border-bottom: 1px solid var(--rule); }
+.vs__axis span:first-child { color: transparent; }
+.vs__who { padding: 20px 16px 20px 0; font: 600 1rem/1.4 var(--sans); color: var(--bone); border-bottom: 1px solid var(--rule); }
+.vs__cell { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--rule); position: relative; font-size: .9375rem; line-height: 1.5; }
+.vs__cell::before { content: ""; position: absolute; left: 0; top: 0; width: 1px; height: 12px; background: var(--rule-strong); }
+.vs__dg { color: var(--bone); }
+.vs__dg span { display: block; font-size: .875rem; color: var(--steel); margin-top: 4px; }
+.vs__done { border-bottom: 1px solid var(--rule); position: relative; }
+.vs__done::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid var(--blue); opacity: .55; }
+.vs__done span { position: absolute; left: 0; bottom: calc(50% + 6px); font: var(--label); color: var(--blue-text); white-space: nowrap; }
+.vs__close {
+  margin-top: clamp(48px, 6vw, 80px); max-width: 30ch;
+  font: 400 clamp(1.5rem, 1.1rem + 1.4vw, 2.375rem)/1.35 var(--serif); color: var(--bone); text-wrap: balance;
+}
+
+/* ---- screens ------------------------------------------------ */
+.screens__head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 20px 64px; align-items: end; }
+.cc { margin-top: clamp(36px, 4vw, 56px); }
+.cc--phone, .phone-only { display: none; }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 40px; margin-top: 18px; }
+.trio p { font-size: .9375rem; line-height: 1.5; }
+.trio .key { display: block; font-size: 1rem; margin-bottom: 2px; }
+.gallery { margin-top: clamp(56px, 7vw, 96px); display: grid; gap: clamp(48px, 6vw, 88px); }
+.gallery .pair { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px clamp(28px, 4vw, 56px); align-items: end; }
+.gallery .pair--rev { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+.gallery .pair--rev .shot { order: 2; }
+.gallery .pair .shot-cap { margin-top: 0; font-size: 1rem; }
+
+/* ---- stakes ------------------------------------------------- */
+.stakes__open { max-width: 40em; font: 400 clamp(1.1875rem, 1rem + .6vw, 1.5rem)/1.55 var(--serif); color: var(--text); }
+.stakes .h2 { margin-top: clamp(40px, 5vw, 64px); }
+.figs { margin-top: 40px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 80px); }
+.fig { padding: 24px 0 28px; border-top: 1px solid var(--rule-strong); display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 4px 24px; align-items: start; }
+.fig__n { font: 600 clamp(2.5rem, 1.8rem + 1.6vw, 3.5rem)/1.1 var(--serif); color: var(--bone); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fig__n small { display: block; font: 600 .95rem/1.3 var(--sans); color: var(--steel); }
+.fig__t { max-width: 34em; padding-top: .7em; }
+.stakes__body { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 64px; align-items: start; }
+.stakes__body .lead { color: var(--bone); }
+
+/* ---- where the stack breaks --------------------------------- */
+.breaks { margin-top: 44px; }
+.breaks__head, .brk { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px clamp(32px, 5vw, 80px); }
+.breaks__head { padding-bottom: 12px; border-bottom: 1px solid var(--rule-strong); }
+.brk { padding: 26px 0 28px; border-bottom: 1px solid var(--rule); }
+.brk__t { font: 600 1.25rem/1.35 var(--serif); }
+.brk__fail p { margin-top: 8px; max-width: var(--measure); }
+.brk__fix { padding-left: 20px; border-left: 2px solid var(--blue); max-width: calc(var(--measure) + 22px); align-self: start; }
+.brk__fix p { color: var(--bone); }
+.brk__fix a { display: inline-block; margin-top: 8px; color: var(--blue-text); font-weight: 600; font-size: .9375rem; text-underline-offset: 4px; }
+.brk__fix a:hover { color: var(--bone); }
+.brk__mark { width: 18px; height: 18px; vertical-align: -3px; margin-right: 8px; display: inline-block; }
+.breaks__close { margin-top: 44px; max-width: 34ch; font: 400 clamp(1.375rem, 1.1rem + .9vw, 1.875rem)/1.4 var(--serif); color: var(--bone); }
+
+/* ---- the model ---------------------------------------------- */
+.model__head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 20px 64px; align-items: end; }
+.model__head .lead em { font-style: normal; color: var(--bone); font-weight: 600; }
+.chain { margin-top: clamp(40px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 0; }
+.node {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 6px 14px;
+  border: 1.5px solid var(--rule-strong); border-radius: 8px; background: var(--navy);
+  font: 600 .9375rem/1.3 var(--sans); color: var(--bone);
+}
+.node--op { border-color: var(--blue); }
+.node--wf { border-color: var(--blue); background: rgba(59,130,246,.12); }
+.chain .sep { width: 28px; height: 1.5px; background: var(--steel); position: relative; flex: none; }
+.chain .sep::after { content: ""; position: absolute; right: -1px; top: -4px; width: 7px; height: 7px; border-top: 1.5px solid var(--steel); border-right: 1.5px solid var(--steel); transform: rotate(45deg); }
+.chain__cap { margin-top: 12px; font-size: .9375rem; color: var(--steel); max-width: var(--measure); }
+.rels { margin-top: 36px; display: grid; gap: 0; border-top: 1px solid var(--rule-strong); }
+.rel {
+  display: grid; grid-template-columns: 8.5rem 16rem 8.5rem minmax(0, 1fr); gap: 12px 0; align-items: center;
+  padding: 18px 0; border-bottom: 1px solid var(--rule);
+}
+.rel .node { justify-content: center; }
+.rel__eg { padding-left: clamp(24px, 4vw, 56px); max-width: calc(var(--measure) + 56px); }
+.edge { position: relative; display: flex; align-items: center; justify-content: center; min-height: 40px; }
+.edge::before { content: ""; position: absolute; left: 0; right: 8px; top: 50%; height: 1.5px; background: var(--blue); }
+.edge::after { content: ""; position: absolute; right: 2px; top: calc(50% - 4px); width: 8px; height: 8px; border-top: 1.5px solid var(--blue); border-right: 1.5px solid var(--blue); transform: rotate(45deg); }
+.edge span { position: relative; background: var(--ink); padding: 0 10px; font: italic 500 .9375rem/1.3 var(--serif); color: var(--blue-text); }
+.rel__eg { font-size: .9375rem; line-height: 1.5; color: var(--text); }
+.nouns { margin-top: clamp(48px, 6vw, 80px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px clamp(24px, 4vw, 56px); }
+.nouns dt { font: 600 1.125rem/1.35 var(--serif); color: var(--bone); }
+.nouns dd { margin-top: 4px; font-size: .9375rem; line-height: 1.55; }
+.verbs { margin-top: clamp(48px, 6vw, 72px); display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 16px 64px; align-items: start; }
+.verbs ul { display: flex; flex-wrap: wrap; gap: 8px 32px; padding-top: 10px; }
+.verbs li { font: italic 500 1.1875rem/1.45 var(--serif); color: var(--bone); }
+.verbs li.wip { color: var(--steel); }
+.ms { margin-top: clamp(56px, 7vw, 96px); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px clamp(32px, 5vw, 80px); align-items: start; }
+.ms p + p { margin-top: 1em; }
+.spec { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.spec caption { text-align: left; padding-bottom: 10px; }
+.spec th, .spec td { text-align: left; padding: 12px 16px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.spec thead th { font: var(--label); color: var(--steel); border-bottom: 1px solid var(--rule-strong); }
+.spec tbody th { font-weight: 600; color: var(--bone); width: 38%; }
+.spec tr.is-day th, .spec tr.is-day td { color: var(--bone); }
+.spec tr.is-day th { box-shadow: inset 3px 0 0 var(--blue); padding-left: 12px; }
+.verdict { margin-top: clamp(40px, 5vw, 64px); padding: 22px 24px; border: 1px dashed var(--rule-strong); border-radius: var(--radius); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 12px 48px; }
+.verdict h3 { font: 600 1.25rem/1.35 var(--serif); }
+.verdict .label { margin-top: 6px; display: block; }
+.verdict q { color: var(--bone); }
+
+/* ---- how the record stays true ------------------------------ */
+.principles { margin-top: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px clamp(24px, 4vw, 56px); }
+.principles li { border-top: 2px solid var(--rule-strong); padding-top: 18px; }
+.principles h3 { font: 600 1.25rem/1.35 var(--serif); }
+.principles p { margin-top: 8px; }
+.ai { margin-top: clamp(64px, 8vw, 112px); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 24px 64px; align-items: start; }
+.ai__aside { margin-top: 20px; font: 400 1.25rem/1.45 var(--serif); color: var(--bone); max-width: 30ch; }
+
+/* ---- company ------------------------------------------------ */
+.company { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px 64px; }
+.company .prose { margin-top: 22px; }
+.founder { margin-top: 32px; }
+.founder__name { font: 600 1.375rem/1.4 var(--serif); color: var(--bone); }
+.founder__role { color: var(--steel); }
+.facts { display: grid; align-self: start; }
+.facts li { padding: 20px 0 16px; border-top: 1px solid var(--rule-strong); color: var(--bone); font: 500 1.0625rem/1.45 var(--sans); }
+.facts li:last-child { border-bottom: 1px solid var(--rule-strong); }
+.facts .todo { display: inline-block; }
+.entities { margin-top: 20px; font-size: .9375rem; color: var(--steel); }
+
+/* ---- contact ------------------------------------------------ */
+.contact { padding-block: clamp(88px, 11vw, 160px); border-top: 1px solid var(--rule); }
+.contact__title { font: 600 clamp(2.25rem, 1.2rem + 3.6vw, 4.25rem)/1.1 var(--serif); letter-spacing: -.02em; max-width: 18ch; text-wrap: balance; }
+.contact__sub { margin-top: 20px; }
+.addr { margin-top: 40px; }
+.addr__text { display: block; margin-top: 6px; font: 500 clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem)/1.35 var(--serif); color: var(--bone); overflow-wrap: anywhere; user-select: all; }
+.addr__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; align-items: center; }
+.copy-status { color: var(--steel); font-size: .9375rem; min-width: 5em; }
+.no-js-hide { display: none; }
+.js .no-js-hide { display: block; }
+.fallback { margin-top: 28px; max-width: var(--measure); }
+
+/* ---- sources ------------------------------------------------ */
+.sources { padding-block: clamp(56px, 7vw, 88px); border-top: 1px solid var(--rule); }
+.sources summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; }
+.sources summary::-webkit-details-marker { display: none; }
+.sources summary .h3 { font-size: clamp(1.375rem, 1.1rem + .8vw, 1.75rem); }
+.sources summary::after { content: ""; width: 8px; height: 8px; border-right: 1.5px solid var(--steel); border-bottom: 1.5px solid var(--steel); transform: rotate(45deg); margin-top: -4px; }
+.sources details[open] summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.srclist { margin-top: 20px; columns: 2; column-gap: 56px; list-style: decimal; padding-left: 1.6em; font-size: .9375rem; line-height: 1.5; }
+.srclist li { break-inside: avoid; padding: 0 0 12px 4px; }
+.srclist li::marker { color: var(--blue-text); font-weight: 700; font-variant-numeric: tabular-nums; }
+.srclist li:target { color: var(--bone); }
+.srclist a { color: var(--text); text-underline-offset: 3px; text-decoration-color: rgba(157,176,196,.45); overflow-wrap: anywhere; }
+.srclist a:hover { color: var(--bone); }
+.notes { margin-top: 24px; display: grid; gap: 6px; font-size: .9375rem; color: var(--steel); max-width: var(--measure); }
+
+/* ---- footer ------------------------------------------------- */
+.footer { border-top: 1px solid var(--rule); padding-block: 56px 72px; background: var(--navy); }
+.footer__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 36px 48px; }
+.footer__tagline { margin-top: 12px; max-width: 30ch; color: var(--steel); }
+.footer__list { margin-top: 12px; display: grid; gap: 4px; }
+.footer__list a { color: var(--text); text-decoration: none; display: inline-block; padding: 3px 0; }
+.footer__list a:hover { color: var(--bone); text-decoration: underline; text-underline-offset: 4px; }
+.footer__list span { color: var(--steel); display: inline-block; padding: 3px 0; }
+.footer__bottom {
+  margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px;
+  font-size: .9375rem; color: var(--steel);
+}
+.footer__motto { font-family: var(--serif); color: var(--text); }
+
+/* ================================================================
+   Motion: the one orchestrated moment is the day itself.
+   States cross-fade; at 07:06 the checks draw their margins.
+   ================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .pane__states > .state { transition: opacity 380ms var(--ease), visibility 0s linear 380ms, transform 380ms var(--ease); transform: translateY(10px); }
+  .pane[data-active="1"] .state[data-s="1"], .pane[data-active="2"] .state[data-s="2"],
+  .pane[data-active="3"] .state[data-s="3"], .pane[data-active="4"] .state[data-s="4"],
+  .pane[data-active="5"] .state[data-s="5"], .pane[data-active="6"] .state[data-s="6"] {
+    transform: none; transition: opacity 380ms var(--ease) 120ms, visibility 0s, transform 380ms var(--ease) 120ms;
+  }
+  .js .step .step__title, .js .step .step__text { transition: color 300ms var(--ease); }
+  .pane__rail li { transition: color 300ms, border-color 300ms; }
+
+  /* the checks: each row's recorded value travels to its place,
+     its margin grows from the limit, then the verdict lands */
+  .js .state[data-s="3"] .gauge__val { transition: left 700ms var(--ease); }
+  .js .state[data-s="3"] .gauge__margin { transition: transform 600ms var(--ease); }
+  .js .state[data-s="3"] .v { transition: opacity 300ms var(--ease); }
+  .js .state[data-s="3"]:not(.is-on) .gauge__val { left: 0; }
+  .js .state[data-s="3"]:not(.is-on) .gauge__margin { transform: scaleX(0); }
+  .js .state[data-s="3"]:not(.is-on) .v { opacity: 0; }
+  .js .state[data-s="3"].is-on .ck:nth-child(1) .gauge__val { transition-delay: 150ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(2) .gauge__val { transition-delay: 450ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(3) .gauge__val { transition-delay: 750ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(4) .gauge__val { transition-delay: 1050ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(1) .gauge__margin { transition-delay: 850ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(2) .gauge__margin { transition-delay: 1150ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(3) .gauge__margin { transition-delay: 1450ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(4) .gauge__margin { transition-delay: 1750ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(1) .v { transition-delay: 1350ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(2) .v { transition-delay: 1650ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(3) .v { transition-delay: 1950ms; }
+  .js .state[data-s="3"].is-on .ck:nth-child(4) .v { transition-delay: 2250ms; }
+}
+
+/* ================================================================
+   Responsive
+   ================================================================ */
+@media (min-width: 1024px) {
+  /* the pane shows the state; the inline copies stay for screen readers */
+  .js .step .state {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+}
+@media (max-width: 1023px) {
+  .day__head, .day__grid { grid-template-columns: 1fr; }
+  .day__stage { display: none; }
+  .step, .step:first-child, .step:last-child { min-height: 0; padding: 0; justify-content: flex-start; }
+  .step + .step { margin-top: 48px; }
+  .js .step .step__title { color: var(--bone); }
+  .js .step .step__text { color: var(--text); }
+  .js .step:not(.is-active) .step__n { border-color: var(--blue); }
+
+  .hero .shot { --cx: 346; --cw: 1566; }
+  .hero { --overlap: clamp(44px, 14vw, 150px); }
+  .hero__copy { max-width: min(38rem, 78%); }
+  .hero__after { grid-template-columns: 1fr; }
+  .hero__cap { justify-self: start; text-align: left; max-width: var(--measure); }
+
+  .screens__head, .model__head, .stakes__body, .ms, .ai, .company, .verbs, .verdict { grid-template-columns: 1fr; }
+  .figs { grid-template-columns: 1fr; }
+  .gallery .pair, .gallery .pair--rev { grid-template-columns: 1fr; }
+  .gallery .pair--rev .shot { order: 0; }
+  .gallery .pair .shot-cap { font-size: .9375rem; }
+  .nouns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .principles { grid-template-columns: 1fr; max-width: var(--measure); }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
+}
+@media (max-width: 859px) {
+  .nav__toggle { display: inline-flex; }
+  .nav__links {
+    display: none; position: absolute; top: var(--nav-h); left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--ink); border-bottom: 1px solid var(--rule-strong);
+    padding: 8px var(--gutter) 20px;
+  }
+  .nav.is-open .nav__links { display: flex; }
+  .nav__link { padding: 13px 0; font-size: 1.0625rem; border-bottom: 1px solid var(--rule); }
+  .nav__link[aria-current="true"]::after { bottom: 8px; width: 2.5em; right: auto; }
+  .nav__links .btn { margin-top: 16px; }
+
+  .breaks__head { display: none; }
+  .brk { grid-template-columns: 1fr; }
+  .vs__grid { grid-template-columns: 1fr; border-top: 0; }
+  .vs__axis { display: none; }
+  .vs__who { padding: 16px 0 6px; border-bottom: 0; color: var(--blue-text); }
+  .vs__who--stack { color: var(--steel); margin-top: 8px; }
+  .vs__cell { padding: 10px 0 10px 18px; border-bottom: 0; border-left: 1px solid var(--rule-strong); }
+  .vs__cell::before { display: none; }
+  .vs__cell[data-when]::after { content: attr(data-when); display: block; order: -1; }
+  .vs__cell[data-when] { display: flex; flex-direction: column; }
+  .vs__cell[data-when]::after { font: var(--label); color: var(--steel); margin-bottom: 2px; }
+  .vs__done { display: none; }
+  .trio { grid-template-columns: 1fr; }
+  .rel { grid-template-columns: 1fr; gap: 6px; }
+  .rel .node { justify-self: start; }
+  .rel__eg { padding-left: 0; }
+  .edge { justify-content: flex-start; min-height: 30px; padding-left: 18px; }
+  .edge::before { left: 18px; right: auto; top: 0; bottom: 0; width: 1.5px; height: auto; }
+  .edge::after { left: 14px; right: auto; top: auto; bottom: 1px; transform: rotate(135deg); }
+  .edge span { background: none; padding-left: 16px; }
+}
+@media (max-width: 699px) {
+  body { font-size: 1rem; }
+  .hero { --overlap: 0px; padding-top: 44px; }  /* the band the mock tag sits in */
+  .hero .shot { --cx: 960; --cy: 0; --cw: 952; --ch: 560; }
+  .hero .shot::after { background: linear-gradient(to top, rgba(10,20,36,.7) 0%, rgba(10,20,36,0) 35%); }
+  .hero__copy { padding: 22px 0 0; max-width: none; }
+  .hero__copy::before { display: none; }
+  .hero__kicker { font-size: 1rem; }
+  .hero__sub { margin-top: 14px; }
+  .hero__actions { margin-top: 22px; }
+  .hero__actions .btn { flex: 1 1 auto; }
+  .hero__after { padding-top: 32px; }
+  .hero__lead { font-size: 1rem; }
+
+  .wfname { white-space: normal; }
+  .step .state { padding: 14px; margin-inline: -4px; }
+  .sheet { padding: 14px; transform: rotate(-.5deg); }
+  .sheet__fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sheet__fields > div:first-child { grid-column: 1 / -1; }
+  .count { grid-template-columns: 1fr; }
+  .pin { font-size: .75rem; padding: 2px 8px 2px 6px; }
+
+  .cc--desk { display: none; }
+  .cc--phone { display: grid; gap: 28px; }
+  .trio { display: none; }
+  .gallery { grid-template-columns: 1fr; }
+  .phone-cut, .phone-hide { display: none !important; }
+  .phone-only { display: block; }
+  .brk__fail p, .brk__fix a { display: none; }
+  .brk__t { font-size: 1.1875rem; }
+  .vs__who:not(.vs__who--stack), .vs__dg { display: none; }
+  .vs__who--stack { margin-top: 0; }
+  .model__head .lead { font-size: 1.0625rem; }
+  .cc--phone { gap: 22px; }
+  .gallery { margin-top: 40px; }
+  /* compact state cards */
+  .step + .step { margin-top: 40px; }
+  .step .state { margin-top: 16px; }
+  .step .state .vals { display: none; }
+  .s-note { margin-top: 10px; }
+  .matchline { margin: 12px 0 10px 22px; }
+  .ck { padding: 8px 0 8px; }
+  .gauge { margin-top: 6px; height: 32px; }
+  .ncr { padding: 10px 12px; }
+  .ncr__vs { display: none; }
+  .ncr__o { margin-top: 2px; }
+  .decision__reason { margin-top: 8px; }
+  .history { margin-top: 12px; }
+  .history li { padding-block: 3px; font-size: .875rem; }
+  .history li::before { top: 9px; }
+  .count { grid-template-columns: 1fr; gap: 12px; }
+  .count > div:first-child { display: flex; align-items: baseline; gap: 14px; }
+  .count__q { font-size: 2.75rem; flex: none; }
+  .count__base { font-size: .875rem; margin-top: 0; }
+  .after li { padding: 7px 0; font-size: .875rem; }
+  .vs { margin-top: 56px; }
+  .vs__grid { margin-top: 16px; }
+  .vs__cell { padding-block: 6px; }
+  .vs__close { margin-top: 32px; }
+  .stakes__open { font-size: 1.125rem; }
+  .figs { margin-top: 24px; }
+  .stakes__body { margin-top: 24px; }
+  .breaks { margin-top: 24px; }
+  .brk { padding: 20px 0; gap: 12px; }
+  .breaks__close { margin-top: 28px; }
+  .chain { margin-top: 28px; }
+  .ms { margin-top: 36px; }
+  .spec th, .spec td { padding-block: 9px; }
+  .ai { margin-top: 0; }
+  .company .prose { margin-top: 16px; }
+  .founder { margin-top: 20px; }
+  .facts li { padding: 14px 0 10px; }
+  .contact { padding-block: 64px; }
+  .addr { margin-top: 28px; }
+  .footer { padding-block: 40px 48px; }
+  .footer__bottom { margin-top: 24px; }
+  .fig { grid-template-columns: 5.75rem minmax(0, 1fr); gap: 0 14px; padding: 16px 0 18px; }
+  .fig__n { font-size: 2.125rem; }
+  .fig__t { padding-top: .3em; font-size: .9375rem; line-height: 1.5; }
+  .stakes .h2 { margin-top: 0; }
+  .srclist { columns: 1; }
+  .nouns { grid-template-columns: 1fr; }
+  .addr__actions .btn { flex: 1 1 8rem; }
+  .footer__grid { grid-template-columns: 1fr; }
+  .footer { padding-bottom: 56px; }
+  .section { padding-block: 48px; }
+  .day { padding-top: 48px; }
+  .h2 { font-size: 1.875rem; }
+  .day__title { font-size: 2.375rem; }
+  .step .history { display: none; }
+  .vs__grid, .vs > .h3 { display: none; }
+  .vs { margin-top: 44px; }
+  .vs__close { margin-top: 0; font-size: 1.375rem; }
+  .footer__grid > div:last-child { display: none; }
+  .sources { padding-block: 32px; }
+  .notes { margin-top: 12px; font-size: .875rem; }
+  .hero .shot { --ch: 500; }
+}
+/* mock chrome: on phones the tag sits in a band under the nav and scrolls away */
+@media (max-width: 699.98px) { .mock-tag { position: absolute; top: calc(var(--nav-h) + 8px); bottom: auto; left: var(--gutter); } }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="#top" aria-label="Indus, home"><span aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span></a>
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#day" data-spy="day">The day</a>
+      <a class="nav__link" href="#screens" data-spy="screens">The system</a>
+      <a class="nav__link" href="#stakes" data-spy="why">Why it matters</a>
+      <a class="nav__link" href="#model" data-spy="model">The model</a>
+      <a class="nav__link" href="#company" data-spy="company">Company</a>
+      <a class="btn btn--quiet btn--sm" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main id="content" tabindex="-1">
+
+<!-- ============ 1 · Hero ============ -->
+<section class="hero" id="top" data-nav="">
+  <div class="shot">
+    <img src="../../assets/command-center.webp" width="1912" height="935" fetchpriority="high" decoding="async"
+         alt="The DiPGOS command centre: scope navigation at left, a live map of the dam's work fronts at the centre, and productivity, quality and business panels at right">
+  </div>
+  <div class="hero__panel">
+    <div class="wrap">
+      <div class="hero__copy">
+        <p class="hero__kicker">The world needs a new way to build.</p>
+        <h1 class="hero__title">Construction built the modern world. It still can’t tell you, today, what was built today.</h1>
+        <p class="hero__sub">Every pour checked against the method, owned by a named engineer, and counted the day it happens.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#day">See a day on a work front</a>
+          <a class="btn btn--quiet" href="#contact">Get in touch</a>
+        </div>
+        <p class="hero__proof">Running on an RCC dam: Stage 1, Blocks 12–24, EL 898–990 m.<span class="dag">†</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap hero__after">
+    <p class="hero__lead">DiPGOS is the project operating system for engineering and construction megaprojects. It models the project the way it is actually built: every scope, work front, operation, crew, machine and material, and the method that governs them. Each day’s work is then checked, owned and counted the day it happens. <span class="hl">People decide. The system keeps the record.</span></p>
+    <p class="hero__cap">The DiPGOS command centre. From the running system. Pilot data.</p>
+  </div>
+</section>
+
+<!-- ============ 2 · One day on a work front (signature) ============ -->
+<section class="section day" id="day" data-nav="day">
+  <div class="wrap">
+    <header class="day__head">
+      <h2 class="day__title">One layer, one day.</h2>
+      <div class="day__setup">
+        <p class="lead">Work front <span class="wfname">Blocks 14–15 · EL 922.0–932.2</span> <span class="wfname">· Lift 2 · Layer 7</span>. Operation: Place &amp; spread RCC. 820 m³.<span class="dag">†</span></p>
+        <p class="small">Illustrative timeline. The values come from a real sample record sheet.</p>
+      </div>
+    </header>
+
+    <div class="day__grid">
+      <ol class="day__steps" id="steps">
+
+        <li class="step" data-step="1" data-time="06:40" id="step-1">
+          <div class="step__head"><span class="step__n" aria-hidden="true">1</span><span class="step__time">06:40</span><h3 class="step__title">Paper</h3></div>
+          <p class="step__text">The foreman fills in the RCC-PL sheet on paper, as always. The sheet itself says: <q>A blank is recorded as ‘not answered’, never as a pass.</q></p>
+          <div class="state" data-s="1">
+            <figure class="sheet" aria-label="The RCC-PL record sheet, filled in by hand">
+              <p class="sheet__org">PFJV / Descon† · RCC Dam Construction Stage 1 · Method Statement MS-348† · Daily site record</p>
+              <div class="sheet__titlerow"><p class="sheet__title">Place &amp; spread RCC</p><span class="sheet__code">RCC-PL</span></div>
+              <dl class="sheet__fields">
+                <div><dt>Panel</dt><dd class="hand">Blocks 14–15 · EL 922.0–932.2</dd></div>
+                <div><dt>Lift</dt><dd class="hand">2</dd></div>
+                <div><dt>Layer</dt><dd class="hand">7</dd></div>
+                <div><dt>Quantity, m³</dt><dd class="hand">820</dd></div>
+              </dl>
+              <table class="sheet__checks">
+                <thead><tr><th scope="col">Check</th><th scope="col">Method limit</th><th scope="col">Recorded</th></tr></thead>
+                <tbody>
+                  <tr><td>Slope</td><td>≤ 1:10</td><td class="hand">1:11</td></tr>
+                  <tr><td>Unloading height</td><td>≤ 1.5 m</td><td class="hand">2</td></tr>
+                  <tr><td>Layer thickness</td><td>33 cm</td><td class="hand">35</td></tr>
+                  <tr><td>Temperature</td><td>&lt; 18 °C</td><td class="hand">18.5</td></tr>
+                </tbody>
+              </table>
+              <p class="sheet__note">A blank is recorded as “not answered”, never as a pass.</p>
+            </figure>
+            <p class="state__cap">Recreated from a real record sheet.</p>
+          </div>
+        </li>
+
+        <li class="step" data-step="2" data-time="07:05" id="step-2">
+          <div class="step__head"><span class="step__n" aria-hidden="true">2</span><span class="step__time">07:05</span><h3 class="step__title">Read</h3></div>
+          <p class="step__text">A photo of the sheet lands in the site-reports folder. DiPGOS reads it and matches it to its work front by the site’s own words. A person confirms each value, because nothing is written without a source. A sheet that could belong to two fronts is parked, not guessed.</p>
+          <div class="state" data-s="2">
+            <div class="snip" aria-label="The panel line of the photographed sheet">
+              <span>Panel</span><b class="hand">Blocks 14–15 · EL 922.0–932.2</b>
+              <span>Lift</span><b class="hand">2</b>
+              <span>Layer</span><b class="hand">7</b>
+            </div>
+            <p class="matchline">Matched by the site’s own words</p>
+            <div class="wf">
+              <p class="wf__kind">Work front</p>
+              <p class="wf__name">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</p>
+              <p class="wf__op">Operation: Place &amp; spread RCC</p>
+            </div>
+            <ul class="vals">
+              <li><span>Slope</span><b>1:11</b><span class="src">confirmed</span></li>
+              <li><span>Unloading height</span><b>2.0 m</b><span class="src">confirmed</span></li>
+              <li><span>Layer</span><b>35 cm</b><span class="src">confirmed</span></li>
+              <li><span>Temperature</span><b>18.5 °C</b><span class="src">confirmed</span></li>
+            </ul>
+            <p class="s-note">Each value confirmed by a person, against the photo it came from.</p>
+          </div>
+        </li>
+
+        <li class="step" data-step="3" data-time="07:06" id="step-3">
+          <div class="step__head"><span class="step__n" aria-hidden="true">3</span><span class="step__time">07:06</span><h3 class="step__title">Checked</h3></div>
+          <p class="step__text">Four checks against the method. One is satisfied. Three are over, and each is reported with its margin.</p>
+          <div class="state" data-s="3">
+            <p class="s-sum">Against MS-348<span class="dag">†</span>: <b>one satisfied, three over.</b></p>
+            <ul class="checks">
+              <li class="ck ck--ok">
+                <span class="ck__name">Slope</span><span class="ck__vs">1:11 against ≤ 1:10</span>
+                <span class="v v--ok">satisfied</span>
+                <span class="gauge" aria-hidden="true" style="--lim:80%;--val:72.7%;--from:72.7%;--to:80%"><span class="gauge__track"></span><span class="gauge__margin"></span><span class="gauge__lim"><span>1:10</span></span><span class="gauge__val"></span></span>
+              </li>
+              <li class="ck ck--bad">
+                <span class="ck__name">Unloading height</span><span class="ck__vs">2.0 m against ≤ 1.5 m</span>
+                <span class="v v--bad">0.5 m over</span>
+                <span class="gauge" aria-hidden="true" style="--lim:60%;--val:80%;--from:60%;--to:80%"><span class="gauge__track"></span><span class="gauge__margin"></span><span class="gauge__lim"><span>1.5 m</span></span><span class="gauge__val"></span></span>
+              </li>
+              <li class="ck ck--bad">
+                <span class="ck__name">Layer</span><span class="ck__vs">35 cm against 33 cm</span>
+                <span class="v v--bad">2 cm over</span>
+                <span class="gauge" aria-hidden="true" style="--lim:50%;--val:70%;--from:50%;--to:70%"><span class="gauge__track"></span><span class="gauge__margin"></span><span class="gauge__lim"><span>33 cm</span></span><span class="gauge__val"></span></span>
+              </li>
+              <li class="ck ck--bad">
+                <span class="ck__name">Temperature</span><span class="ck__vs">18.5 °C against &lt; 18 °C</span>
+                <span class="v v--bad">0.5 °C over</span>
+                <span class="gauge" aria-hidden="true" style="--lim:66.7%;--val:72.2%;--from:66.7%;--to:72.2%"><span class="gauge__track"></span><span class="gauge__margin"></span><span class="gauge__lim"><span>18 °C</span></span><span class="gauge__val"></span></span>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="step" data-step="4" data-time="07:06" id="step-4">
+          <div class="step__head"><span class="step__n" aria-hidden="true">4</span><span class="step__time">07:06</span><h3 class="step__title">Owned</h3></div>
+          <p class="step__text">Three NCRs are raised, each with its margin, and routed to the approver the method names.</p>
+          <div class="state" data-s="4">
+            <ul class="ncrs">
+              <li class="ncr"><p class="ncr__t">NCR: unloading height</p><p class="ncr__m">0.5 m over</p><p class="ncr__vs">2.0 m against ≤ 1.5 m</p><p class="ncr__o">Routed to <b>the site engineer</b></p></li>
+              <li class="ncr"><p class="ncr__t">NCR: layer</p><p class="ncr__m">2 cm over</p><p class="ncr__vs">35 cm against 33 cm</p><p class="ncr__o">Routed to <b>the materials engineer</b></p></li>
+              <li class="ncr"><p class="ncr__t">NCR: temperature</p><p class="ncr__m">0.5 °C over</p><p class="ncr__vs">18.5 °C against &lt; 18 °C</p><p class="ncr__o">Routed to <b>the materials engineer</b></p></li>
+            </ul>
+            <p class="s-okline">Slope: <b>satisfied</b>, so no NCR.</p>
+          </div>
+        </li>
+
+        <li class="step" data-step="5" data-time="11:30" id="step-5">
+          <div class="step__head"><span class="step__n" aria-hidden="true">5</span><span class="step__time">11:30</span><h3 class="step__title">Decided</h3></div>
+          <p class="step__text">The consultant’s representative reviews the layer and records the decision with a reason. Closing or reopening an NCR also needs a reason, and every step stays in the history.</p>
+          <div class="state" data-s="5">
+            <div class="decision">
+              <p class="decision__k">Sign-off on Layer 7</p>
+              <p class="decision__who">The consultant’s representative</p>
+              <p class="decision__reason"><b>Approve or reject, with a reason.</b></p>
+            </div>
+            <ol class="history" aria-label="History of the layer">
+              <li><time>06:40</time><span>Filled in on paper</span></li>
+              <li><time>07:05</time><span>Read, matched, each value confirmed</span></li>
+              <li><time>07:06</time><span>Checked: one satisfied, three over</span></li>
+              <li><time>07:06</time><span>Three NCRs raised and routed</span></li>
+              <li><time>11:30</time><span>Decision recorded, with its reason</span></li>
+            </ol>
+          </div>
+        </li>
+
+        <li class="step" data-step="6" data-time="18:00" id="step-6">
+          <div class="step__head"><span class="step__n" aria-hidden="true">6</span><span class="step__time">18:00</span><h3 class="step__title">Counted</h3></div>
+          <p class="step__text">820 m³ counts against the frozen baseline. Float on the following operations recomputes, and the day’s quantities are ready for certification.</p>
+          <div class="state" data-s="6">
+            <div class="count">
+              <div>
+                <p class="count__q">820<small>m³</small></p>
+                <p class="count__base">Layer 7, counted against the frozen baseline.</p>
+              </div>
+              <svg class="lift" viewBox="0 0 364 198" role="img" aria-label="Section through Lift 2 across Blocks 14 and 15: layers 1 to 6 already counted, layer 7 counted today, later layers still planned">
+                <g font-size="11" fill="#9DB0C4">
+                  <text x="85" y="14" text-anchor="middle">Block 14</text>
+                  <text x="220" y="14" text-anchor="middle">Block 15</text>
+                </g>
+                <g stroke-width="1.2">
+                  <rect x="18" y="26" width="270" height="17" fill="none" stroke="#9DB0C4" stroke-dasharray="4 4" opacity=".6"/>
+                  <rect x="18" y="45" width="270" height="17" fill="none" stroke="#9DB0C4" stroke-dasharray="4 4" opacity=".6"/>
+                  <rect x="18" y="64" width="270" height="17" fill="rgba(59,130,246,.6)" stroke="#8DB5FA" stroke-width="2"/>
+                  <rect x="18" y="83" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <rect x="18" y="102" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <rect x="18" y="121" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <rect x="18" y="140" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <rect x="18" y="159" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <rect x="18" y="178" width="270" height="17" fill="#1B2638" stroke="#56677F"/>
+                  <line x1="153" y1="22" x2="153" y2="195" stroke="#9DB0C4" stroke-dasharray="2 3"/>
+                </g>
+                <g font-size="10.5" fill="#9DB0C4" text-anchor="end">
+                  <text x="13" y="38">9</text><text x="13" y="57">8</text>
+                  <text x="13" y="76" fill="#F4F2EC" font-weight="700">7</text>
+                  <text x="13" y="95">6</text><text x="13" y="114">5</text><text x="13" y="133">4</text>
+                  <text x="13" y="152">3</text><text x="13" y="171">2</text><text x="13" y="190">1</text>
+                </g>
+                <text x="298" y="47" font-size="11" fill="#9DB0C4">planned</text>
+                <text x="298" y="76" font-size="11" fill="#F4F2EC" font-weight="700">today</text>
+              </svg>
+              <ul class="after">
+                <li><span>Float on the following operations</span><b>recomputed</b></li>
+                <li><span>The day’s quantities</span><b>ready for certification</b></li>
+              </ul>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="day__stage">
+        <div class="pane" id="pane" data-active="1" aria-hidden="true">
+          <div class="pane__bar">
+            <div>
+              <p class="pane__op">Place &amp; spread RCC</p>
+              <p class="pane__wf">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</p>
+            </div>
+            <p class="pane__clock" id="clock">06:40</p>
+          </div>
+          <div class="pane__states" id="pane-states"></div>
+          <ol class="pane__rail" id="rail">
+            <li class="is-now">1 Paper</li><li>2 Read</li><li>3 Checked</li><li>4 Owned</li><li>5 Decided</li><li>6 Counted</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- the same day, elsewhere -->
+    <div class="vs">
+      <h3 class="h3">The same day, in a typical stack</h3>
+      <div class="vs__grid">
+        <div class="vs__axis" aria-hidden="true"><span>&nbsp;</span><span>The day of the pour</span><span>Days later</span><span>If anyone notices</span><span>Month-end</span></div>
+        <p class="vs__who">DiPGOS</p>
+        <p class="vs__cell vs__dg">Read, checked, owned, decided and counted.<span>06:40 to 18:00, on the record.</span></p>
+        <div class="vs__done" aria-hidden="true"><span>The record exists</span></div><div class="vs__done" aria-hidden="true"></div><div class="vs__done" aria-hidden="true"></div>
+        <p class="vs__who vs__who--stack">Typical stack</p>
+        <p class="vs__cell" data-when="The day of the pour">The sheet goes into a folder.</p>
+        <p class="vs__cell" data-when="Days later">The numbers are retyped into a spreadsheet days later.</p>
+        <p class="vs__cell" data-when="If anyone notices">The 2 cm, if anyone notices it, becomes an email.</p>
+        <p class="vs__cell" data-when="Month-end">At month-end the activity’s percent complete goes up in P6.</p>
+      </div>
+      <p class="vs__close">Same concrete, same people. The difference is that the record exists the day the work does.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · Where you run it ============ -->
+<section class="section" id="screens" data-nav="screens">
+  <div class="wrap">
+    <header class="screens__head">
+      <h2 class="h2">The command centre, not a dashboard.</h2>
+      <p class="prose">The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+    </header>
+
+    <figure class="cc cc--desk">
+      <div class="shot">
+        <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async"
+             alt="The DiPGOS command centre, with its three regions outlined: the scope rail, the live map and the performance panels">
+        <span class="box box--dash" style="--x:60;--y:63;--w:284;--h:866"></span>
+        <span class="box box--dash" style="--x:350;--y:62;--w:1219;--h:800"></span>
+        <span class="box box--dash" style="--x:1577;--y:63;--w:330;--h:866"></span>
+        <span class="pin" style="--x:196;--y:63">What</span>
+        <span class="pin" style="--x:700;--y:62">Where</span>
+        <span class="pin" style="--x:1770;--y:63">How</span>
+      </div>
+      <figcaption class="trio">
+        <p><span class="key">Where</span>The live map: every work front on the dam, where the work stands.</p>
+        <p><span class="key">What</span>Scope and work fronts: what the project is made of.</p>
+        <p><span class="key">How</span>Productivity, quality and business: how it is performing.</p>
+      </figcaption>
+      <p class="shot-cap"><span class="label">From the running system. Pilot data.</span></p>
+    </figure>
+
+    <div class="cc cc--phone">
+      <figure class="phone-cut">
+        <div class="shot" style="--cx:590;--cy:100;--cw:620;--ch:330">
+          <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="Crop of the command centre: the live map, with work-front markers showing percent complete">
+          <span class="pin" style="--x:606;--y:124">Where</span>
+        </div>
+        <figcaption class="shot-cap"><span class="key">Where</span> The live map, where the work stands.</figcaption>
+      </figure>
+      <figure>
+        <div class="shot" style="--cx:50;--cy:60;--cw:300;--ch:202">
+          <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="Crop of the command centre: the scope rail, each scope with actual and planned progress">
+          <span class="box" style="--x:60;--y:63;--w:284;--h:866"></span>
+          <span class="pin" style="--x:130;--y:74">What</span>
+        </div>
+        <figcaption class="shot-cap"><span class="key">What</span> Scope and work fronts.</figcaption>
+      </figure>
+      <figure>
+        <div class="shot" style="--cx:1567;--cy:60;--cw:345;--ch:250">
+          <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="Crop of the command centre: the productivity panel, physical works completed against plan">
+          <span class="box" style="--x:1577;--y:63;--w:330;--h:866"></span>
+          <span class="pin" style="--x:1700;--y:74">How</span>
+        </div>
+        <figcaption class="shot-cap"><span class="key">How</span> Productivity, quality and business. <span class="label" style="display:block;margin-top:6px">From the running system. Pilot data.</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="gallery">
+      <figure class="phone-only">
+        <div class="shot" style="--iw:1920;--cw:596;--ch:252;--cx:98;--cy:222">
+          <img src="assets/app-site-reports-folder.png" width="1920" height="935" loading="lazy" decoding="async"
+               alt="The site-reports folder: two Place &amp; Spread RCC reports for Blocks 14–15, EL 922.0–932.2, Lift 2, layers 8 and 9, and the blank RCC-PL form">
+          <span class="box" style="--x:212;--y:283;--w:484;--h:122"></span>
+          <span class="pin" style="--x:420;--y:247">The site’s own words</span>
+        </div>
+        <figcaption class="shot-cap"><span class="label">From the running system. Pilot data.</span>The site-reports folder: the day’s Place &amp; Spread files, <span class="key">named in the site’s own words</span>, each with Evaluate.</figcaption>
+      </figure>
+      <figure class="phone-hide">
+        <div class="shot shot--reports" style="--iw:1920;--cw:1830;--ch:320;--cx:80;--cy:168">
+          <img src="assets/app-site-reports-folder.png" width="1920" height="935" loading="lazy" decoding="async"
+               alt="The Document Manager's site-reports folder: two Place &amp; Spread RCC reports for Blocks 14–15, EL 922.0–932.2, Lift 2, layers 8 and 9, and the blank RCC-PL form, each with an Evaluate button. Staff names are hidden.">
+          <span class="mask" style="--x:1528;--y:226;--w:160;--h:245">Names hidden</span>
+          <span class="box" style="--x:212;--y:283;--w:484;--h:122"></span>
+          <span class="box" style="--x:1774;--y:286;--w:96;--h:184"></span>
+          <span class="pin" style="--x:712;--y:299">The site’s own words</span>
+          <span class="pin" style="--x:1822;--y:247;--tx:-50%">Evaluate</span>
+        </div>
+        <figcaption class="shot-cap"><span class="label">From the running system. Pilot data.</span>The site-reports folder: the day’s Place &amp; Spread files, <span class="key">named in the site’s own words</span> (here the same work front’s next layers, 8 and 9), each with <span class="key">Evaluate</span>.</figcaption>
+      </figure>
+
+      <figure class="pair phone-cut">
+        <div class="shot" style="--iw:1920;--cw:760;--ch:420;--cx:590;--cy:258">
+          <img src="assets/app-evaluate-against-contract.png" width="1920" height="935" loading="lazy" decoding="async"
+               alt="The Evaluate document dialog: contract Volume 3A, document the Place &amp; Spread RCC report for Blocks 14–15, and the line: the document is reviewed against the contract clause by clause">
+          <span class="box" style="--x:694;--y:532;--w:438;--h:32"></span>
+          <span class="pin" style="--x:1142;--y:548">Clause by clause</span>
+        </div>
+        <figcaption class="shot-cap"><span class="label">From the running system. Pilot data.</span>Evaluate against the contract: the report is <span class="key">reviewed against the contract clause by clause</span>.</figcaption>
+      </figure>
+
+      <figure class="pair pair--rev phone-cut">
+        <div class="shot" style="--iw:1440;--cw:920;--ch:302;--cx:112;--cy:342">
+          <img src="assets/app-record-what-happened.png" width="1440" height="900" loading="lazy" decoding="async"
+               alt="Record what happened on one handheld vibrator: pick a reason, planned or unplanned, noted as appended, never overwritten; a correction is a new dated row">
+          <span class="box" style="--x:638;--y:362;--w:378;--h:26"></span>
+          <span class="pin" style="--x:640;--y:404">Appended, never overwritten</span>
+        </div>
+        <figcaption class="shot-cap"><span class="label">From the running system. Pilot data.</span>Record what happened to one machine: <span class="key">appended, never overwritten</span>. A correction is a new dated row.</figcaption>
+      </figure>
+
+      <figure class="phone-cut">
+        <div class="shot" style="--iw:1440;--cw:1320;--ch:266;--cx:94;--cy:168">
+          <img src="assets/app-atom-manager-home.png" width="1440" height="900" loading="lazy" decoding="async"
+               alt="Atom Manager: the whole catalogue, right now. 28 material types, 536 people, 134 machines, 710 temporary-works sets, 0 deliverables, 24 storage vessels, marked live as of 19 September 2026">
+          <span class="box" style="--x:1236;--y:184;--w:148;--h:24"></span>
+          <span class="box" style="--x:322;--y:218;--w:420;--h:142"></span>
+          <span class="pin" style="--x:1226;--y:195;--tx:-100%">Live, as of 19 Sep 2026</span>
+          <span class="pin" style="--x:326;--y:410">536 people, 134 machines</span>
+        </div>
+        <figcaption class="shot-cap"><span class="label">From the running system. Pilot data.</span>Atom Manager, the whole catalogue right now: <span class="key">536 people, 134 machines</span>, 710 sets and 24 vessels, <span class="key">live as of 19 Sep 2026</span>.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · The stakes ============ -->
+<section class="section stakes" id="stakes" data-nav="why">
+  <div class="wrap">
+    <p class="stakes__open phone-cut">Roads, dams, cities, power plants: every physical thing around us was delivered by engineering and construction. It is the largest industry on earth, at <span class="todo todo--inline" data-todo="source needed">$15 trillion a year</span><span class="todo-note">source needed</span>. Its greatest work is still ahead: the build now coming is the largest in the history of human civilisation.</p>
+    <h2 class="h2">And the largest things we build run late as a rule.</h2>
+    <ul class="figs">
+      <li class="fig"><p class="fig__n">96%</p><p class="fig__t">The average cost overrun across 245 large dams in 65 countries. Three in four ran over budget; eight in ten ran late, by 2.3 years on average.<sup class="fn"><a href="#src-1" aria-label="Source 1">1</a></sup></p></li>
+      <li class="fig"><p class="fig__n">16<small>years</small></p><p class="fig__t">How long Neelum-Jhelum took against a planned 8. Its cost went from Rs 84.5 bn to Rs 423 bn.<sup class="fn"><a href="#src-2" aria-label="Source 2">2</a></sup></p></li>
+      <li class="fig"><p class="fig__n">59%</p><p class="fig__t">The share of Pakistan’s 931 ongoing federal development projects that were running late.<sup class="fn"><a href="#src-3" aria-label="Source 3">3</a></sup></p></li>
+      <li class="fig phone-cut"><p class="fig__n">98%</p><p class="fig__t">The share of megaprojects that overrun their budget by more than 30%. 77% finish at least 40% late.<sup class="fn"><a href="#src-4" aria-label="Source 4">4</a></sup></p></li>
+    </ul>
+    <div class="stakes__body">
+      <p class="lead">None of this comes from a shortage of engineering talent. It comes from not having a shared, current and trusted account of the work: what was done, where, by whom, to what standard, and who approved it.</p>
+      <p class="small">Dams completed after 2000 have overrun less than earlier ones, at 33% on cost and 18% on schedule on average.<sup class="fn"><a href="#src-5" aria-label="Source 5">5</a></sup> The trend is better, but the problem remains.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · Where the stack breaks ============ -->
+<section class="section" id="stack" data-nav="why">
+  <div class="wrap">
+    <h2 class="h2">The tools record the project. None of them runs it.</h2>
+    <p class="lead" style="margin-top:20px">Primavera P6 is the industry’s schedule of record, and it is very good at being one. The trouble is everything that has to happen outside it.</p>
+
+    <div class="breaks">
+      <div class="breaks__head" aria-hidden="true"><p class="label">Where it breaks</p><p class="label">What DiPGOS does instead</p></div>
+      <ul>
+        <li class="brk">
+          <div class="brk__fail"><h3 class="brk__t">The plan is monthly. The site is daily.</h3><p>Schedule updates are normally monthly, while superintendents run the job from one- or two-week bar charts.<sup class="fn"><a href="#src-7" aria-label="Source 7">7</a></sup> Only about half of the work assigned to crews at the start of a week is completed as planned.<sup class="fn"><a href="#src-8" aria-label="Source 8">8</a></sup></p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">820 m³ counts against the frozen baseline. Float on the following operations recomputes.</p><a href="#step-6">See 18:00, counted</a></div>
+        </li>
+        <li class="brk">
+          <div class="brk__fail"><h3 class="brk__t">Percent complete is an opinion.</h3><p>A supervisor’s estimate is the measure “most prone to overstatement and the hardest to audit”.<sup class="fn"><a href="#src-10" aria-label="Source 10">10</a></sup> In one documented case a contractor reported activities as “90% complete for several months” to hide missed starts.<sup class="fn"><a href="#src-11" aria-label="Source 11">11</a></sup></p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">Two denominators, both named. Progress is shown against the fronts that have started and against the whole job. The first can read 101% while the second reads 36%, and both are true.</p></div>
+        </li>
+        <li class="brk">
+          <div class="brk__fail"><h3 class="brk__t">The method statement is a PDF.</h3><p>The limits that decide whether a layer is acceptable (thickness, unloading height, temperature, roller passes) live in a document. They aren’t data that anything checks.</p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">Diamer-Basha’s RCC method statement<span class="dag">†</span> is loaded as data: 6 processes and 21 operations, each with its limits.</p><a href="#step-3">See 07:06, checked</a></div>
+        </li>
+        <li class="brk phone-cut">
+          <div class="brk__fail"><h3 class="brk__t">Every system names the work differently.</h3><p>The WBS in the schedule, the cost codes in the ERP and the numbers in the document register each describe the same concrete.<sup class="fn"><a href="#src-12" aria-label="Source 12">12</a></sup> Moving data between them is manual in 49% of cases.<sup class="fn"><a href="#src-13" aria-label="Source 13">13</a></sup></p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">Every screen, form, check and figure reads from one model of the work.</p><a href="#model">See the model</a></div>
+        </li>
+        <li class="brk">
+          <div class="brk__fail"><h3 class="brk__t">Nobody can say who approved what.</h3><p>On Tarbela’s 5th extension, a contractor’s cofferdam change the contract did not allow was accepted conditionally by the Engineer and approved by the employer. The inquiry held all three responsible, and the cost rose from Rs 82 bn to about Rs 317 bn.<sup class="fn"><a href="#src-14" aria-label="Source 14">14</a></sup></p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">Every verdict has an owner. A breach arrives with its margin and the name of the person who must act, and every decision carries its approver and reason.</p><a href="#step-5">See 11:30, decided</a></div>
+        </li>
+        <li class="brk phone-cut">
+          <div class="brk__fail"><h3 class="brk__t">Data is collected, then ignored.</h3><p>95.5% of engineering and construction data goes unused.<sup class="fn"><a href="#src-15" aria-label="Source 15">15</a></sup> Team members spend 14 hours a week on conflict, rework and hunting for information, 5.5 of them hunting for data alone.<sup class="fn"><a href="#src-16" aria-label="Source 16">16</a></sup></p></div>
+          <div class="brk__fix"><p><img class="brk__mark" src="../../assets/dipgos-mark-light.svg" alt="DiPGOS:">Records in, state out. Nothing is typed as a total. Stock, hours, progress and earned value are all computed from dated records, so you can ask what any figure said on any past date.</p></div>
+        </li>
+      </ul>
+    </div>
+    <p class="breaks__close">The industry does not need another tool on the pile. It needs a model of the work that every tool, and every person, can read.</p>
+  </div>
+</section>
+
+<!-- ============ 6 · The model ============ -->
+<section class="section" id="model" data-nav="model">
+  <div class="wrap">
+    <header class="model__head">
+      <h2 class="h2">DiPGOS starts from what the project is made of.</h2>
+      <p class="lead">Most software models documents, dates or geometry. DiPGOS models <em>the work</em>: the things a project is made of, how they relate, and the method that governs them. Every screen, form, check and figure reads from that one model.</p>
+    </header>
+
+    <div class="chain phone-cut" aria-label="The breakdown of the job">
+      <span class="node">Project</span><span class="sep" aria-hidden="true"></span>
+      <span class="node">Contract</span><span class="sep" aria-hidden="true"></span>
+      <span class="node">Scope</span><span class="sep" aria-hidden="true"></span>
+      <span class="node">Activity</span><span class="sep" aria-hidden="true"></span>
+      <span class="node">Process</span><span class="sep" aria-hidden="true"></span>
+      <span class="node node--op">Operation</span>
+    </div>
+    <p class="chain__cap phone-cut">The breakdown of the job, down to a single operation such as “Place &amp; spread RCC”.</p>
+
+    <div class="rels phone-cut" aria-label="How the things relate">
+      <div class="rel"><span class="node node--op">Operation</span><span class="edge"><span>performed at</span></span><span class="node node--wf">Work front</span><p class="rel__eg">A bounded place and time: <span class="hl">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</span>.</p></div>
+      <div class="rel"><span class="node node--op">Operation</span><span class="edge"><span>precedes, with a lag</span></span><span class="node node--op">Operation</span><p class="rel__eg">The lag is in hours.</p></div>
+      <div class="rel"><span class="node node--op">Operation</span><span class="edge"><span>requires, with quantities</span></span><span class="node">Atom</span><p class="rel__eg">Batch &amp; mix, for instance, uses 90 kg of pozzolan and 95 L of water.</p></div>
+      <div class="rel"><span class="node">Atom</span><span class="edge"><span>needs</span></span><span class="node">Atom</span><p class="rel__eg">A vibratory roller needs one operator per machine-hour and 8 L/h of diesel.</p></div>
+    </div>
+
+    <dl class="nouns phone-cut">
+      <div><dt>Work front</dt><dd>A bounded place and time where an operation happens.</dd></div>
+      <div><dt>Atom</dt><dd>Anything the work consumes or uses, in six classes: material, workforce, equipment, temporary works, deliverable, storage. Each unit is one physical thing, such as roller 3 of 12, or formwork set 037 of 581.</dd></div>
+      <div><dt>Run</dt><dd>One filed report of work on a work front.</dd></div>
+      <div><dt>Data point</dt><dd>One measured check on that report.</dd></div>
+      <div><dt>Alarm / NCR</dt><dd>A breach, with its margin.</dd></div>
+      <div><dt>Decision</dt><dd>A sign-off, with its approver and reason.</dd></div>
+    </dl>
+
+    <div class="verbs phone-cut">
+      <h3 class="h3">The verbs</h3>
+      <ul>
+        <li>File a run</li><li>Check it against the method</li><li>Raise an NCR</li><li>Request a sign-off</li>
+        <li>Approve or reject, with a reason</li><li>Freeze a baseline</li><li class="wip">Certify quantities for billing (in progress)</li>
+      </ul>
+    </div>
+
+    <div class="ms">
+      <div>
+        <h3 class="h3">The method statement becomes the model</h3>
+        <p style="margin-top:16px" class="prose">Diamer-Basha’s RCC method statement<span class="dag">†</span> is loaded as data: 6 processes and 21 operations, each with its limits.</p>
+        <p class="prose">The same limits generate the paper form the foreman fills in, the screen form, the checks, the alarms, and the approver each output goes to.</p>
+      </div>
+      <table class="spec">
+        <caption class="label">MS-348<span class="dag">†</span>, as data. The highlighted row is the one the day was checked against.</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Limit</th></tr></thead>
+        <tbody>
+          <tr class="is-day"><th scope="row">Place &amp; spread</th><td>Unloading height ≤ 1.5 m; layer 33 cm</td></tr>
+          <tr><th scope="row">Compact</th><td>Roller ≤ 2.5 km/h; compacted layer 30 cm; before initial set</td></tr>
+          <tr><th scope="row">Bedding mortar</th><td>10–15 mm</td></tr>
+          <tr><th scope="row">Aggregate</th><td>Moisture ≤ 5%</td></tr>
+          <tr><th scope="row">Haul</th><td>Dump truck ≤ 15 km/h (safety)</td></tr>
+          <tr><th scope="row">Cure</th><td>14 days</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <aside class="verdict phone-cut">
+      <div><h3>One verdict per discipline, never a single pass/fail</h3><span class="label">The model’s shape; in development</span></div>
+      <p>A check is judged separately by each discipline that owns part of it: the site engineer for geometry, the materials engineer for physical properties, the scheduler for sequence, the cost controller for money, and so on across nine owners. A verdict reads like <q>Not satisfied: physical, 5 °C short, materials engineer</q>, not a red cross.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ 7 · How the record stays true, and AI ============ -->
+<section class="section" id="record" data-nav="model">
+  <div class="wrap">
+    <h2 class="h2 phone-cut">How the record stays true.</h2>
+    <ul class="principles phone-cut">
+      <li><h3>A blank is not a pass.</h3><p>“Nothing reported” and “we looked, and there is none” are different answers, and DiPGOS keeps them apart.</p></li>
+      <li><h3>Paper stays paper.</h3><p>Forms are printed from the method and read back from photos. Nobody retypes a sheet.</p></li>
+      <li><h3>It sits alongside what you have.</h3><p>DiPGOS works with the contract schedule as issued and the folders your site already uses. It doesn’t ask you to throw away P6.</p></li>
+    </ul>
+    <div class="ai">
+      <h3 class="h3">AI proposes. A named engineer decides. The record keeps both.</h3>
+      <div>
+        <p class="prose">DiPGOS uses AI where it removes the typing, not the judgement. It reads a photographed site sheet into a proposal for a person to confirm. It answers questions over the tender, the design documents and the delivered record, and cites its sources every time. It never writes a value without a source, and it never signs anything off.</p>
+        <p class="ai__aside phone-cut">AI can only act on ground it understands. The model of the work is that ground.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 · Company ============ -->
+<section class="section" id="company" data-nav="company">
+  <div class="wrap company">
+    <div>
+      <h2 class="h2">We lived the problem before we built the answer.</h2>
+      <p class="prose">Indus is built by engineers and builders who spent their careers inside real projects, and felt the gridlock first-hand. We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      <div class="founder">
+        <p class="founder__name">M. Kamran Basit</p>
+        <p class="founder__role">Founder &amp; CEO</p>
+      </div>
+    </div>
+    <div>
+      <ul class="facts phone-cut">
+        <li><span class="todo" data-todo="needs owner input">[Years in heavy civil and hydropower]</span></li>
+        <li><span class="todo" data-todo="needs owner input">[Projects delivered]</span></li>
+        <li><span class="todo" data-todo="needs owner input">[Offices: Pakistan · USA]</span></li>
+      </ul>
+      <p class="entities">Indus Technology Solutions (Pvt) Ltd<br>Indus Technologies LLC, USA</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 · Contact ============ -->
+<section class="contact" id="contact" data-nav="">
+  <div class="wrap">
+    <h2 class="contact__title">Let’s shape the future of how the world gets built.</h2>
+    <p class="lead contact__sub">Bring us the project you trust least. We’ll show you what its record would look like.</p>
+    <div class="addr no-js-hide">
+      <p class="label" id="addr-label">Write to</p>
+      <p class="addr__text" id="addr" aria-labelledby="addr-label"></p>
+      <div class="addr__actions">
+        <a class="btn btn--primary" id="email-btn" href="#contact" data-u="kamran" data-d="industechsol.com">Email us</a>
+        <button class="btn btn--quiet" id="copy-btn" type="button">Copy</button>
+        <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+    <noscript><p class="fallback">Write to <span class="hl">kamran (at) industechsol.com</span>.</p></noscript>
+  </div>
+</section>
+
+<!-- ============ Sources ============ -->
+<section class="sources" id="sources" data-nav="">
+  <div class="wrap">
+    <details id="sources-details" open>
+      <summary><h2 class="h3">Sources</h2></summary>
+      <ol class="srclist">
+        <li id="src-1"><a href="https://arxiv.org/pdf/1409.0002">Ansar, Flyvbjerg, Budzier &amp; Lunn (2014), “Should we build more large dams?”, <i>Energy Policy</i></a></li>
+        <li id="src-2"><a href="https://www.waterpowermagazine.com/news/audit-declares-neelum-jhelum-hydropower-project-a-failure/">Water Power Magazine, “Audit declares Neelum-Jhelum hydropower project a failure”</a></li>
+        <li id="src-3"><a href="https://file.pide.org.pk/pdfpideresearch/wp-23-10-reforming-the-federal-public-sector-development-programme.pdf">PIDE Working Paper 2023:10, <i>Reforming the Federal PSDP</i></a></li>
+        <li id="src-4"><a href="https://www.mckinsey.com/capabilities/operations/our-insights/the-construction-productivity-imperative">McKinsey (2015), <i>The construction productivity imperative</i></a></li>
+        <li id="src-5"><a href="https://ideas.repec.org/a/taf/cijwxx/v36y2020i5p839-854.html">Plummer Braeckman, Disselhoff &amp; Kirchherr (2020), <i>International Journal of Water Resources Development</i></a></li>
+        <li id="src-6"><a href="https://web.aacei.org/docs/default-source/toc/toc_18r-97.pdf">AACE International 18R-97, cost estimate classification</a></li>
+        <li id="src-7"><a href="https://www.long-intl.com/articles/contract-scheduling-provisions/">Long International, “Contract scheduling provisions”</a></li>
+        <li id="src-8"><a href="https://lean-construction-gcs.storage.googleapis.com/wp-content/uploads/2022/09/08152942/the-last-planner-system-of-production-control-ballard2000-dissertation.pdf">Ballard (2000), <i>The Last Planner System of Production Control</i></a></li>
+        <li id="src-9"><a href="https://www.instituteccp.com/fidic-red-yellow-and-silver-books-a-brief-overview/">ICCP, “FIDIC Red, Yellow and Silver Books”</a></li>
+        <li id="src-10"><a href="https://www.gatherinsights.com/en/earned-value/definitions/progress-measurement">Gather Insights, progress measurement</a></li>
+        <li id="src-11"><a href="https://ankura.com/insights/construction-schedules-why-owners-should-monitor-and-care">Ankura, “Construction schedules: why owners should monitor and care”</a></li>
+        <li id="src-12"><a href="https://quollnet.com/article/work-breakdown-structure-explained">Quollnet, “Work breakdown structure explained”</a></li>
+        <li id="src-13"><a href="https://www.constructiondive.com/news/construction-app-usage-increases-despite-continued-lack-of-integration/592922/">JBKnowledge 2020 ConTech Report, via Construction Dive</a></li>
+        <li id="src-14"><a href="https://www.dawn.com/news/2014942">Dawn, Tarbela 5th extension inquiry</a></li>
+        <li id="src-15"><a href="https://fmicorp.com/insights/quick-reads/harnessing-the-data-advantage-in-engineering-and-construction">FMI &amp; Autodesk (2021), <i>Harnessing the Data Advantage</i></a></li>
+        <li id="src-16"><a href="https://www.prnewswire.com/news-releases/new-research-from-plangrid-and-fmi-identifies-factors-costing-the-construction-industry-more-than-177-billion-annually-300689826.html">FMI &amp; PlanGrid (2018), <i>Construction Disconnected</i></a></li>
+      </ol>
+    </details>
+    <div class="notes">
+      <p>† Named with the client’s permission pending.</p>
+      <p>Screens marked “From the running system” are captures of the DiPGOS app on pilot data. Staff names are hidden.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <span class="wordmark" style="font-size:32px" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span><span class="sr-only">Indus</span>
+        <p class="footer__tagline">The world’s oldest industry, reimagined from the ground up.</p>
+      </div>
+      <nav aria-label="Footer" class="phone-cut">
+        <p class="label">Explore</p>
+        <ul class="footer__list">
+          <li><a href="#day">One day on a work front</a></li>
+          <li><a href="#screens">The command centre</a></li>
+          <li><a href="#stakes">Why it matters</a></li>
+          <li><a href="#model">The model</a></li>
+          <li><a href="#company">Company</a></li>
+        </ul>
+      </nav>
+      <div>
+        <p class="label">Contact</p>
+        <ul class="footer__list">
+          <li><a href="#contact">Get in touch</a></li>
+          <li><span>Indus Technology Solutions (Pvt) Ltd</span></li>
+          <li><span>Indus Technologies LLC, USA</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Indus Technology Solutions.</span>
+      <span>† Named with the client’s permission pending.</span>
+      <span class="footer__motto">The project thinks; the human commands.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="mock-tag" href="../../index.html" target="_top">R2 · B · The work front · ← all mocks</a>
+
+<script>
+(function () {
+  /* ---- mobile menu ---- */
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('nav-links');
+  function setMenu(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('is-open')); });
+  links.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+  /* ---- the day: the pane shows a copy of each step's state ---- */
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var pane = document.getElementById('pane');
+  var paneStates = document.getElementById('pane-states');
+  var clock = document.getElementById('clock');
+  var rail = Array.prototype.slice.call(document.querySelectorAll('#rail li'));
+  steps.forEach(function (st) {
+    var c = st.querySelector('.state').cloneNode(true);
+    c.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
+    paneStates.appendChild(c);
+  });
+  var checksPane = paneStates.querySelector('.state[data-s="3"]');
+  var desk = window.matchMedia('(min-width: 1024px)');
+  var activeStep = 0;
+
+  function setStep(n) {
+    if (n === activeStep) return;
+    activeStep = n;
+    pane.dataset.active = String(n);
+    var st = steps[n - 1];
+    clock.textContent = st.dataset.time;
+    steps.forEach(function (s) { s.classList.toggle('is-active', +s.dataset.step === n); });
+    rail.forEach(function (li, i) {
+      li.classList.toggle('is-now', i === n - 1);
+      li.classList.toggle('is-done', i < n - 1);
+    });
+    /* the checks draw their margins when 07:06 arrives, and reset when you scroll back above it */
+    if (n >= 3) checksPane.classList.add('is-on');
+    if (n < 3) checksPane.classList.remove('is-on');
+  }
+
+  /* inline state cards (phones, tablets): the checks draw once they're in view */
+  var inlineChecks = document.querySelector('.step .state[data-s="3"]');
+  function inlineCheck() {
+    if (desk.matches || inlineChecks.classList.contains('is-on')) return;
+    var r = inlineChecks.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.8) inlineChecks.classList.add('is-on');
+  }
+
+  /* ---- scroll spy: active link follows the section in view,
+          and clears on the hero, contact and sources ---- */
+  var spyLinks = Array.prototype.slice.call(document.querySelectorAll('[data-spy]'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var line = window.innerHeight * 0.4;
+    var current = '';
+    sections.forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) current = s.dataset.nav;
+    });
+    spyLinks.forEach(function (a) {
+      if (current && a.dataset.spy === current) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+
+    if (desk.matches) {
+      var mid = window.innerHeight * 0.5;
+      var n = 1;
+      steps.forEach(function (st) { if (st.getBoundingClientRect().top < mid) n = +st.dataset.step; });
+      setStep(n);
+    } else {
+      inlineCheck();
+    }
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  setStep(1);
+  update();
+
+  /* ---- sources: collapsed on phones, opened by any footnote ---- */
+  var details = document.getElementById('sources-details');
+  if (window.matchMedia('(max-width: 699px)').matches) details.removeAttribute('open');
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.fn a');
+    if (a) details.setAttribute('open', '');
+  });
+
+  /* ---- contact: the address is assembled here, never written in the source ---- */
+  var btn = document.getElementById('email-btn');
+  var addr = btn.dataset.u + '@' + btn.dataset.d;
+  document.getElementById('addr').textContent = addr;
+  btn.href = ['mail', 'to:'].join('') + addr;
+  var copyBtn = document.getElementById('copy-btn');
+  var status = document.getElementById('copy-status');
+  var timer;
+  function selectAddr() {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById('addr'));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  }
+  function confirmCopy(ok) {
+    clearTimeout(timer);
+    if (ok) { copyBtn.textContent = 'Copied'; status.innerHTML = '<span class="sr-only">Address copied</span>'; }
+    else { selectAddr(); status.textContent = 'Address selected. Copy it with your keyboard.'; }
+    timer = setTimeout(function () { copyBtn.textContent = 'Copy'; status.textContent = ''; }, 2600);
+  }
+  copyBtn.addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(addr).then(function () { confirmCopy(true); }, function () { confirmCopy(false); });
+    } else { confirmCopy(false); }
+  });
+})();
+</script>
+</body>
+</html>

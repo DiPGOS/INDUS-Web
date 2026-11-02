@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus redesign, round 3</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#0A1424;--panel:#0F1D33;--line:rgba(157,176,196,.18);--text:#D3DCE6;--muted:#9DB0C4;--bone:#FBF9F4;--amber:#E8A020;
+  --serif:Georgia,'Times New Roman',serif;--sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.55 var(--sans);padding:clamp(24px,5vw,64px) clamp(16px,5vw,64px) 96px}
+.wrap{max-width:1280px;margin:0 auto}
+h1{font:600 clamp(30px,5vw,48px)/1.12 var(--serif);color:var(--bone)}
+h2{font:600 26px/1.2 var(--serif);color:var(--bone);margin:56px 0 14px}
+h3{font:600 24px/1.2 var(--serif);color:var(--bone)}
+p,li{max-width:70ch}
+.intro{margin-top:16px;color:var(--muted)}
+.intro b{color:var(--text)}
+a{color:var(--bone)}
+a:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;display:grid;gap:16px;margin-top:24px}
+.card__head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+.card__voice{color:var(--muted);font-size:14.5px}
+.shots{display:grid;grid-template-columns:1fr 1fr 22%;gap:10px;align-items:start}
+.shots img{width:100%;height:auto;display:block;border-radius:6px;border:1px solid var(--line)}
+@media (max-width:760px){.shots{grid-template-columns:1fr 1fr}.shots img:first-child{grid-column:1/-1}}
+dl{display:grid;grid-template-columns:8.5em 1fr;gap:6px 14px;font-size:14.5px}
+dt{color:var(--muted)}
+.open{justify-self:start;background:var(--amber);color:#0A1424;font-weight:700;padding:11px 20px;border-radius:6px;text-decoration:none}
+ul{padding-left:1.2em;display:grid;gap:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Round 3: four directions, all grown from what worked in C</h1>
+  <p class="intro">Round 1's C won on its <b>look</b>: all four round-1 mocks had identical copy. It had one huge serif sentence, a brand emblem, scarce amber and a calm, short page. Round 2 turned the page into a research report (about 2,500 words, with codes and footnotes), and all eight mocks shared one template. Round 3 goes back to C's restraint: <b>270–620 words per page, 6–9 phone screens, no codes above the fold</b>. It adds what was missing: <b>real project photography</b>, the <b>new brand kit</b>, and the content plan's <b>whole lifecycle from tender to site</b>. Each mock differs in its hero, signature, typefaces, section order and buttons.</p>
+  <p class="intro">Background: <a href="FLAWS.md">why the previous 7 missed</a> · <a href="../research/2026-10-08-brand-site-landscape.md">21 reference sites and the clichés to avoid</a> · <a href="BRIEF.md">brief</a> · <a href="COPY.md">copy</a></p>
+
+  <section class="card">
+    <div class="card__head"><h3>R3 · A · Emblem</h3><span class="card__voice">Bold voice · closest to C</span></div>
+    <div class="shots">
+      <img src="shots/r3a-emblem-desktop-fold.png" alt="R3-A desktop hero" loading="lazy">
+      <img src="shots/r3a-emblem-desktop-2.png" alt="R3-A photo band" loading="lazy">
+      <img src="shots/r3a-emblem-phone-fold.png" alt="R3-A phone hero" loading="lazy">
+    </div>
+    <dl>
+      <dt>Signature</dt><dd>The DiPGOS mark is redrawn flat (amber beams, blue nodes, no glow). Its nodes are the six real lifecycle steps: Read, Understand, Propose, Bid, Book, Control. A seventh, Operate, is dimmed as "later". On load, the beams draw out of the core and the ring closes.</dd>
+      <dt>Type</dt><dd>Gelasio for display and reading text; Instrument Sans for the UI.</dd>
+      <dt>Size</dt><dd>About 275 words, 5 sections, 6 phone screens. The shortest page.</dd>
+      <dt>Watch for</dt><dd>It may feel thin; it's a manifesto page.</dd>
+    </dl>
+    <a class="open" href="r3a-emblem.html">Open R3-A</a>
+  </section>
+
+  <section class="card">
+    <div class="card__head"><h3>R3 · B · Ground</h3><span class="card__voice">Bold voice · photograph-led</span></div>
+    <div class="shots">
+      <img src="shots/r3b-ground-desktop-fold.png" alt="R3-B desktop hero" loading="lazy">
+      <img src="shots/r3b-ground-desktop-2.png" alt="R3-B problem and figure" loading="lazy">
+      <img src="shots/r3b-ground-phone-fold.png" alt="R3-B phone hero" loading="lazy">
+    </div>
+    <dl>
+      <dt>Signature</dt><dd>A real dam-site aerial is the hero. The Indus i-dot (an amber ball in a blue ring) is used as survey pins on real features: a work front, a load of material, a crew, a machine. "Every crew, machine and load on a site like this, in one system." No text sits on a photo; an ink block carries it.</dd>
+      <dt>Type</dt><dd>Gelasio, plus the Archivo grotesque. Colours are taken from the photos: rock, silt and river.</dd>
+      <dt>Size</dt><dd>About 500 words, 6 sections, 8 phone screens.</dd>
+      <dt>Watch for</dt><dd>The photos are graded fairly grey. "Named for the river our first projects are built on" is an assumption for you to confirm.</dd>
+    </dl>
+    <a class="open" href="r3b-ground.html">Open R3-B</a>
+  </section>
+
+  <section class="card">
+    <div class="card__head"><h3>R3 · C · One thread</h3><span class="card__voice">Engineer voice · product walkthrough</span></div>
+    <div class="shots">
+      <img src="shots/r3c-thread-desktop-fold.png" alt="R3-C desktop hero" loading="lazy">
+      <img src="shots/r3c-thread-desktop-3.png" alt="R3-C thread steps" loading="lazy">
+      <img src="shots/r3c-thread-phone-fold.png" alt="R3-C phone hero" loading="lazy">
+    </div>
+    <dl>
+      <dt>Signature</dt><dd>A blue line drops from the stem of the "i" in the Indus logo and runs down the page through the six steps, from tender to site. It draws as you scroll and lights an i-dot at each step, where a large product screen sits. The line is the "one connected system" claim.</dd>
+      <dt>Type</dt><dd>Gelasio, plus IBM Plex Sans.</dd>
+      <dt>Size</dt><dd>About 445 words, 5 sections, 8 phone screens.</dd>
+      <dt>Watch for</dt><dd>It needs your real screenshots most. With placeholder frames it looks emptier than it will.</dd>
+    </dl>
+    <a class="open" href="r3c-thread.html">Open R3-C</a>
+  </section>
+
+  <section class="card">
+    <div class="card__head"><h3>R3 · D · The clause</h3><span class="card__voice">Engineer voice · typographic</span></div>
+    <div class="shots">
+      <img src="shots/r3d-clause-desktop-fold.png" alt="R3-D desktop hero" loading="lazy">
+      <img src="shots/r3d-clause-desktop-3.png" alt="R3-D the traced clause" loading="lazy">
+      <img src="shots/r3d-clause-phone-fold.png" alt="R3-D phone hero" loading="lazy">
+    </div>
+    <dl>
+      <dt>Signature</dt><dd>A tender page sits on the dark page as a paper object, with one clause underlined in amber. Scrolling down, that sentence is traced through the system: requirement, proposal, priced bid, booked crew and machines, and the day's site report checked against it.</dd>
+      <dt>Type</dt><dd>Gelasio, including the document; Fira Sans for the UI.</dd>
+      <dt>Size</dt><dd>About 615 words, 7 sections, 9 phone screens.</dd>
+      <dt>Watch for</dt><dd>The clause and crew are generic, invented examples. Name no project here until you approve one.</dd>
+    </dl>
+    <a class="open" href="r3d-clause.html">Open R3-D</a>
+  </section>
+
+  <h2>Needed from you</h2>
+  <ul>
+    <li><b>Which direction</b>, or which parts of several, to take forward.</li>
+    <li><b>Product screenshots</b> for the placeholders: the ACCS project map, the RCC lifts activity flow, the Atom Manager catalogue, the CPDS requirement profiler and a Mutlashi answer with sources. Dark theme, 1920 wide.</li>
+    <li><b>Photo rights:</b> the aerials and river shots come from the DiPGOS image library. Can they go on a public site?</li>
+    <li><b>Claims:</b> can the site say "running on an RCC dam in northern Pakistan"? And is the company named after the river?</li>
+  </ul>
+</div>
+</body>
+</html>

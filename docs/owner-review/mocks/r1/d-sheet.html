@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus — Mock D · Drawing sheet</title>
+<meta name="description" content="Mock D of the industechsol.com redesign: a light, engineering-drawing sheet.">
+<meta name="theme-color" content="#F3F5F8">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Public+Sans:wght@400..700&amp;display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   Tokens
+   ================================================================ */
+:root {
+  --sheet: #F3F5F8;         /* cool drafting white */
+  --panel: #FFFFFF;
+  --ink: #0A1424;           /* headings, lines, ink band */
+  --ink-2: #3B4759;         /* running text      8.6:1 on sheet */
+  --ink-3: #56627A;         /* labels, captions  5.6:1 on sheet */
+  --rule: rgba(10, 20, 36, .16);
+  --blue: #3E74D6;          /* blueprint line (graphics only) */
+  --blue-ink: #2C5CB3;      /* blue that carries text: 6.4:1 with white */
+  --grid: rgba(62, 116, 214, .30);
+  --amber: #E8A020;         /* action fill, ink text on it */
+  --amber-deep: #C98612;    /* hover */
+  --amber-ink: #8A5A00;     /* amber as text on light: 5.4:1 */
+  --bone: #FBF9F4;
+  --steel: #A9BBCE;         /* secondary text on ink: 9:1 */
+  --dim-line: #86A9EC;      /* dimension lines on ink */
+
+  --serif: "Gelasio", Georgia, "Times New Roman", serif;
+  --sans: "Public Sans", "Segoe UI", system-ui, sans-serif;
+
+  --max: 1280px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --gap: clamp(16px, 1.9vw, 24px);
+  --section: clamp(72px, 9vw, 128px);
+  --radius: 3px;
+  --measure: 31em;        /* about 65 characters of running text */
+}
+
+/* The one label style */
+.label {
+  font: 600 13px/1.4 var(--sans);
+  letter-spacing: .02em;
+  color: var(--ink-3);
+}
+
+/* ================================================================
+   Base
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 84px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  background: var(--sheet);
+  color: var(--ink-2);
+  font: 400 17px/1.6 var(--sans);
+  overflow-x: clip;
+}
+h1, h2, h3, h4 { margin: 0; color: var(--ink); font-family: var(--serif); font-weight: 500; }
+p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+p { max-width: var(--measure); }
+[hidden] { display: none !important; }
+::selection { background: rgba(62, 116, 214, .22); }
+
+:focus-visible { outline: 2px solid var(--blue-ink); outline-offset: 3px; border-radius: 2px; }
+.on-ink :focus-visible { outline-color: var(--amber); }
+
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 100;
+  background: var(--ink); color: var(--bone);
+  padding: 10px 16px; border-radius: var(--radius);
+  font: 600 15px/1.4 var(--sans); text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.wrap { width: min(var(--max), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+
+.em { color: var(--ink); font-weight: 600; }
+.on-ink .em { color: var(--bone); }
+.hl { color: var(--amber-ink); }
+
+.h2 {
+  font: 500 clamp(32px, 4.3vw, 58px)/1.1 var(--serif);
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.h3 { font: 500 clamp(22px, 2.2vw, 28px)/1.25 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+.lead { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.55; color: var(--ink-2); }
+
+/* Placeholders the owner must supply */
+.todo {
+  position: relative;
+  outline: 1.5px dashed var(--amber-ink);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.todo::after {
+  content: "needs owner input";
+  position: absolute; right: -4px; top: -4px; transform: translateY(-100%);
+  font: 600 10px/1.5 var(--sans); letter-spacing: .02em;
+  color: #fff; background: var(--amber-ink);
+  padding: 0 5px; border-radius: 2px; white-space: nowrap;
+}
+.on-ink .todo { outline-color: var(--amber); }
+.on-ink .todo::after { color: var(--ink); background: var(--amber); }
+
+/* Buttons: the only solid amber on the page */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 22px;
+  font: 600 16px/1.2 var(--sans); text-decoration: none;
+  border-radius: var(--radius); border: 1.5px solid transparent;
+  cursor: pointer; white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.btn--primary { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+.btn--primary:hover { background: var(--amber-deep); border-color: var(--amber-deep); }
+.btn--line { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn--line:hover { background: var(--ink); color: var(--bone); }
+
+/* ================================================================
+   Sheet frame: the container's edges drawn down the page
+   ================================================================ */
+.frame-lines {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.frame-lines::before, .frame-lines::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid);
+  left: calc(50% - min(var(--max), 100% - 2 * var(--gutter)) / 2 - 24px);
+}
+.frame-lines::after { left: auto; right: calc(50% - min(var(--max), 100% - 2 * var(--gutter)) / 2 - 24px); }
+main, .footer { position: relative; z-index: 1; }
+
+/* ================================================================
+   Nav
+   ================================================================ */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--rule);
+}
+.nav__bar { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 24px; }
+.wordmark {
+  font: 600 27px/1.2 var(--serif); color: var(--ink); letter-spacing: -.01em; text-decoration: none;
+  display: inline-block; padding: 4px 0;
+}
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .08em; transform: translateX(-50%);
+  width: .30em; height: .30em;
+  background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+.nav__links { display: flex; align-items: center; gap: 4px; }
+.nav__link {
+  position: relative;
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
+  font: 500 15px/1.3 var(--sans); color: var(--ink-2); text-decoration: none;
+}
+.nav__link:hover { color: var(--ink); }
+.nav__link::after {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: 8px; height: 2px;
+  background: var(--blue-ink); transform: scaleX(0); transform-origin: left;
+}
+.nav__link[aria-current="true"] { color: var(--ink); }
+.nav__link[aria-current="true"]::after { transform: none; }
+.nav__cta { margin-left: 12px; min-height: 40px; padding: 0 18px; font-size: 15px; }
+.nav__toggle {
+  display: none;
+  width: 44px; height: 44px; border: 1.5px solid var(--ink); border-radius: var(--radius);
+  background: var(--panel); cursor: pointer; padding: 0;
+  align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+}
+.nav__toggle span { display: block; width: 18px; height: 1.5px; background: var(--ink); }
+
+/* Column ticks: the 12-column grid, faintly, along the top edge of the sheet */
+.ticks { height: 7px; }
+.ticks .grid { height: 100%; }
+.ticks i {
+  display: block; height: 100%;
+  border-left: 1px solid var(--grid); border-right: 1px solid var(--grid);
+  background: rgba(62, 116, 214, .06);
+}
+
+/* ================================================================
+   Hero
+   ================================================================ */
+.hero { padding: clamp(40px, 5.5vw, 76px) 0 clamp(40px, 4.5vw, 64px); }
+.hero__title {
+  grid-column: 1 / span 7;
+  font: 500 clamp(46px, 6.3vw, 92px)/1.02 var(--serif);
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+.hero__side { grid-column: 8 / span 5; align-self: end; padding-bottom: 6px; }
+.hero__lead { font-size: 18px; line-height: 1.6; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.hero__tagline {
+  grid-column: 1 / span 7; margin-top: 22px;
+  font: italic 400 clamp(17px, 1.5vw, 20px)/1.45 var(--serif); color: var(--ink-3);
+  text-wrap: balance;
+}
+
+/* ================================================================
+   Command centre: the ink viewport band
+   ================================================================ */
+.band { background: var(--ink); color: var(--steel); padding: clamp(40px, 4.5vw, 60px) 0 clamp(64px, 7vw, 104px); }
+.band h2, .band h3 { color: var(--bone); }
+.band .label { color: var(--steel); }
+
+.lockup { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.lockup__mark { width: 46px; height: 46px; }
+.lockup__word { font: 700 30px/1.1 var(--serif); color: var(--bone); letter-spacing: -.01em; }
+.lockup__word .wordmark__dot { top: .1em; }
+.lockup__tag { padding-left: 14px; border-left: 1px solid rgba(251, 249, 244, .28); }
+
+.cc { margin-top: 28px; }
+.dims { position: relative; height: 46px; }
+.dim { position: absolute; bottom: 0; height: 46px; color: var(--dim-line); }
+.dim__line {
+  position: absolute; left: 0; right: 0; bottom: 14px; height: 1px; background: currentColor;
+}
+/* architectural end ticks + extension lines */
+.dim__line::before, .dim__line::after {
+  content: ""; position: absolute; top: -5px; width: 1px; height: 11px; background: currentColor;
+  transform: rotate(45deg);
+}
+.dim__line::before { left: 0; }
+.dim__line::after { right: 0; }
+.dim::before, .dim::after {
+  content: ""; position: absolute; bottom: -8px; width: 1px; height: 30px; background: currentColor; opacity: .75;
+}
+.dim::before { left: 0; }
+.dim::after { right: 0; }
+.dim__text {
+  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+  padding: 0 8px; background: var(--ink);
+  font: 600 14px/1.3 var(--sans); color: #C9DAF8; white-space: nowrap;
+}
+.cc__img {
+  border: 1px solid rgba(251, 249, 244, .22); border-radius: var(--radius);
+  width: 100%; height: auto;
+}
+.cc__caption { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; font-size: 14px; line-height: 1.45; color: var(--steel); }
+
+.band__text { margin-top: clamp(40px, 4.5vw, 64px); row-gap: 40px; }
+.band__intro { grid-column: 1 / span 5; }
+.band__intro .h2 { margin-top: 10px; font-size: clamp(30px, 3.4vw, 46px); }
+.band__intro p { margin-top: 18px; }
+.key { grid-column: 7 / span 6; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px var(--gap); }
+.key__col--nav { grid-column: 1 / -1; }
+.key__col--nav .key__list { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); }
+.key__col { border-top: 1px solid rgba(251, 249, 244, .24); padding-top: 18px; }
+.key__col h3 { font: 500 21px/1.3 var(--serif); margin-bottom: 10px; }
+.key__col p { font-size: 16px; line-height: 1.6; }
+.key__list { display: grid; gap: 10px; }
+.key__list p { font-size: 16px; }
+.key__term {
+  position: relative; display: inline-block; color: var(--bone); font-weight: 600; line-height: 1.3;
+  padding: 0 3px 3px; margin-right: 2px;
+  background: linear-gradient(var(--dim-line), var(--dim-line)) left bottom / 100% 1px no-repeat;
+}
+/* the same end ticks as the dimension lines on the image */
+.key__term::before, .key__term::after {
+  content: ""; position: absolute; bottom: -4px; width: 1px; height: 9px; background: var(--dim-line); transform: rotate(45deg);
+}
+.key__term::before { left: 0; }
+.key__term::after { right: 0; }
+.key__close { margin-top: 12px; }
+.crop { display: none; }
+
+/* ================================================================
+   Sections on the sheet
+   ================================================================ */
+.section { padding: var(--section) 0; }
+.section + .section { border-top: 1px solid var(--rule); }
+
+/* DiPGOS system */
+.sys__head { grid-column: 1 / span 8; }
+.sys__head .lead { margin-top: 22px; }
+.block { margin-top: clamp(64px, 7vw, 104px); }
+.block__intro { max-width: var(--measure); }
+.block__intro .h3 { margin-top: 10px; }
+.block__intro p { margin-top: 14px; }
+.block__intro .label + p { margin-top: 10px; }
+
+/* The loop: process-flow diagram with a return line, drawn as a detail on graph paper */
+.detail {
+  margin-top: 36px; padding: clamp(28px, 3.4vw, 48px) clamp(20px, 3vw, 44px) clamp(24px, 3vw, 40px);
+  background-color: var(--panel);
+  background-image:
+    linear-gradient(rgba(62, 116, 214, .09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 116, 214, .09) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+  border: 1px solid rgba(62, 116, 214, .45); border-radius: var(--radius);
+}
+.flow {
+  --g: clamp(28px, 3.4vw, 48px);
+  --drop: 40px;
+  --line: 1.5px;
+  position: relative;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: var(--g);
+  margin-top: 0; padding-bottom: calc(var(--drop) + 4px);
+  color: var(--ink);
+}
+.st {
+  position: relative; background: var(--panel);
+  border: var(--line) solid var(--ink); border-radius: var(--radius);
+  padding: 16px 18px 20px;
+}
+.st--act { box-shadow: inset 0 4px 0 var(--amber); }
+.st__num {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  border: var(--line) solid var(--ink); background: var(--panel); color: var(--ink);
+  font: 600 13px/1 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.st__title { font: 500 23px/1.25 var(--serif); margin-top: 14px; }
+.st__body { font-size: 15px; line-height: 1.5; margin-top: 6px; }
+
+.fwd, .rail, .drop { position: absolute; background: currentColor; }
+.fwd { top: 33px; left: calc(100% + var(--line)); width: calc(var(--g) - 2 * var(--line)); height: var(--line); }
+.fwd::after {
+  content: ""; position: absolute; right: -1px; top: 50%; transform: translateY(-50%);
+  border-left: 9px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+}
+.rail {
+  top: calc(100% + var(--drop)); height: var(--line);
+  left: calc(-1 * var(--line)); width: calc(100% + 2 * var(--line) + var(--g));
+}
+.st:first-child .rail { left: 50%; width: calc(50% + var(--line) + var(--g)); }
+.st:last-child .rail { width: calc(50% + var(--line)); }
+.drop { left: calc(50% - var(--line) / 2); top: calc(100% + var(--line)); width: var(--line); height: calc(var(--drop) - var(--line)); }
+.st:first-child .drop::after {
+  content: ""; position: absolute; left: 50%; top: -1px; transform: translateX(-50%);
+  border-bottom: 9px solid currentColor; border-left: 5px solid transparent; border-right: 5px solid transparent;
+}
+.st:nth-child(3) .rail::after {
+  content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  border-right: 9px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+}
+.flow__note { margin-top: 18px; max-width: var(--measure); }
+
+/* Functions resting on the foundation */
+.kicker { margin-top: 44px; font-size: 17px; color: var(--ink); font-weight: 500; }
+.fns { margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--gap); }
+.fn { border-top: 1px solid var(--rule); padding: 18px 0 22px; }
+.fn h4 { font: 500 20px/1.3 var(--serif); }
+.fn p { font-size: 15px; line-height: 1.5; margin-top: 4px; }
+.carry {
+  display: flex; align-items: center; gap: 14px; margin-top: 4px; padding: 10px 0;
+  color: var(--ink-3); font-size: 14px; line-height: 1.4; max-width: none;
+}
+.carry::before, .carry::after { content: ""; flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--blue) 0 6px, transparent 6px 10px); opacity: .6; }
+.foundation {
+  position: relative; background: var(--panel);
+  border: 1.5px solid var(--ink); border-top-width: 3px; border-radius: var(--radius);
+  padding: 30px clamp(20px, 3vw, 40px) 32px;
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 24px var(--gap);
+}
+.foundation__lead .h3 { margin-top: 8px; }
+.foundation__lead p { margin-top: 10px; }
+.foundation__parts { align-self: center; display: grid; gap: 0; }
+.foundation__parts li {
+  padding: 10px 0 10px 16px; border-left: 3px solid var(--blue);
+  font: 500 18px/1.35 var(--serif); color: var(--ink);
+}
+.foundation__parts li + li { border-top: 1px solid var(--rule); }
+.close { margin-top: 36px; font: 400 clamp(20px, 1.9vw, 24px)/1.45 var(--serif); color: var(--ink); max-width: 44ch; }
+
+/* Conviction */
+.conv__title { grid-column: 1 / span 10; font-size: clamp(34px, 4.8vw, 66px); }
+.conv__a { grid-column: 1 / span 5; margin-top: 40px; }
+.conv__b { grid-column: 7 / span 5; margin-top: 40px; }
+.statement {
+  grid-column: 1 / span 10; margin-top: clamp(48px, 6vw, 80px);
+  padding-left: clamp(20px, 2.5vw, 32px); border-left: 3px solid var(--blue);
+}
+.statement p { font: 400 clamp(22px, 2.3vw, 30px)/1.42 var(--serif); color: var(--ink); max-width: 40ch; }
+.statement .em { font-weight: 700; }
+
+/* Applied AI: the section-cut */
+.ai__title { grid-column: 1 / span 9; }
+.ai__fig { grid-column: 1 / span 8; margin-top: 56px; }
+.ai__prose { grid-column: 9 / span 4; margin-top: 56px; display: grid; gap: 18px; align-content: start; }
+.ai__prose .first { font: 400 clamp(20px, 1.8vw, 23px)/1.45 var(--serif); color: var(--ink); }
+
+.cut { --cutw: 60%; position: relative; }
+.cut__row { position: relative; display: grid; grid-template-columns: var(--cutw) 1fr; }
+.cut__structure { padding-top: 6px; }
+.slab {
+  width: 84%; margin-inline: auto; background: var(--panel);
+  border: 1.5px solid var(--ink); border-top: 4px solid var(--amber); border-radius: 2px;
+  padding: 16px 18px 18px;
+}
+.slab h3 { font: 500 21px/1.3 var(--serif); }
+.slab p { font-size: 15px; line-height: 1.5; margin-top: 6px; }
+.piers { position: relative; display: flex; justify-content: space-between; width: 60%; margin-inline: auto; height: 40px; }
+.piers::before, .piers::after { content: ""; width: 14px; height: 100%; background: var(--panel); border: 1.5px solid var(--ink); border-top: 0; border-bottom: 0; }
+.piers span {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font: 600 13px/1.4 var(--sans); color: var(--ink-3); white-space: nowrap;
+}
+.stratum { min-height: var(--h, 72px); }
+.stratum__fill {
+  position: absolute; top: 0; bottom: 0; left: 0; width: var(--cutw); height: 100%;
+  border-left: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink);
+}
+.stratum--top .stratum__fill { border-top: 2.5px solid var(--ink); }
+.stratum + .stratum .stratum__fill { border-top: 1px solid var(--ink); }
+.stratum__call { grid-column: 2; align-self: center; position: relative; padding: 12px 0 12px 28px; }
+.stratum__call::before {
+  content: ""; position: absolute; top: calc(12px + .65em * 1.3); left: -48px; width: 68px; height: 1px; background: var(--ink);
+}
+.stratum__call::after {
+  content: ""; position: absolute; top: calc(12px + .65em * 1.3 - 3px); left: -51px; width: 7px; height: 7px; border-radius: 50%; background: var(--ink);
+}
+.stratum__call h3 { font: 500 19px/1.3 var(--serif); }
+.stratum__call p { font-size: 15px; line-height: 1.45; margin-top: 2px; }
+.cut__break { position: absolute; left: 0; bottom: 0; width: var(--cutw); height: 14px; overflow: visible; }
+.stratum--base .stratum__fill {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), 56% calc(100% - 7px), 53% calc(100% - 14px), 47% 100%, 44% calc(100% - 7px), 0 calc(100% - 7px));
+}
+
+/* Company */
+.co__main { grid-column: 1 / span 7; }
+.co__main > p { margin-top: 22px; }
+.founder { margin-top: 32px; }
+.founder__name { font: 500 22px/1.3 var(--serif); color: var(--ink); margin-top: 6px; }
+.founder__role { font-size: 15px; }
+.co__facts { grid-column: 9 / span 4; align-self: start; margin-top: 30px; }
+.facts { background: var(--panel); border: 1.5px solid var(--ink); border-radius: var(--radius); }
+.facts li { padding: 14px 18px; font-size: 16px; line-height: 1.45; color: var(--ink); font-variant-numeric: tabular-nums; }
+.facts li + li { border-top: 1px solid var(--rule); }
+
+/* Contact */
+.contact__title { grid-column: 1 / span 9; font-size: clamp(36px, 5vw, 70px); line-height: 1.06; }
+.contact__row { grid-column: 1 / -1; margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.addr {
+  display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px;
+  background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius);
+  font: 500 19px/1.3 var(--sans); color: var(--ink); user-select: all; -webkit-user-select: all;
+  font-variant-numeric: tabular-nums;
+}
+.contact__status { grid-column: 1 / -1; min-height: 1.5em; margin-top: 10px; font-size: 14px; color: var(--ink-3); }
+.contact__fallback { grid-column: 1 / -1; margin-top: 16px; }
+
+/* ================================================================
+   Footer: the drawing title block
+   ================================================================ */
+.footer { background: var(--ink); color: var(--steel); padding: 56px 0 88px; }
+.tb {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+  border: 2px solid rgba(251, 249, 244, .55); border-radius: 2px;
+}
+.tb__cell { padding: 14px 16px 16px; border-right: 1px solid rgba(251, 249, 244, .28); border-bottom: 1px solid rgba(251, 249, 244, .28); min-width: 0; }
+.tb__cell .label { color: var(--steel); display: block; margin-bottom: 6px; }
+.tb__value { color: var(--bone); font-size: 16px; line-height: 1.45; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tb__rev .tb__value { white-space: nowrap; }
+.tb__brand { grid-column: 1 / span 4; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+.tb__brand .wordmark { color: var(--bone); font-size: 40px; }
+.tb__motto { font: italic 400 20px/1.4 var(--serif); color: var(--bone); max-width: 30ch; }
+.tb__explore { grid-column: 5 / span 3; grid-row: 1 / span 2; }
+.tb__explore a, .tb__contact a {
+  display: block; padding: 5px 0; min-height: 32px; color: var(--bone); text-decoration: none; font-size: 16px; line-height: 1.4;
+}
+.tb__explore a:hover, .tb__contact a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tb__entities { grid-column: 8 / span 5; }
+.tb__entities .tb__value + .tb__value { margin-top: 4px; }
+.tb__contact { grid-column: 8 / span 2; }
+.tb__sheet { grid-column: 10 / span 2; }
+.tb__rev { grid-column: 12 / span 1; border-right: 0; }
+.tb__entities { border-right: 0; }
+.tb__copy { grid-column: 1 / -1; border-right: 0; border-bottom: 0; font-size: 14px; }
+
+/* Mock tag */
+.mock-tag {
+  position: fixed; left: 12px; bottom: 12px; z-index: 60;
+  display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px;
+  background: rgba(10, 20, 36, .9); color: var(--bone); border-radius: 999px; border: 1px solid rgba(251, 249, 244, .35);
+  font: 500 12px/1.3 var(--sans); text-decoration: none;
+}
+.mock-tag:hover { background: var(--ink); }
+
+/* ================================================================
+   Motion: the one orchestrated moment: a turn of the loop
+   ================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .flow.is-live .st__num { animation: lit 7.5s calc(var(--i) * 1.2s) infinite; }
+  .flow.is-live .rail, .flow.is-live .drop { animation: ret 7.5s infinite; }
+  @keyframes lit {
+    0%, 13% { background: var(--blue-ink); color: #fff; border-color: var(--blue-ink); }
+    17%, 100% { background: var(--panel); color: var(--ink); border-color: var(--ink); }
+  }
+  @keyframes ret {
+    0%, 79% { color: var(--ink); }
+    82%, 97% { color: var(--blue-ink); }
+    100% { color: var(--ink); }
+  }
+}
+
+/* ================================================================
+   Tablet
+   ================================================================ */
+@media (max-width: 1100px) {
+  .hero__title { grid-column: 1 / -1; }
+  .hero__side { grid-column: 1 / span 9; margin-top: 28px; }
+  .hero__tagline { grid-column: 1 / span 9; order: 3; }
+  .band__intro { grid-column: 1 / span 10; }
+  .key { grid-column: 1 / -1; }
+  .sys__head { grid-column: 1 / span 11; }
+  .flow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .st { padding: 14px 14px 18px; }
+  .st__title { font-size: 20px; }
+  .conv__title, .ai__title, .contact__title { grid-column: 1 / -1; }
+  .conv__a { grid-column: 1 / span 6; }
+  .conv__b { grid-column: 7 / span 6; }
+  .statement { grid-column: 1 / -1; }
+  .ai__fig { grid-column: 1 / -1; }
+  .ai__prose { grid-column: 1 / span 10; margin-top: 56px; }
+  .co__main { grid-column: 1 / span 10; }
+  .co__facts { grid-column: 1 / span 8; margin-top: 48px; }
+  .tb__brand { grid-column: 1 / span 6; }
+  .tb__explore { grid-column: 7 / span 6; border-right: 0; }
+  .tb__entities { grid-column: 1 / span 6; border-right: 1px solid rgba(251, 249, 244, .28); }
+  .tb__contact { grid-column: 7 / span 6; border-right: 0; }
+  .tb__sheet { grid-column: 1 / span 6; }
+  .tb__rev { grid-column: 7 / span 6; }
+  .tb__brand, .tb__explore { grid-row: auto; }
+}
+@media (max-width: 900px) {
+  .nav__toggle { display: inline-flex; }
+  .nav__links {
+    display: none;
+    position: absolute; left: 0; right: 0; top: 100%;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--sheet); border-bottom: 1.5px solid var(--ink);
+    padding: 8px var(--gutter) 20px;
+  }
+  .nav.is-open .nav__links { display: flex; }
+  .nav__link { min-height: 52px; padding: 0; border-bottom: 1px solid var(--rule); font-size: 17px; }
+  .nav__link::after { left: 0; right: auto; width: 32px; bottom: 10px; }
+  .nav__cta { margin: 16px 0 0; min-height: 48px; }
+  .flow { grid-template-columns: 1fr; }
+  .conv__a, .conv__b { grid-column: 1 / -1; }
+  .conv__b { margin-top: 20px; }
+}
+
+/* The loop turns vertical, return line up the right side */
+@media (max-width: 900px) {
+  .flow {
+    --g: 22px; --side: 28px;
+    grid-template-columns: 1fr; row-gap: var(--g); column-gap: 0;
+    padding: 0 var(--side) 0 0;
+  }
+  .st { display: grid; grid-template-columns: 36px 1fr; column-gap: 16px; padding: 14px 16px 16px; }
+  .st__num { grid-row: 1 / span 2; }
+  .st__title { margin-top: 3px; font-size: 21px; }
+  .st__body { margin-top: 2px; }
+  .fwd { top: calc(100% + var(--line)); left: calc(16px + 18px - var(--line) / 2); width: var(--line); height: calc(var(--g) - 2 * var(--line)); }
+  .fwd::after {
+    right: auto; left: 50%; top: auto; bottom: -1px; transform: translateX(-50%);
+    border-top: 9px solid currentColor; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 0;
+  }
+  .rail { left: calc(100% + var(--side)); top: calc(-1 * var(--line)); width: var(--line); height: calc(100% + 2 * var(--line) + var(--g)); }
+  .st:first-child .rail { left: calc(100% + var(--side)); top: 50%; width: var(--line); height: calc(50% + var(--line) + var(--g)); }
+  .st:last-child .rail { width: var(--line); height: calc(50% + var(--line)); }
+  .drop { top: 50%; left: calc(100% + var(--line)); width: calc(var(--side) - var(--line)); height: var(--line); }
+  .st:first-child .drop::after {
+    left: -1px; top: 50%; transform: translateY(-50%);
+    border-right: 9px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 0;
+  }
+  .st:nth-child(3) .rail::after {
+    border-bottom: 9px solid currentColor; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 0;
+  }
+}
+
+/* ================================================================
+   Phone
+   ================================================================ */
+@media (max-width: 700px) {
+  body { font-size: 16px; }
+  :root { --section: 60px; }
+  .block { margin-top: 56px; }
+  .kicker { margin-top: 32px; }
+  .band { padding-bottom: 60px; }
+  .band__text { margin-top: 32px; }
+  .key__col--nav .key__list { gap: 24px; }
+  .frame-lines { display: none; }
+  .hero { padding-top: 36px; }
+  .hero__title { font-size: clamp(42px, 12.4vw, 56px); line-height: 1.04; }
+  .hero__side { grid-column: 1 / -1; }
+  .hero__lead { font-size: 17px; }
+  .hero__actions .btn { flex: 1 1 auto; }
+  .hero__tagline { grid-column: 1 / -1; }
+
+  .cc { display: none; }
+  .crop {
+    display: block; position: relative; overflow: hidden;
+    aspect-ratio: var(--w) / var(--h);
+    border: 1px solid rgba(251, 249, 244, .24); border-radius: var(--radius);
+    margin-bottom: 14px;
+  }
+  .crop img {
+    position: absolute; top: 0; left: 0; max-width: none;
+    width: calc(1912 / var(--w) * 100%); height: auto;
+    transform: translate(calc(var(--x) / 1912 * -100%), calc(var(--y) / 935 * -100%));
+  }
+  .band__intro { grid-column: 1 / -1; }
+  .band__intro .h2 { font-size: 32px; }
+  .lockup { gap: 10px 12px; }
+  .lockup__mark { width: 38px; height: 38px; }
+  .lockup__word { font-size: 26px; }
+  .lockup__tag { padding-left: 12px; }
+  .key { grid-template-columns: 1fr; gap: 36px; }
+  .key__col--nav .key__list { grid-template-columns: 1fr; gap: 28px; }
+  .cc__caption--phone { margin-top: 18px; }
+
+  .sys__head { grid-column: 1 / -1; }
+  .detail { padding: 18px 12px 18px 14px; }
+  .flow { --g: 18px; --side: 22px; }
+  .st { padding: 10px 12px 12px; column-gap: 12px; grid-template-columns: 32px 1fr; }
+  .st__num { width: 32px; height: 32px; font-size: 12px; }
+  .st__title { font-size: 19px; margin-top: 2px; }
+  .st__body { font-size: 15px; line-height: 1.45; }
+  .fwd { left: calc(12px + 16px - var(--line) / 2); }
+  .fns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fn { padding: 14px 0 16px; }
+  .fn h4 { font-size: 18px; }
+  .fn p { font-size: 14px; }
+  .foundation { grid-template-columns: 1fr; padding: 22px 18px 24px; }
+  .foundation__parts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .foundation__parts li { padding: 4px 0 4px 10px; font-size: 16px; }
+  .foundation__parts li + li { border-top: 0; }
+
+  .ai__prose { grid-column: 1 / -1; }
+  .cut { --cutw: 100%; }
+  .cut__row { grid-template-columns: 1fr; }
+  .slab { width: 100%; }
+  .piers { width: 70%; }
+  .stratum { padding: 18px 14px; min-height: 0; }
+  .stratum__call {
+    grid-column: 1; position: relative; z-index: 1;
+    background: var(--panel); border: 1px solid var(--ink); border-radius: 2px;
+    padding: 8px 10px; width: fit-content; max-width: 76%;
+  }
+  .stratum__call h3 { font-size: 17px; }
+  .stratum__call p { font-size: 14px; }
+  .stratum__call::before, .stratum__call::after { display: none; }
+  .stratum--base { padding-bottom: 36px; }
+
+  .co__main, .co__facts { grid-column: 1 / -1; }
+  .facts li { padding: 10px 14px; font-size: 15px; }
+  .contact__row .btn { flex: 1 1 auto; }
+  .addr { flex: 1 1 100%; font-size: 17px; }
+
+  .tb__brand, .tb__entities { grid-column: 1 / -1; border-right: 0; }
+  .tb__explore { grid-column: 1 / span 7; border-right: 1px solid rgba(251, 249, 244, .28); }
+  .tb__contact { grid-column: 8 / span 5; border-right: 0; }
+  .tb__brand .tb__motto { font-size: 18px; }
+  .tb__sheet { grid-column: 1 / span 7; border-right: 1px solid rgba(251, 249, 244, .28); }
+  .tb__rev { grid-column: 8 / span 5; }
+  .tb__brand .wordmark { font-size: 34px; }
+  .footer { padding-bottom: 96px; }
+  .mock-tag { font-size: 11px; min-height: 26px; padding: 0 10px; left: 8px; bottom: 8px; }
+}
+</style>
+<style>/* mock chrome: on phones the tag sits under the nav and scrolls away instead of covering content */@media (max-width:699.98px){.mock-tag,.mocktag{position:absolute!important;top:76px!important;bottom:auto!important}}</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="frame-lines" aria-hidden="true"></div>
+
+<!-- Hatch patterns for the section-cut -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hatch-sand" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="#FFFFFF"/>
+      <circle cx="3" cy="3" r="1.1" fill="#3E74D6" fill-opacity=".6"/>
+      <circle cx="9" cy="8" r=".9" fill="#3E74D6" fill-opacity=".45"/>
+      <circle cx="6.5" cy="10.5" r=".6" fill="#0A1424" fill-opacity=".35"/>
+    </pattern>
+    <pattern id="hatch-earth" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)">
+      <rect width="9" height="9" fill="#F4F7FC"/>
+      <line x1="0" y1="0" x2="0" y2="9" stroke="#3E74D6" stroke-opacity=".55" stroke-width="1.4"/>
+    </pattern>
+    <pattern id="hatch-rock" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#CFD8E6"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#0A1424" stroke-opacity=".62" stroke-width="1"/>
+      <line x1="0" y1="0" x2="8" y2="0" stroke="#0A1424" stroke-opacity=".62" stroke-width="1"/>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__bar">
+    <a class="wordmark" href="#top" aria-label="Indus, home"><span class="wordmark__i" aria-hidden="true">ı<span class="wordmark__dot"></span></span><span aria-hidden="true">ndus</span></a>
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#dipgos" data-for="dipgos">DiPGOS</a>
+      <a class="nav__link" href="#conviction" data-for="conviction">Conviction</a>
+      <a class="nav__link" href="#ai" data-for="ai">Applied AI</a>
+      <a class="nav__link" href="#company" data-for="company">Company</a>
+      <a class="btn btn--primary nav__cta" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+  <div class="ticks" aria-hidden="true"><div class="wrap grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+</header>
+
+<main id="content" tabindex="-1">
+
+<!-- ============================== Hero ============================== -->
+<section class="hero" id="top" data-nav="none" aria-labelledby="hero-title">
+  <div class="wrap grid">
+    <h1 class="hero__title" id="hero-title">The world needs a new way to <span class="hl">build</span>.</h1>
+    <div class="hero__side">
+      <p class="hero__lead">We can’t house, power and connect eight billion people with the fractured way the world builds today. Indus&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#dipgos">See DiPGOS</a>
+        <a class="btn btn--line" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <p class="hero__tagline">The world’s oldest industry, reimagined from the ground up.</p>
+  </div>
+</section>
+
+<!-- ============================== Command centre (ink viewport) ============================== -->
+<section class="band on-ink" id="dipgos" data-nav="dipgos" aria-labelledby="cc-title">
+  <div class="wrap">
+    <div class="lockup">
+      <img class="lockup__mark" src="../../assets/dipgos-mark-light.svg" alt="" width="46" height="46">
+      <span class="lockup__word" aria-hidden="true">D<span class="wordmark__i">ı<span class="wordmark__dot"></span></span>PGOS</span><span class="sr-only">DiPGOS</span>
+      <span class="label lockup__tag">Project operating system</span>
+    </div>
+
+    <figure class="cc">
+      <div class="dims" aria-hidden="true">
+        <div class="dim" style="left:3%;width:15%"><span class="dim__line"></span><span class="dim__text">What</span></div>
+        <div class="dim" style="left:18.3%;width:63.8%"><span class="dim__line"></span><span class="dim__text">Where</span></div>
+        <div class="dim" style="left:82.6%;width:17%"><span class="dim__line"></span><span class="dim__text">How</span></div>
+      </div>
+      <img class="cc__img" src="../../assets/command-center.webp" width="1912" height="935" decoding="async"
+           alt="DiPGOS command centre — scope navigation at left, a live project map at the centre, and productivity, quality and business panels at right">
+      <figcaption class="cc__caption"><span>Live command centre, as shipped.</span> <span class="todo">Project shown: Diamer‑Basha dam</span></figcaption>
+    </figure>
+
+    <div class="grid band__text">
+      <div class="band__intro">
+        <p class="label">Where you run it</p>
+        <h2 class="h2" id="cc-title">The command centre&nbsp;— not a dashboard.</h2>
+        <p>The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+      </div>
+
+      <div class="key">
+        <div class="key__col key__col--nav">
+          <h3>Navigate — where, what &amp; how</h3>
+          <ul class="key__list">
+            <li>
+              <div class="crop" style="--x:580;--y:90;--w:590;--h:620"><img src="../../assets/command-center.webp" alt="The live map: work fronts marked with their percentage complete" loading="lazy" decoding="async"></div>
+              <p><span class="key__term">Where</span> — the live map, the epicentre of activity.</p>
+            </li>
+            <li>
+              <div class="crop" style="--x:56;--y:62;--w:292;--h:213"><img src="../../assets/command-center.webp" alt="The scopes panel: each scope with actual against planned progress" loading="lazy" decoding="async"></div>
+              <p><span class="key__term">What</span> — scope, blocks and work fronts.</p>
+            </li>
+            <li>
+              <div class="crop" style="--x:1576;--y:62;--w:334;--h:248"><img src="../../assets/command-center.webp" alt="The productivity panel: physical works completed and design work output" loading="lazy" decoding="async"></div>
+              <p><span class="key__term">How</span> — productivity, quality and safety.</p>
+            </li>
+          </ul>
+          <p class="key__close">The whole project, navigable from one place.</p>
+        </div>
+        <div class="key__col">
+          <h3>Action &amp; command</h3>
+          <p>Approve, escalate, change, resolve — every action taken inside the system, in context, on the record. Alarms, decision engine, change manager, notifications, collaboration — command lives where the work lives.</p>
+        </div>
+        <div class="key__col">
+          <h3>Decision intelligence</h3>
+          <p>Your <span class="em">knowledge repository</span> — historic projects and contracts — reasoned against the live operation the moment a decision is made.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== DiPGOS: the system ============================== -->
+<section class="section" id="system" data-nav="dipgos" aria-labelledby="sys-title">
+  <div class="wrap">
+    <div class="grid">
+      <div class="sys__head">
+        <h2 class="h2" id="sys-title">Your whole project, running as one system.</h2>
+        <p class="lead">The first system built to run the work itself — connecting every signal, reasoning over the whole, and turning your project into one that can <span class="em">think and act</span>.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block__intro">
+        <p class="label">How it thinks</p>
+        <p>A living loop runs continuously over the work. Each turn makes the next sharper — the project learns as it is built.</p>
+      </div>
+      <div class="detail">
+      <ol class="flow" id="flow">
+        <li class="st" style="--i:0">
+          <span class="st__num">01</span>
+          <div><h3 class="st__title">Sense</h3><p class="st__body">Read the project’s true state from the ground, live.</p></div>
+          <span class="fwd" aria-hidden="true"></span><span class="rail" aria-hidden="true"></span><span class="drop" aria-hidden="true"></span>
+        </li>
+        <li class="st" style="--i:1">
+          <span class="st__num">02</span>
+          <div><h3 class="st__title">Understand</h3><p class="st__body">Set it against what you know and the science of the work.</p></div>
+          <span class="fwd" aria-hidden="true"></span><span class="rail" aria-hidden="true"></span>
+        </li>
+        <li class="st" style="--i:2">
+          <span class="st__num">03</span>
+          <div><h3 class="st__title">Foresee</h3><p class="st__body">See what’s coming before it lands on the programme.</p></div>
+          <span class="fwd" aria-hidden="true"></span><span class="rail" aria-hidden="true"></span>
+        </li>
+        <li class="st" style="--i:3">
+          <span class="st__num">04</span>
+          <div><h3 class="st__title">Adapt</h3><p class="st__body">Reshape the plan against the live operation.</p></div>
+          <span class="fwd" aria-hidden="true"></span><span class="rail" aria-hidden="true"></span>
+        </li>
+        <li class="st st--act" style="--i:4">
+          <span class="st__num">05</span>
+          <div><h3 class="st__title">Act</h3><p class="st__body">Put the call in front of the right person, and move.</p></div>
+          <span class="rail" aria-hidden="true"></span><span class="drop" aria-hidden="true"></span>
+        </li>
+      </ol>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block__intro">
+        <p class="label">What it connects</p>
+        <h3 class="h3">Every function, on one live picture of the work.</h3>
+        <p>Today each function runs in its own tool, blind to the rest. In DiPGOS they all run on one live picture of the job — so schedule, cost, supply chain, quality and safety finally move together.</p>
+      </div>
+
+      <p class="kicker">Functions that run themselves — driven by the work, approved by you.</p>
+      <ul class="fns">
+        <li class="fn"><h4>Autonomous scheduling</h4><p>The plan drives itself off the live process.</p></li>
+        <li class="fn"><h4>Finance</h4><p>Cost and value move with the work.</p></li>
+        <li class="fn"><h4>Supply chain</h4><p>Materials sequenced to the real plan.</p></li>
+        <li class="fn"><h4>Risk management</h4><p>Exposure caught before it bites.</p></li>
+        <li class="fn"><h4>Resource manager</h4><p>People and plant, put where they pay.</p></li>
+        <li class="fn"><h4>Document manager</h4><p>The right revision, tied to the work.</p></li>
+      </ul>
+      <p class="carry">every function runs on one foundation</p>
+      <div class="foundation">
+        <div class="foundation__lead">
+          <p class="label">The foundation</p>
+          <h3 class="h3">Operational management</h3>
+          <p>How the work is actually going, on the ground — captured live, where delivery is won or lost.</p>
+        </div>
+        <ul class="foundation__parts">
+          <li>Productivity</li>
+          <li>Quality</li>
+          <li>Health &amp; safety</li>
+        </ul>
+      </div>
+      <p class="close">The intelligence does the heavy lifting; you approve. Every function runs itself — and you stay in command.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== Conviction ============================== -->
+<section class="section" id="conviction" data-nav="conviction" aria-labelledby="conv-title">
+  <div class="wrap grid">
+    <h2 class="h2 conv__title" id="conv-title">We built the world. But never built the machine that builds it.</h2>
+    <p class="conv__a">Roads, dams, cities, power plants, buildings — every physical thing around us was delivered by engineering and construction. It is the largest industry on earth: <span class="em">$15 trillion a year</span>. And its greatest work is still ahead — <span class="em">the build now coming is the largest in the history of human civilisation.</span></p>
+    <p class="conv__b">What keeps us up at night is one question: <span class="em">how will the world deliver it?</span> The industry carrying humanity’s future still fights the battles it has always fought — productivity stalled for decades, cost and schedule overruns the norm rather than the exception, quality failures still making headlines.</p>
+    <blockquote class="statement" style="margin-inline:0">
+      <p>The answer is not another tool on the pile. The industry has thousands of tools — each holding a fragment of the project. What’s missing is <span class="em">the machine</span>: an operating system, one place where every part of a project connects, understands itself, and acts. Connect the work, and it begins to think.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============================== Applied AI: section-cut ============================== -->
+<section class="section" id="ai" data-nav="ai" aria-labelledby="ai-title">
+  <div class="wrap grid">
+    <h2 class="h2 ai__title" id="ai-title">AI can only act on ground it understands. We build the ground.</h2>
+
+    <figure class="ai__fig">
+      <div class="cut">
+        <div class="cut__row cut__structure">
+          <div>
+            <div class="slab">
+              <h3>Applied AI — human in command</h3>
+              <p>AI does the heavy lifting; your engineers stay in command.</p>
+            </div>
+            <div class="piers"><span>stands on</span></div>
+          </div>
+        </div>
+        <div class="cut__row stratum stratum--top" style="--h:96px">
+          <svg class="stratum__fill" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#hatch-sand)"/></svg>
+          <div class="stratum__call"><h3>Semantic &amp; knowledge layer</h3><p>The meaning and context of your project.</p></div>
+        </div>
+        <div class="cut__row stratum" style="--h:112px">
+          <svg class="stratum__fill" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#hatch-earth)"/></svg>
+          <div class="stratum__call"><h3>Operational relationships</h3><p>How work sequences, depends and constrains.</p></div>
+        </div>
+        <div class="cut__row stratum stratum--base" style="--h:150px">
+          <svg class="stratum__fill" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#hatch-rock)"/></svg>
+          <div class="stratum__call"><h3>Physics &amp; operational sciences</h3><p>How things really behave on the ground.</p></div>
+          <svg class="cut__break" viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <polyline points="0,7 44,7 47,14 53,0 56,7 100,7" fill="none" stroke="#0A1424" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>
+      </div>
+    </figure>
+
+    <div class="ai__prose">
+      <p class="first">Everyone is racing to put AI to work. But an agent is only as good as what it understands — and in construction, that understanding never existed.</p>
+      <p>DiPGOS builds the layers AI must stand on: the meaning, the relationships, the operational sciences and the physics of the work. Give AI that ground, and it can finally reason and act on real projects.</p>
+      <p>Electricity. The internet. AI. The value was never in the raw technology — it was in the application layer built on top. We are that applied layer for engineering &amp; construction.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== Company ============================== -->
+<section class="section" id="company" data-nav="company" aria-labelledby="co-title">
+  <div class="wrap grid">
+    <div class="co__main">
+      <h2 class="h2" id="co-title">We lived the problem before we built the answer.</h2>
+      <p>Indus is built by engineers and builders who spent their careers inside real projects — feeling the gridlock first-hand.&nbsp;We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      <div class="founder">
+        <p class="label">Founded by</p>
+        <p class="founder__name">M. Kamran Basit</p>
+        <p class="founder__role">Founder &amp; CEO</p>
+      </div>
+    </div>
+    <div class="co__facts">
+      <ul class="facts todo">
+        <li>[20+ years delivering hydropower &amp; infrastructure]</li>
+        <li>[N projects run on DiPGOS, including Diamer‑Basha]</li>
+        <li>[N engineers and builders on the team]</li>
+        <li>[Offices: Islamabad · USA]</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== Contact ============================== -->
+<section class="section" id="contact" data-nav="none" aria-labelledby="contact-title">
+  <div class="wrap grid">
+    <h2 class="h2 contact__title" id="contact-title">Let’s shape the future of how the world <span class="hl">gets built</span>.</h2>
+    <div class="contact__row" data-u="kamran" data-d="industechsol.com" hidden>
+      <span class="addr" id="addr"></span>
+      <button class="btn btn--line" type="button" id="copy">Copy</button>
+      <a class="btn btn--primary" id="email" href="#contact">Email us</a>
+    </div>
+    <p class="contact__status" id="copy-status" role="status" aria-live="polite"></p>
+    <noscript><p class="contact__fallback">Write to <span class="em">kamran (at) industechsol.com</span>.</p></noscript>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================== Footer: title block ============================== -->
+<footer class="footer on-ink">
+  <div class="wrap">
+    <div class="tb">
+      <div class="tb__cell tb__brand">
+        <div>
+          <span class="label">Company</span>
+          <span class="wordmark" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span><span class="sr-only">Indus</span>
+        </div>
+        <p class="tb__motto">The project thinks; the human commands.</p>
+      </div>
+      <nav class="tb__cell tb__explore" aria-label="Footer">
+        <span class="label">Explore</span>
+        <a href="#dipgos">DiPGOS</a>
+        <a href="#conviction">Our conviction</a>
+        <a href="#ai">Applied &amp; physical AI</a>
+        <a href="#company">Company</a>
+      </nav>
+      <div class="tb__cell tb__entities">
+        <span class="label">Entities</span>
+        <p class="tb__value">Indus Technology Solutions (Pvt) Ltd, Pakistan</p>
+        <p class="tb__value">Indus Technologies LLC, USA</p>
+      </div>
+      <div class="tb__cell tb__contact">
+        <span class="label">Contact</span>
+        <a href="#contact">Get in touch</a>
+      </div>
+      <div class="tb__cell tb__sheet">
+        <span class="label">Sheet</span>
+        <p class="tb__value">industechsol.com</p>
+      </div>
+      <div class="tb__cell tb__rev">
+        <span class="label">Rev</span>
+        <p class="tb__value">2026-09</p>
+      </div>
+      <div class="tb__cell tb__copy">© <span id="year">2026</span> Indus Technology Solutions. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<a class="mock-tag" href="../../index.html" target="_top">Mock D · Drawing sheet · ← all mocks</a>
+
+<script>
+(function () {
+  // Year
+  var y = document.getElementById('year');
+  if (y) y.textContent = new Date().getFullYear();
+
+  // Mobile menu
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  function setMenu(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('is-open')); });
+  document.getElementById('nav-links').addEventListener('click', function (e) {
+    if (e.target.closest('a')) setMenu(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) { setMenu(false); toggle.focus(); }
+  });
+
+  // Active nav link: the section crossing a band 35% down the viewport.
+  // Hero and contact map to "none", so the highlight clears there.
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+  function syncActive() {
+    var line = window.innerHeight * 0.35, current = 'none';
+    for (var i = 0; i < sections.length; i++) {
+      var r = sections[i].getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) { current = sections[i].getAttribute('data-nav'); break; }
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = 'none';
+    links.forEach(function (a) {
+      if (a.getAttribute('data-for') === current) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', syncActive, { passive: true });
+  window.addEventListener('resize', syncActive);
+  syncActive();
+
+  // The loop only turns while it is on screen
+  var flow = document.getElementById('flow');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { flow.classList.toggle('is-live', en.isIntersecting); });
+    }, { threshold: 0.2 }).observe(flow);
+  } else { flow.classList.add('is-live'); }
+
+  // Contact: assemble the address at runtime
+  var row = document.querySelector('.contact__row');
+  var addr = row.getAttribute('data-u') + '@' + row.getAttribute('data-d');
+  var status = document.getElementById('copy-status');
+  document.getElementById('addr').textContent = addr;
+  document.getElementById('email').setAttribute('href', 'mail' + 'to:' + addr);
+  row.hidden = false;
+  var timer;
+  document.getElementById('copy').addEventListener('click', function () {
+    var btn = this;
+    function done(ok) {
+      btn.textContent = ok ? 'Copied' : 'Copy';
+      status.textContent = ok ? 'Copied ' + addr + ' to the clipboard.' : 'Copy failed. Select the address and copy it.';
+      clearTimeout(timer);
+      timer = setTimeout(function () { btn.textContent = 'Copy'; status.textContent = ''; }, 2500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(addr).then(function () { done(true); }, function () { done(false); });
+    } else { done(false); }
+  });
+})();
+</script>
+</body>
+</html>

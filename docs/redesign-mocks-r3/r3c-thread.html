@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiPGOS by Indus | From tender to site, one connected system</title>
+<meta name="description" content="DiPGOS reads your tenders, builds your proposal, plans your resources and tracks every operation on site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08121E;
+  --panel:#0D1A2A;
+  --rule:#1E2F47;
+  --bone:#FBF9F4;
+  --steel:#A7B4C6;
+  --mute:#8593A8;
+  --blue:#3E74D6;
+  --blue-dim:#26446F;
+  --blue-text:#8DB0F0;
+  --amber:#E8A020;
+  --amber-hi:#F2B544;
+
+  --serif:"Gelasio",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+
+  --gut:clamp(16px,4vw,56px);
+  --rail:36px;
+  --max:1280px;
+  --space:clamp(72px,9vw,136px);
+}
+@media (min-width:900px){ :root{ --rail:64px; } }
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ink);color:var(--steel);
+  font:400 17px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit}
+h1,h2,h3,p,ol,ul,figure{margin:0}
+ol,ul{padding:0;list-style:none}
+
+:focus-visible{outline:2px solid var(--bone);outline-offset:3px;border-radius:2px}
+
+.skip{position:absolute;left:var(--gut);top:-60px;z-index:50;background:var(--bone);color:var(--ink);
+  padding:10px 14px;border-radius:4px;font:500 15px/1.2 var(--sans);text-decoration:none}
+.skip:focus{top:12px}
+
+/* one container */
+.wrap{max-width:calc(var(--max) + 2*var(--gut));margin-inline:auto;padding-inline:var(--gut)}
+.col{padding-left:var(--rail)}
+
+.page{position:relative}
+
+/* ---------- thread overlay ---------- */
+#thread{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible}
+#thread .line{fill:none;stroke:var(--blue);stroke-width:2;stroke-linecap:round}
+#thread .case{fill:none;stroke:var(--ink);stroke-width:6;stroke-opacity:.7}
+#thread .ring{fill:var(--ink);stroke:var(--blue-dim);stroke-width:2.5;transition:stroke .35s ease}
+#thread .core{fill:var(--amber);transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .45s cubic-bezier(.2,.8,.2,1.2)}
+#thread .on .ring{stroke:var(--blue)}
+#thread .on .core{transform:scale(1)}
+#thread .cap{fill:var(--ink);stroke:var(--blue-dim);stroke-width:2.5;transition:stroke .35s ease}
+#thread .cap.on{stroke:var(--blue)}
+@media (prefers-reduced-motion:reduce){
+  #thread .ring,#thread .core,#thread .cap{transition:none}
+}
+/* no-JS: a plain rail so the idea still reads */
+.no-js .page::before{content:"";position:absolute;top:58px;bottom:0;border-left:2px solid var(--blue);
+  left:max(calc(var(--gut) + 6px), calc((100% - var(--max)) / 2 + 6px))}
+
+/* ---------- nav ---------- */
+.nav{position:relative;z-index:20}
+.nav .wrap{display:flex;align-items:center;gap:clamp(24px,4vw,56px);height:76px}
+.logo{display:block;flex:none;line-height:0}
+.logo img{height:28px;width:auto}
+.nav-links{display:none;gap:32px;font:500 15px/1 var(--sans)}
+.nav-links a{color:var(--steel);text-decoration:none;padding:8px 0;border-bottom:1px solid transparent}
+.nav-links a:hover{color:var(--bone);border-bottom-color:var(--blue)}
+.nav .nav-demo{display:none;margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:4px;
+  font:600 15px/1 var(--sans);text-decoration:none;cursor:pointer;border:0}
+.btn-amber{background:var(--amber);color:var(--ink)}
+.btn-amber:hover{background:var(--amber-hi)}
+.btn-line{background:transparent;color:var(--bone);border:1px solid #3A5276;min-height:40px;padding:0 16px}
+.btn-line:hover{border-color:var(--blue)}
+.link{color:var(--blue-text);font:500 16px/1.4 var(--sans);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px;
+  text-decoration-color:rgba(141,176,240,.45);background:none;border:0;padding:10px 0;cursor:pointer}
+.link:hover{text-decoration-color:var(--blue-text)}
+
+.menu-btn{margin-left:auto;background:none;border:1px solid #3A5276;color:var(--bone);border-radius:4px;
+  font:500 15px/1 var(--sans);min-height:40px;padding:0 14px;cursor:pointer}
+.menu{position:absolute;left:0;right:0;top:76px;background:var(--panel);border-block:1px solid var(--rule);z-index:30}
+.menu[hidden]{display:none}
+.menu ul{padding:8px var(--gut) 24px calc(var(--gut) + var(--rail))}
+.menu li a{display:block;padding:14px 0;color:var(--bone);font:500 19px/1.3 var(--sans);text-decoration:none;border-bottom:1px solid var(--rule)}
+.menu li:last-child a{border:0}
+.menu li a.btn{display:inline-flex;margin-top:16px;padding:0 22px;font:600 16px/1 var(--sans);color:var(--ink);border:0}
+@media (min-width:900px){
+  .nav-links{display:flex}
+  .nav .nav-demo{display:inline-flex}
+  .menu-btn,.menu{display:none}
+}
+
+.tag{position:absolute;top:80px;z-index:4;left:0;right:0;pointer-events:none}
+.tag a{pointer-events:auto;font:400 13px/1.4 var(--sans);color:var(--mute);text-decoration:none;padding:4px 0;display:inline-block}
+.tag a:hover{color:var(--bone);text-decoration:underline}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(64px,9vw,128px);padding-bottom:var(--space)}
+h1{font:600 clamp(42px,3.2vw + 26px,72px)/1.06 var(--serif);color:var(--bone);letter-spacing:-.012em;max-width:13.4em;text-wrap:balance}
+.lead{margin-top:clamp(24px,2.6vw,36px);max-width:34em;font:400 clamp(18px,.4vw + 16px,21px)/1.62 var(--serif);color:#C9D2DE}
+@media (min-width:1100px){ .hero .after{margin-left:min(42%,500px);margin-top:clamp(28px,3vw,44px)} .hero .lead{margin-top:0;max-width:30em} }
+.ctas{margin-top:clamp(28px,3vw,40px);display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px}
+
+/* ---------- sections ---------- */
+.sec{padding-bottom:var(--space)}
+h2{font:500 clamp(30px,1.9vw + 22px,48px)/1.12 var(--serif);color:var(--bone);letter-spacing:-.008em;text-wrap:balance;max-width:17em}
+
+/* problem */
+.problem .grid{display:grid;gap:36px}
+.points li{padding:22px 0;border-top:1px solid var(--rule)}
+.points li:last-child{border-bottom:1px solid var(--rule)}
+.points b{display:block;font:500 clamp(20px,.6vw + 17px,25px)/1.3 var(--serif);color:var(--bone)}
+.points span{display:block;margin-top:6px;max-width:44ch}
+@media (min-width:900px){
+  .problem .grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px}
+  .points{margin-top:6px}
+}
+
+/* thread */
+.thread-head{padding-bottom:clamp(48px,6vw,88px)}
+.thread-head p{margin-top:16px;max-width:52ch}
+.step{display:grid;gap:22px;padding-bottom:clamp(64px,8vw,120px)}
+.step h3{font:500 clamp(24px,.9vw + 19px,32px)/1.2 var(--serif);color:var(--bone)}
+.step h3 .n{color:var(--blue-text);font-weight:400;margin-right:.45em;font-variant-numeric:lining-nums}
+.step p{margin-top:12px;max-width:40ch}
+@media (min-width:900px){
+  .step{grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:56px;align-items:start}
+}
+
+.screen{position:relative;aspect-ratio:1920/935;background:var(--panel);border:1px solid var(--rule);border-radius:8px;
+  display:grid;place-items:center;padding:16px;text-align:center;font:400 14px/1.45 var(--sans);color:var(--mute)}
+.screen.tall{aspect-ratio:16/10}
+.capture{border:1px solid var(--rule);border-radius:8px;overflow:hidden;display:none}
+.capture img{width:100%}
+@media (min-width:900px){
+  .capture{display:block}
+  .screen.cc{display:none}
+}
+
+/* photo band */
+.band{position:relative;height:clamp(200px,30vw,440px);overflow:hidden;background:#0B1520}
+.band img{width:100%;height:100%;object-fit:cover;object-position:40% 56%;filter:brightness(.56) saturate(.55) contrast(1.06)}
+
+/* proof */
+.proof{padding-top:clamp(48px,6vw,88px)}
+.proof p:first-child{font:500 clamp(28px,2.4vw + 16px,52px)/1.16 var(--serif);color:var(--bone);max-width:19em;text-wrap:balance}
+.nw{white-space:nowrap}
+.proof p + p{margin-top:20px;max-width:56ch}
+
+/* mutlashi */
+.mut .grid{display:grid;gap:32px}
+.mut h2{text-wrap:wrap}
+.mut .body{margin-top:18px;max-width:46ch}
+.mut .rule{margin-top:24px;font:italic 400 clamp(20px,.5vw + 18px,24px)/1.4 var(--serif);color:var(--bone)}
+@media (min-width:900px){
+  .mut .grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center}
+}
+
+/* pilot */
+.pilot .grid{display:grid;gap:28px}
+.pilot ol li{display:grid;grid-template-columns:2em 1fr;align-items:baseline;padding:13px 0;border-top:1px solid var(--rule);color:var(--bone);font:400 17px/1.45 var(--sans)}
+.pilot ol li:last-child{border-bottom:1px solid var(--rule)}
+.pilot .n{font:400 19px/1 var(--serif);color:var(--blue-text);font-variant-numeric:lining-nums}
+@media (min-width:900px){
+  .pilot .grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px}
+}
+
+/* contact */
+.contact h2{font-size:clamp(34px,2.6vw + 22px,60px);max-width:14em}
+.contact .sub{margin-top:18px;max-width:36em;font:400 clamp(18px,.4vw + 16px,21px)/1.62 var(--serif);color:#C9D2DE}
+.mail{margin-top:clamp(28px,3vw,40px);display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.addr{font:400 clamp(20px,.6vw + 17px,26px)/1.3 var(--serif);color:var(--bone);user-select:all;-webkit-user-select:all;word-break:break-all}
+.mail .acts{display:flex;align-items:center;gap:22px}
+.mail noscript{font:400 20px/1.4 var(--serif);color:var(--bone)}
+
+/* footer */
+footer{border-top:1px solid var(--rule);padding-block:clamp(48px,6vw,80px) 40px;font-size:15px;position:relative;z-index:4;background:var(--ink)}
+footer .grid{display:grid;gap:36px}
+.motto{font:italic 400 clamp(20px,.5vw + 18px,24px)/1.4 var(--serif);color:var(--bone);margin-top:20px;max-width:20em}
+.founder p{max-width:46ch}
+.founder .who{margin-top:12px;color:var(--bone);font-weight:500}
+.legal{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);display:grid;gap:6px;font-size:13.5px;line-height:1.5;color:var(--mute)}
+footer .logo img{height:24px}
+@media (min-width:900px){
+  footer .grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="page" id="page">
+  <svg id="thread" aria-hidden="true" focusable="false"></svg>
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="logo" href="#top" aria-label="Indus, home"><img id="logo" src="../../assets/brand/indus-logo-light.svg" alt="Indus" width="80" height="28"></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#product">Product</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#pilot">Pilot</a>
+        <a href="#company">Company</a>
+      </nav>
+      <a class="btn btn-line nav-demo" href="#contact">Book a demo</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+    </div>
+    <div class="menu" id="menu" hidden>
+      <ul>
+        <li><a href="#product">Product</a></li>
+        <li><a href="#solutions">Solutions</a></li>
+        <li><a href="#pilot">Pilot</a></li>
+        <li><a href="#company">Company</a></li>
+        <li><a class="btn btn-amber" href="#contact">Book a demo</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="tag"><div class="wrap"><div class="col"><a href="index.html">R3 · C · One thread · all mocks</a></div></div></div>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="wrap"><div class="col">
+        <h1>From tender to site, one connected system.</h1>
+        <div class="after">
+        <p class="lead">DiPGOS reads your tenders, builds your proposal, plans your resources and tracks every operation on site, so the numbers you bid are the numbers you build against.</p>
+        <div class="ctas">
+          <a class="btn btn-amber" href="#contact">Book a demo</a>
+          <a class="link" href="#product">See how it works</a>
+        </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="sec problem" aria-labelledby="problem-h">
+      <div class="wrap"><div class="col grid">
+        <h2 id="problem-h">Four systems, one project, and nothing connecting them.</h2>
+        <ul class="points">
+          <li><b>Tenders take weeks to read.</b><span>Hundreds of documents, addenda arriving daily, and requirements buried in specs.</span></li>
+          <li><b>Bids and builds don’t talk.</b><span>The estimate lives in one file, the schedule in another, the site reports in a third.</span></li>
+          <li><b>Overruns show up too late.</b><span>By the time a deviation reaches the monthly report, the money is already spent.</span></li>
+        </ul>
+      </div></div>
+    </section>
+
+    <section class="thread" id="product" aria-labelledby="thread-h">
+      <div class="wrap"><div class="col">
+        <div class="thread-head">
+          <h2 id="thread-h">How DiPGOS carries a project through.</h2>
+        </div>
+
+        <article class="step">
+          <div><h3><span class="n">1</span>Read the tender</h3>
+            <p>Upload the package. DiPGOS extracts the synopsis, client, value, dates and bid bond, and runs your bid / no-bid decision with the right approvals.</p></div>
+          <figure class="screen">Screen to come: tender synopsis with the bid decision</figure>
+        </article>
+
+        <article class="step">
+          <div><h3><span class="n">2</span>Understand the requirements</h3>
+            <p>Requirements are extracted for six disciplines and mapped to the project’s areas. Engineers approve them; nothing goes forward unchecked.</p></div>
+          <figure class="screen">Screen to come: CPDS requirement profiler</figure>
+        </article>
+
+        <article class="step">
+          <div><h3><span class="n">3</span>Build the proposal</h3>
+            <p>Requirements become deliverables, deliverables become operations, and operations get their crews, equipment and materials. Schedule and cost derive themselves.</p></div>
+          <figure class="screen">Screen to come: Activity flow with the RCC dam lifts</figure>
+        </article>
+
+        <article class="step">
+          <div><h3><span class="n">4</span>Export the bid</h3>
+            <p>The budget sheet comes out in Excel and the proposal in Word, with the proposal manager’s commercial buffers applied.</p></div>
+          <figure class="screen">Screen to come: budget sheet ready for export</figure>
+        </article>
+
+        <article class="step">
+          <div><h3><span class="n">5</span>Book real resources</h3>
+            <p>Once the work is won, planned resource types become real, booked people, machines and materials, with work fronts, critical path and baselines.</p></div>
+          <figure class="screen">Screen to come: Atom Manager resource catalogue</figure>
+        </article>
+
+        <article class="step" id="step-6">
+          <div><h3><span class="n">6</span>Control construction</h3>
+            <p>Every project, from the portfolio down to a single operation, on a live map. Site teams report; alarms flag deviations; changes and cost increases show as they happen.</p></div>
+          <div>
+            <figure class="capture"><img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" alt="The DiPGOS command centre: a portfolio map with contract markers beside project status panels."></figure>
+            <figure class="screen cc">Screen to come: ACCS project map with contract markers</figure>
+          </div>
+        </article>
+      </div></div>
+    </section>
+
+    <figure class="band">
+      <img src="assets/river-bunji.jpg" width="2200" height="1467" loading="lazy" alt="A suspension bridge crossing the Indus river below bare mountain slopes.">
+    </figure>
+
+    <section class="sec proof" id="solutions" aria-label="What DiPGOS covers">
+      <div class="wrap"><div class="col">
+        <p>Six disciplines. Seven levels of <span class="nw">drill-down</span>. Every AI answer sourced.</p>
+        <p>Built for dams and hydropower first, then buildings and urban, and industrial and EPC.</p>
+      </div></div>
+    </section>
+
+    <section class="sec mut" aria-labelledby="mut-h">
+      <div class="wrap"><div class="col grid">
+        <div>
+          <h2 id="mut-h">Ask your project anything.</h2>
+          <p class="body">Mutlashi has read every tender, spec and drawing in your project. Ask it a question and it answers with the source, uses a calculator rather than guessing figures, and stays inside the project you’re working in.</p>
+          <p class="rule">AI proposes. A named engineer decides.</p>
+        </div>
+        <figure class="screen tall">Screen to come: Mutlashi answer with sources</figure>
+      </div></div>
+    </section>
+
+    <section class="sec pilot" id="pilot" aria-labelledby="pilot-h">
+      <div class="wrap"><div class="col grid">
+        <h2 id="pilot-h">How a pilot works.</h2>
+        <ol>
+          <li><span class="n">1</span>Bring one real tender.</li>
+          <li><span class="n">2</span>We set up your project.</li>
+          <li><span class="n">3</span>Your team works in it for four to eight weeks.</li>
+          <li><span class="n">4</span>You rate and confirm answers.</li>
+          <li><span class="n">5</span>We review the results together.</li>
+        </ol>
+      </div></div>
+    </section>
+
+    <section class="sec contact" id="contact" aria-labelledby="contact-h">
+      <div class="wrap"><div class="col">
+        <h2 id="contact-h">See it on your own tender.</h2>
+        <p class="sub">Bring one past tender and we’ll show you what DiPGOS extracts from it.</p>
+        <div class="mail" data-u="kamran" data-d="industechsol.com">
+          <span class="addr" id="addr"></span>
+          <noscript>kamran (at) industechsol.com</noscript>
+          <div class="acts" id="acts" hidden>
+            <a class="btn btn-amber" id="mailto" href="#contact">Email us</a>
+            <button class="link" type="button" id="copy">Copy</button>
+            <span id="copied" role="status" aria-live="polite" style="font:500 15px/1 var(--sans);color:var(--bone)"></span>
+          </div>
+        </div>
+      </div></div>
+    </section>
+  </main>
+</div>
+
+<footer id="company">
+  <div class="wrap"><div class="col">
+    <div class="grid">
+      <div>
+        <a class="logo" href="#top" aria-label="Indus, back to top"><img src="../../assets/brand/indus-logo-light.svg" alt="Indus" width="69" height="24"></a>
+        <p class="motto">The project thinks; the human commands.</p>
+      </div>
+      <div class="founder">
+        <p>Indus is built by engineers and builders who spent their careers inside real projects. We’re industry people building the system we always needed.</p>
+        <p class="who">M. Kamran Basit, Founder &amp; CEO</p>
+      </div>
+    </div>
+    <div class="legal">
+      <p>© 2026 Indus Technology Solutions. Indus Technology Solutions (Pvt) Ltd, Pakistan, and Indus Technologies LLC, USA.</p>
+      <p>Project photography from the DiPGOS library; usage rights to be confirmed.</p>
+    </div>
+  </div></div>
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.remove('no-js'); root.classList.add('js');
+
+  /* ---------- menu ---------- */
+  var btn = document.querySelector('.menu-btn'), menu = document.getElementById('menu');
+  function setMenu(open){ btn.setAttribute('aria-expanded', String(open)); menu.hidden = !open; btn.textContent = open ? 'Close' : 'Menu'; }
+  btn.addEventListener('click', function(){ setMenu(menu.hidden); });
+  menu.addEventListener('click', function(e){ if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden){ setMenu(false); btn.focus(); } });
+
+  /* in-page links glide (not a CSS default, so scripted scrolls stay instant) */
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[href^="#"]'); if (!a) return;
+    var id = a.getAttribute('href').slice(1), t = id && document.getElementById(id); if (!t) return;
+    e.preventDefault();
+    t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    history.replaceState(null, '', '#' + id);
+    if (id !== 'top' && !t.hasAttribute('tabindex')) t.setAttribute('tabindex', '-1');
+    t.focus({preventScroll: true});
+  });
+
+  /* ---------- contact ---------- */
+  var box = document.querySelector('.mail'), addr = box.dataset.u + '@' + box.dataset.d;
+  document.getElementById('addr').textContent = addr;
+  document.getElementById('mailto').href = 'mail' + 'to:' + addr;
+  document.getElementById('acts').hidden = false;
+  var copied = document.getElementById('copied'), t;
+  document.getElementById('copy').addEventListener('click', function(){
+    function done(){ copied.textContent = 'Copied'; clearTimeout(t); t = setTimeout(function(){ copied.textContent = ''; }, 2200); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(addr).then(done, fallback);
+    else fallback();
+    function fallback(){
+      var r = document.createRange(), s = getSelection(); r.selectNodeContents(document.getElementById('addr'));
+      s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); done(); } catch(e){}
+    }
+  });
+
+  /* ---------- the thread ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var page = document.getElementById('page'), svg = document.getElementById('thread'), logo = document.getElementById('logo');
+  var still = matchMedia('(prefers-reduced-motion: reduce)');
+  // In the logo SVG (viewBox -1.71 -91.32 276.11 96.74) the i-dot centre is x 16.75; the baseline is y 0.
+  var DOT_X = (16.748 + 1.71) / 276.11, BASE_Y = 91.32 / 96.74;
+
+  // the blue line rides on a dark casing so it stays legible where it crosses the photograph
+  var casing = document.createElementNS(NS, 'path'); casing.setAttribute('class', 'case');
+  var line = document.createElementNS(NS, 'path'); line.setAttribute('class', 'line');
+  var gNodes = document.createElementNS(NS, 'g');
+  var cap = document.createElementNS(NS, 'circle'); cap.setAttribute('class', 'cap'); cap.setAttribute('r', '6');
+  svg.appendChild(casing); svg.appendChild(line); svg.appendChild(gNodes); svg.appendChild(cap);
+
+  var geo = null, drawn = 0, target = 0, raf = 0;
+
+  function el(name, attrs){ var n = document.createElementNS(NS, name); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
+
+  function build(){
+    var pr = page.getBoundingClientRect(), lr = logo.getBoundingClientRect();
+    if (!lr.width) return;
+    var x = Math.round(lr.left - pr.left + lr.width * DOT_X) + 0.5;
+    var y0 = lr.top - pr.top + lr.height * BASE_Y + 7;
+    var h = document.getElementById('contact-h'), hr = h.getBoundingClientRect();
+    var lh = parseFloat(getComputedStyle(h).lineHeight) || 40;
+    var yEnd = hr.top - pr.top + lh / 2;
+
+    svg.setAttribute('viewBox', '0 0 ' + pr.width + ' ' + pr.height);
+    var d = 'M' + x + ' ' + y0 + 'V' + yEnd, total = yEnd - y0;
+    [line, casing].forEach(function(p){ p.setAttribute('d', d); p.style.strokeDasharray = total + ' ' + (total + 10); });
+    cap.setAttribute('cx', x); cap.setAttribute('cy', yEnd);
+
+    var lit = geo ? geo.nodes.map(function(n){ return n.g.classList.contains('on'); }) : [];
+    gNodes.textContent = '';
+    var nodes = [].map.call(document.querySelectorAll('.step h3'), function(s, i){
+      var r = s.getBoundingClientRect(), l = parseFloat(getComputedStyle(s).lineHeight) || 36;
+      var y = r.top - pr.top + l / 2;
+      var g = el('g', {}); if (lit[i]) g.classList.add('on');
+      g.appendChild(el('circle', {class:'ring', cx:x, cy:y, r:8.5}));
+      g.appendChild(el('circle', {class:'core', cx:x, cy:y, r:4.4}));
+      gNodes.appendChild(g);
+      return {y: y - y0, g: g};
+    });
+    geo = {y0: y0 + pr.top + scrollY, total: total, nodes: nodes};
+    update(true);
+  }
+
+  function aim(){
+    if (!geo) return 0;
+    if (still.matches) return geo.total;
+    var pen = scrollY + innerHeight * 0.62 - geo.y0;
+    // reaching the bottom of the page always finishes the line
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 4) pen = geo.total;
+    return Math.max(0, Math.min(geo.total, pen));
+  }
+  function paint(){
+    line.style.strokeDashoffset = casing.style.strokeDashoffset = String(geo.total - drawn);
+    for (var i = 0; i < geo.nodes.length; i++) geo.nodes[i].g.classList.toggle('on', drawn >= geo.nodes[i].y - 1);
+    cap.classList.toggle('on', drawn >= geo.total - 1);
+  }
+  var last = 0;
+  function tick(now){
+    raf = 0;
+    var dt = last ? Math.min(64, now - last) : 16; last = now;
+    var d = target - drawn;
+    drawn = Math.abs(d) < 0.5 ? target : drawn + d * (1 - Math.exp(-dt / 85));
+    paint();
+    if (drawn !== target) raf = requestAnimationFrame(tick); else last = 0;
+  }
+  function update(jump){
+    if (!geo) return;
+    target = aim();
+    if (still.matches || jump === 'now'){ drawn = target; paint(); return; }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  addEventListener('scroll', function(){ update(); }, {passive:true});
+  addEventListener('resize', function(){ update(); });
+  if (still.addEventListener) still.addEventListener('change', function(){ update('now'); });
+  if (window.ResizeObserver) new ResizeObserver(function(){ build(); }).observe(page);
+  else addEventListener('resize', build);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+  addEventListener('load', build);
+  build();
+})();
+</script>
+</body>
+</html>

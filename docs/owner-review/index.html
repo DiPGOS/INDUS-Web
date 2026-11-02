@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus website designs</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@500..700&family=Archivo:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A1424; --shale:#111C2A; --rule:rgba(157,176,196,.2);
+  --text:#D7DEE7; --muted:#9DA9BB; --bone:#FBF9F4; --amber:#E8A020; --ice:#9FBCEB;
+  --serif:'Gelasio',Georgia,serif; --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --gutter:clamp(16px,4vw,48px);
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--ink);color:var(--text);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:var(--gutter)}
+
+header{padding:clamp(28px,5vw,56px) 0 clamp(8px,2vw,16px)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+header img{height:30px;width:auto}
+header span{font-size:14px;color:var(--muted)}
+
+.round{padding:clamp(32px,5vw,64px) 0}
+.round + .round{border-top:1px solid var(--rule)}
+.round h2{font:600 clamp(26px,3vw,36px)/1.15 var(--serif);color:var(--bone)}
+.grid{margin-top:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px clamp(20px,3vw,40px)}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+
+.card{display:grid;gap:12px;padding:0;border:0;background:none;text-align:left}
+.shot{display:block;aspect-ratio:16/9;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--shale)}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.card:hover .shot img{opacity:.9}
+.card.pick .shot{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
+.card.current .shot{border-color:var(--ice);box-shadow:0 0 0 1px var(--ice)}
+.meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.meta b{font:600 clamp(19px,1.7vw,22px)/1.3 var(--serif);color:var(--bone)}
+.meta i{font-style:normal;font-size:13px;color:var(--muted);font-weight:600}
+.tag{font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:2px;border:1px solid currentColor}
+.pick .tag{color:var(--amber)}
+.current .tag{color:var(--ice)}
+
+/* Viewer */
+.viewer{position:fixed;inset:0;z-index:50;background:#060C16;display:none;grid-template-rows:auto minmax(0,1fr)}
+.viewer.open{display:grid}
+.bar{display:flex;align-items:center;gap:8px;padding:8px var(--gutter);background:var(--ink);border-bottom:1px solid var(--rule)}
+.bar strong{flex:1 1 auto;min-width:0;font:600 17px/1.3 var(--serif);color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{min-height:40px;padding:0 12px;border:1px solid var(--rule);background:transparent;border-radius:2px;font-size:14px;font-weight:600;color:#C8CFDB}
+.ib:hover{border-color:var(--muted);color:var(--bone)}
+.ib[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.stage{display:flex;justify-content:center;background:#060C16}
+.stage iframe{border:0;width:100%;height:100%;background:var(--ink)}
+.viewer.phone .stage{padding:16px 0}
+.viewer.phone iframe{width:390px;max-width:100%;border:1px solid var(--rule);border-radius:10px}
+@media (max-width:760px){.size{display:none}.bar{padding:6px 12px}.bar strong{font-size:15px}.ib{padding:0 10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <img src="assets/brand/indus-logo-light.svg" alt="Indus" width="86" height="30">
+    <span>Website designs · 2026</span>
+  </div>
+</header>
+
+<main class="wrap" id="rounds"></main>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="v-title">
+  <div class="bar">
+    <strong id="v-title"></strong>
+    <button class="ib size" type="button" data-size="desktop" aria-pressed="true">Desktop</button>
+    <button class="ib size" type="button" data-size="phone" aria-pressed="false">Phone</button>
+    <button class="ib" type="button" id="v-prev" aria-label="Previous design">Prev</button>
+    <button class="ib" type="button" id="v-next" aria-label="Next design">Next</button>
+    <button class="ib" type="button" id="v-close">Close</button>
+  </div>
+  <div class="stage"><iframe id="v-frame" title="Design"></iframe></div>
+</div>
+
+<script>
+(function(){
+  // round, letter, name, file, preview, highlight ('pick' | 'current'), tag
+  var M = [
+    [1,'A','Proof up front','mocks/r1/a-proof.html','previews/r1-a-proof.jpg'],
+    [1,'B','Command-centre canvas','mocks/r1/b-canvas.html','previews/r1-b-canvas.jpg'],
+    [1,'C','The loop','mocks/r1/c-loop.html','previews/r1-c-loop.jpg','pick','Selected'],
+    [1,'D','Drawing sheet','mocks/r1/d-sheet.html','previews/r1-d-sheet.jpg'],
+    [2,'A','The record','mocks/r2/r2a-record.html','previews/r2-r2a-record.jpg'],
+    [2,'B','The work front','mocks/r2/r2b-workfront.html','previews/r2-r2b-workfront.jpg'],
+    [2,'C','The model','mocks/r2/r2c-model.html','previews/r2-r2c-model.jpg'],
+    [2,'D','The lifecycle','mocks/r2/r2d-lifecycle.html','previews/r2-r2d-lifecycle.jpg'],
+    [3,'A','Emblem','mocks/r3/r3a-emblem.html','previews/r3-r3a-emblem.jpg'],
+    [3,'B','Ground','mocks/r3/r3b-ground.html','previews/r3-r3b-ground.jpg','pick','Selected'],
+    [3,'C','One thread','mocks/r3/r3c-thread.html','previews/r3-r3c-thread.jpg'],
+    [3,'D','The clause','mocks/r3/r3d-clause.html','previews/r3-r3d-clause.jpg'],
+    [4,'A','Ground, complete','mocks/r4/r4a-ground.html','previews/r4-r4a-ground.jpg','current','Current'],
+    [4,'B','The mark at work','mocks/r4/r4b-mark.html','previews/r4-r4b-mark.jpg','current','Current']
+  ];
+  var root = document.getElementById('rounds');
+  [1,2,3,4].forEach(function(r){
+    var sec = document.createElement('section');
+    sec.className = 'round';
+    sec.innerHTML = '<h2>Round ' + r + '</h2><div class="grid"></div>';
+    M.forEach(function(m, i){
+      if (m[0] !== r) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'card ' + (m[5] || '');
+      b.innerHTML = '<span class="shot"><img src="' + m[4] + '" alt="" width="1920" height="1080" loading="lazy"></span>' +
+        '<span class="meta"><i>R' + m[0] + ' · ' + m[1] + '</i><b>' + m[2] + '</b>' + (m[6] ? '<span class="tag">' + m[6] + '</span>' : '') + '</span>';
+      b.addEventListener('click', function(){ open(i); });
+      sec.lastChild.appendChild(b);
+    });
+    root.appendChild(sec);
+  });
+
+  var viewer = document.getElementById('viewer'), frame = document.getElementById('v-frame'), idx = 0, back = null;
+  function open(i){
+    idx = (i + M.length) % M.length;
+    frame.src = M[idx][3];
+    document.getElementById('v-title').textContent = 'R' + M[idx][0] + ' · ' + M[idx][1] + ' · ' + M[idx][2];
+    if (!viewer.classList.contains('open')) {
+      back = document.activeElement;
+      viewer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('v-close').focus();
+    }
+  }
+  function close(){
+    viewer.classList.remove('open');
+    document.body.style.overflow = '';
+    frame.src = 'about:blank';
+    if (back) back.focus();
+  }
+  document.getElementById('v-close').addEventListener('click', close);
+  document.getElementById('v-prev').addEventListener('click', function(){ open(idx - 1); });
+  document.getElementById('v-next').addEventListener('click', function(){ open(idx + 1); });
+  document.querySelectorAll('[data-size]').forEach(function(b){
+    b.addEventListener('click', function(){
+      viewer.classList.toggle('phone', b.dataset.size === 'phone');
+      document.querySelectorAll('[data-size]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if (!viewer.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowRight') open(idx + 1);
+    if (e.key === 'ArrowLeft') open(idx - 1);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus redesign, round 2</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #0A1424; --panel: #0F1D33; --line: rgba(157,176,196,.18);
+  --text: #D3DCE6; --muted: #9DB0C4; --bone: #FBF9F4; --amber: #E8A020;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 16px/1.55 var(--sans); padding: clamp(24px, 5vw, 64px) clamp(16px, 5vw, 64px) 96px; }
+.wrap { max-width: 1280px; margin: 0 auto; }
+h1 { font: 600 clamp(32px, 5vw, 52px)/1.1 var(--serif); color: var(--bone); letter-spacing: -.5px; }
+h2 { font: 600 26px/1.2 var(--serif); color: var(--bone); margin: 64px 0 16px; }
+h3 { font: 600 24px/1.2 var(--serif); color: var(--bone); }
+p, li { max-width: 70ch; }
+.intro { margin-top: 16px; color: var(--muted); }
+.intro b, .note b { color: var(--text); }
+a { color: var(--bone); }
+a:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+code { font-size: .92em; color: var(--bone); }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px; display: grid; gap: 16px; margin-top: 28px; }
+.card__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.card__tag { color: var(--amber); font-weight: 600; font-size: 14px; }
+.shots { display: grid; grid-template-columns: 1fr 1fr 22%; gap: 10px; align-items: start; }
+.shots img { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--line); }
+.shots .phone { aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+@media (max-width: 760px) { .shots { grid-template-columns: 1fr 1fr; } .shots img:first-child { grid-column: 1 / -1; } }
+.cols { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.card__idea { color: var(--bone); }
+.card dl { display: grid; grid-template-columns: 8em 1fr; gap: 6px 14px; font-size: 14.5px; }
+.card dt { color: var(--muted); }
+.card ul { padding-left: 1.1em; font-size: 14.5px; display: grid; gap: 4px; }
+.pro li::marker { content: '+  '; color: #6fcf97; }
+.con li::marker { content: '–  '; color: #eb8a8a; }
+.open { justify-self: start; background: var(--amber); color: #0A1424; font-weight: 700; padding: 11px 20px; border-radius: 999px; text-decoration: none; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14.5px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { color: var(--bone); background: var(--panel); }
+tbody th { color: var(--muted); font-weight: 500; white-space: nowrap; }
+tr:last-child > * { border-bottom: 0; }
+.num { font-variant-numeric: tabular-nums; }
+ol, .list { padding-left: 1.2em; display: grid; gap: 8px; }
+.note { color: var(--muted); font-size: 14.5px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Round 2: the story, told with evidence</h1>
+  <p class="intro">Round 1 rearranged the same marketing copy. Round 2 starts from research instead: how a capital project really runs, where P6 and the rest of the tool stack fail (with a source for every figure), and what DiPGOS actually does about it, read from the product repo rather than guessed. All four mocks share <b>one new copy deck</b>. They differ in <b>what the page leads with</b>: the argument, the product in use, the model, or the lifecycle.</p>
+  <p class="note">
+    Research: <a href="../research/2026-09-25-ec-lifecycle-tools-ontology.md">verdict and claim sheet</a> ·
+    <a href="../research/2026-09-25-dipgos-product-truth.md">what DiPGOS really does</a> ·
+    <a href="../research/2026-09-25-claude-track-industry.md">lifecycle and tool failures</a> ·
+    Copy: <a href="COPY.md">COPY.md</a> · Brief: <a href="BRIEF.md">BRIEF.md</a>
+  </p>
+  <p class="note">
+    <b>View these through the local server</b> (<code>npm run serve</code>, then <code>/docs/redesign-mocks-r2/</code>).
+    <b>Markings:</b> † marks a client name that needs permission; an amber dashed box marks something only you can supply; superscript numbers link to that page’s Sources.
+  </p>
+
+  <article class="card">
+    <div class="card__head"><span class="card__tag">R2 · A</span><h3>The record</h3></div>
+    <div class="shots">
+      <img src="shots/r2a-record-desktop-fold.png" alt="R2-A hero: 'The world’s oldest industry has never had an operating system. Now it does.' beside a ring of the day's six steps around the DiPGOS mark" loading="lazy">
+      <img src="shots/r2a-record-desktop-4.png" alt="R2-A: the recreated RCC-PL record sheet with handwritten values, with the source note in the margin" loading="lazy">
+      <img class="phone" src="shots/r2a-record-phone-fold.png" alt="R2-A on a phone" loading="lazy">
+    </div>
+    <div class="cols">
+      <div>
+        <p class="card__idea">Round 1’s C, grown up: an editorial long-read in Gelasio, with every figure’s source printed in the margin beside it, like a well-edited report. The hero ring now shows the real day: Paper 06:40 → Read → Checked (1 satisfied, 3 over) → Owned → Decided → Counted 18:00, then round again for the next layer.</p>
+        <dl>
+          <dt>Leads with</dt><dd>The argument: ambition first, then evidence, chapter by chapter</dd>
+          <dt>Signature</dt><dd>Sources in the margin, and the ring of the real day</dd>
+          <dt>Type</dt><dd>Gelasio for body and headings; Instrument Sans for buttons and labels</dd>
+        </dl>
+      </div>
+      <div>
+        <ul class="pro"><li>The most serious, credible register. It reads like engineers wrote it</li><li>It keeps what you liked in C</li></ul>
+        <ul class="con"><li>The longest desktop page (19.7 screens)</li><li>The phone version cuts the most, including the lifecycle chapter</li></ul>
+      </div>
+    </div>
+    <a class="open" href="r2a-record.html">Open R2-A</a>
+  </article>
+
+  <article class="card">
+    <div class="card__head"><span class="card__tag">R2 · B</span><h3>The work front</h3></div>
+    <div class="shots">
+      <img src="shots/r2b-workfront-desktop-fold.png" alt="R2-B hero: 'Construction built the modern world. It still can’t tell you, today, what was built today.' over the live command centre" loading="lazy">
+      <img src="shots/r2b-workfront-desktop-2.png" alt="R2-B: the sticky day, step 1 Paper at 06:40, with the record sheet in the state pane" loading="lazy">
+      <img class="phone" src="shots/r2b-workfront-phone-2.png" alt="R2-B on a phone: the record sheet, then step 2 Read" loading="lazy">
+    </div>
+    <div class="cols">
+      <div>
+        <p class="card__idea">The product proves it. You scroll through one layer’s day while a pinned panel shows what the system sees: the paper sheet, the match to its work front, gauges drawing each margin in green or red, the three NCRs with their owners, the sign-off, and 820 m³ counted on a cross-section of the lift. A clock runs from 06:40 to 18:00.</p>
+        <dl>
+          <dt>Leads with</dt><dd>The product in use</dd>
+          <dt>Signature</dt><dd>The pinned “what the system sees” panel through the day</dd>
+          <dt>Type</dt><dd>Gelasio headings + Hanken Grotesk; product blue for markers</dd>
+        </dl>
+      </div>
+      <div>
+        <ul class="pro"><li>The most concrete: nobody can mistake it for vapourware</li><li>Carries B’s product-first idea, which you liked</li></ul>
+        <ul class="con"><li>Drops the lifecycle section</li><li>The NCR owners (site engineer, materials engineer ×2) are the builder’s own mapping; confirm them</li><li>The site-reports strip is small on desktop</li></ul>
+      </div>
+    </div>
+    <a class="open" href="r2b-workfront.html">Open R2-B</a>
+  </article>
+
+  <article class="card">
+    <div class="card__head"><span class="card__tag">R2 · C</span><h3>The model</h3></div>
+    <div class="shots">
+      <img src="shots/r2c-model-desktop-fold.png" alt="R2-C hero: an explorable object graph of one work front, from Project through Operation to Work front, Atoms, Run, Data points, NCR and Decision" loading="lazy">
+      <img src="shots/r2c-model-desktop-3.png" alt="R2-C: 'The method statement becomes the model', a spec sheet of MS-348 limits and what they generate" loading="lazy">
+      <img class="phone" src="shots/r2c-model-phone-fold.png" alt="R2-C on a phone" loading="lazy">
+    </div>
+    <div class="cols">
+      <div>
+        <p class="card__idea">The model leads. The hero is an explorable map of one real work front: Project → Contract → Scope → Activity → Process → Operation “Place &amp; spread RCC” → Work front, with its Atoms, Run, checks, NCRs and sign-off. Tap any part to see its properties, its links and its verbs. The page then walks through nouns, relations and verbs, the method statement as a spec sheet, and one verdict per discipline.</p>
+        <dl>
+          <dt>Leads with</dt><dd>The model: the ontology is the hero</dd>
+          <dt>Signature</dt><dd>The explorable graph, using only the product’s real vocabulary</dd>
+          <dt>Type</dt><dd>Gelasio headings + IBM Plex Sans; Plex Mono only for object-type names</dd>
+        </dl>
+      </div>
+      <div>
+        <ul class="pro"><li>The clearest answer to “what makes DiPGOS different”</li><li>The shortest desktop page of the four (14.6 screens)</li></ul>
+        <ul class="con"><li>Asks more of the reader up front. The stakes come later, as “why it matters”</li><li>Drops the lifecycle section</li></ul>
+      </div>
+    </div>
+    <a class="open" href="r2c-model.html">Open R2-C</a>
+  </article>
+
+  <article class="card">
+    <div class="card__head"><span class="card__tag">R2 · D</span><h3>The lifecycle</h3></div>
+    <div class="shots">
+      <img src="shots/r2d-lifecycle-desktop-fold.png" alt="R2-D hero: 'We’re rebuilding how the world builds, starting with the work itself.' over a nine-phase lifecycle band with CPDS, ACCS and AOS marked" loading="lazy">
+      <img src="shots/r2d-lifecycle-desktop-4.png" alt="R2-D: the sticky nine-phase rail at Construction, with phase 7 opening into four deep-dive chapters" loading="lazy">
+      <img class="phone" src="shots/r2d-lifecycle-phone-fold.png" alt="R2-D on a phone" loading="lazy">
+    </div>
+    <div class="cols">
+      <div>
+        <p class="card__idea">The whole project, and where DiPGOS stands in it. Nine phases from feasibility to operations, with each handover drawn as a gap. DiPGOS’s coverage sits above the band: CPDS at tender (built), ACCS at construction (built) and AOS at operations (planned). The band becomes a rail that fills in as you read. At Construction it opens into the deep dive: where the stack breaks, the model, one day, and the screens.</p>
+        <dl>
+          <dt>Leads with</dt><dd>The lifecycle, as you asked</dd>
+          <dt>Signature</dt><dd>The nine-phase rail, with DiPGOS’s coverage and progress</dd>
+          <dt>Type</dt><dd>Gelasio headings + Instrument Sans</dd>
+        </dl>
+      </div>
+      <div>
+        <ul class="pro"><li>The only mock that tells the full lifecycle story you asked for</li><li>Says honestly what is built and what is planned</li></ul>
+        <ul class="con"><li>The per-phase chapters make it the most schematic</li><li>The phone version cuts a lot inside the construction deep dive</li></ul>
+      </div>
+    </div>
+    <a class="open" href="r2d-lifecycle.html">Open R2-D</a>
+  </article>
+
+  <h2>Side by side</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>A · The record</th><th>B · The work front</th><th>C · The model</th><th>D · The lifecycle</th></tr></thead>
+      <tbody>
+        <tr><th>First screen shows</th><td>The ambition + the ring of the day</td><td>The live command centre</td><td>The object graph</td><td>Nine lifecycle phases + coverage</td></tr>
+        <tr><th>Lifecycle story</th><td>Yes (desktop only)</td><td>Cut</td><td>Cut</td><td>The spine of the page</td></tr>
+        <tr><th>Where the stack breaks</th><td>Chapter</td><td>Each failure paired with its fix</td><td>Later, as “why it matters”</td><td>Inside Construction</td></tr>
+        <tr><th>Real product screens</th><td>Command centre + app screens</td><td>Command centre + gallery</td><td>Command centre + app screens</td><td>Command centre + app screens</td></tr>
+        <tr class="num"><th>Length, desktop</th><td>19.7 screens</td><td>19.2</td><td>14.6</td><td>17.1</td></tr>
+        <tr class="num"><th>Length, phone</th><td>13.6 screens</td><td>13.6</td><td>13.1</td><td>13.8</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Screens are measured at 1440×900 and 390×844. These pages are <b>much longer than round 1</b> (8–10 screens on desktop) because the substance is now on the page. Every mock carries <b>footnoted sources</b>, the <b>† permission note</b>, a <b>real, runtime-assembled contact address</b>, and <b>no mention of Palantir</b>. None scrolls sideways from 360 to 1600px, and none throws script errors.</p>
+
+  <h2>Parts you can mix</h2>
+  <ul class="list">
+    <li><b>A’s margin sources</b> work in any layout. They’re the cheapest credibility on the page.</li>
+    <li><b>B’s pinned day</b> could replace the “one day” chapter in A, C or D.</li>
+    <li><b>C’s graph</b> could be the “model” chapter inside D’s construction deep dive.</li>
+    <li><b>D’s lifecycle rail</b> could sit above A as its chapter navigation.</li>
+  </ul>
+
+  <h2>Needs your decision before anything ships</h2>
+  <ol>
+    <li><b>Permissions.</b> Can these be named: Diamer-Basha, MW-1, MS-348, PFJV and Descon? The command-centre screenshot also shows “DIAMER-BASHA · MW-1” in its breadcrumb. A masks it; B, C and D don’t, and neither does the live site today.</li>
+    <li><b>The $15 trillion figure</b> from the current site needs a source, or it comes out.</li>
+    <li><b>Company facts:</b> years, projects, offices. All placeholders for now.</li>
+    <li><b>Things these mocks leave out on purpose</b>, because the product repo shows them as not ready: autonomy; the risk, HSE and change modules; the decision engine; “learns from feedback”; and the pilot’s progress figures.</li>
+  </ol>
+</main>
+</body>
+</html>

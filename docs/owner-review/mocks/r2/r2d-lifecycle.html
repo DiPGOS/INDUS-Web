@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiPGOS by Indus: the operating system for megaprojects (R2 · D · The lifecycle)</title>
+<meta name="description" content="Every pour checked against the method, owned by a named engineer, and counted the day it happens. DiPGOS models how a megaproject is really built.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070F1C">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+/* ==================================================================
+   R2-D · "The lifecycle"
+   One signature: the nine-phase lifecycle band. In the hero it is the
+   picture; on scroll it becomes the rail under the nav that fills as
+   you read through the phases, with DiPGOS's coverage drawn on it.
+   Everything else stays quiet.
+   ================================================================== */
+:root {
+  /* surfaces */
+  --ink:    #070F1C;   /* page */
+  --navy:   #0B182C;   /* the opened construction chapter, panels */
+  --slate:  #13243F;   /* raised */
+  /* text */
+  --bone:   #FBF9F4;   /* headings */
+  --text:   #D3DCE6;   /* running text, 13.9:1 on ink */
+  --steel:  #9DB0C4;   /* secondary, 8.9:1 on ink, 8.3:1 on navy */
+  /* coverage: the DiPGOS mark's own node blue, used only to mark where DiPGOS sits */
+  --cov:    #9CB9E0;
+  --cov-line: #5F86C4;
+  /* action */
+  --amber:  #E8A020;
+  --amber-hi: #FFC24D;
+  --amber-rgb: 232, 160, 32;
+  /* verdicts only */
+  --ok:   #22c55e;
+  --warn: #f59e0b;
+  --bad:  #ef4444;
+  --bad-text: #F87171;  /* the breach red, lifted for small text on navy (6.1:1) */
+  --ok-text:  #4ADE80;
+  /* rules */
+  --rule:        rgba(157, 176, 196, .16);
+  --rule-strong: rgba(157, 176, 196, .32);
+
+  --serif: 'Gelasio', Georgia, serif;
+  --sans:  'Instrument Sans', system-ui, sans-serif;
+  /* the one label style */
+  --label: 600 13px/1.4 var(--sans);
+
+  --gutter: clamp(18px, 5vw, 64px);
+  --max: 1312px;
+  --nav-h: 64px;
+  --rail-h: 46px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+@media (max-width: 859.98px) { :root { --nav-h: 58px; --rail-h: 50px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ink); color: var(--text);
+  font: 400 17px/1.62 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, table { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+[id] { scroll-margin-top: calc(var(--nav-h) + var(--rail-h) + 18px); }
+#top { scroll-margin-top: 0; }
+
+:focus-visible { outline: 2px solid var(--amber-hi); outline-offset: 3px; border-radius: 3px; }
+::selection { background: rgba(var(--amber-rgb), .3); color: var(--bone); }
+
+.wrap { width: min(var(--max), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.label { font: var(--label); letter-spacing: .01em; color: var(--steel); }
+.measure { max-width: 62ch; }
+.em { color: var(--bone); font-weight: 600; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.skip {
+  position: fixed; left: 16px; top: 12px; z-index: 100; transform: translateY(-180%);
+  background: var(--amber); color: var(--ink); font: 600 14px/1 var(--sans);
+  padding: 13px 18px; border-radius: 999px; text-decoration: none;
+}
+.skip:focus { transform: none; }
+
+/* footnotes: part of the credibility, so they show */
+.fn { font: 600 .68em/0 var(--sans); vertical-align: .55em; margin-left: .08em; white-space: nowrap; }
+.fn a { color: var(--cov); text-decoration: none; padding: 0 .12em; border-bottom: 1px solid rgba(156, 185, 224, .45); }
+.fn a:hover { color: var(--bone); border-color: var(--bone); }
+.fn a + a { margin-left: .18em; }
+.dag { color: var(--steel); font-weight: 400; }
+
+.todo { outline: 1.5px dashed var(--amber); outline-offset: 3px; border-radius: 2px; }
+.todo::after {
+  content: 'needs owner input'; display: inline-block; vertical-align: .15em; margin-left: .6em;
+  font: 600 10px/1.4 var(--sans); letter-spacing: .02em; color: #F2D49A;
+  border: 1px solid rgba(var(--amber-rgb), .5); padding: 0 5px; border-radius: 2px; white-space: nowrap;
+}
+
+/* --- wordmark -------------------------------------------------------- */
+.wordmark { font: 600 26px/1 var(--serif); color: var(--bone); letter-spacing: -.2px; }
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .05em; transform: translateX(-50%);
+  width: .30em; height: .30em; background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+
+/* --- buttons: the only solid amber ------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 24px; border-radius: 999px;
+  font: 600 15px/1.2 var(--sans); text-decoration: none; cursor: pointer; white-space: nowrap;
+  border: 1px solid transparent; transition: background-color .18s, border-color .18s, color .18s;
+}
+.btn--solid { background: var(--amber); color: var(--ink); }
+.btn--solid:hover { background: var(--amber-hi); }
+.btn--ghost { background: transparent; color: var(--bone); border-color: rgba(var(--amber-rgb), .6); }
+.btn--ghost:hover { background: rgba(var(--amber-rgb), .12); border-color: var(--amber); }
+.btn--sm { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+/* --- nav --------------------------------------------------------------- */
+.nav { position: sticky; top: 0; z-index: 50; background: var(--ink); border-bottom: 1px solid var(--rule); }
+.nav__in { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; }
+.nav__panel { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 34px); }
+.nav__link { position: relative; text-decoration: none; font: 500 15px/1.3 var(--sans); color: var(--steel); padding: 8px 0; }
+.nav__link:hover { color: var(--bone); }
+.nav__link[aria-current="true"] { color: var(--bone); }
+.nav__link[aria-current="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: var(--amber); }
+.nav__toggle { display: none; }
+@media (max-width: 859.98px) {
+  .js .nav__toggle {
+    display: inline-flex; flex-direction: column; justify-content: center; gap: 5px;
+    width: 44px; height: 44px; padding: 0 11px; margin-right: -11px; background: none; border: 0; cursor: pointer;
+  }
+  .nav__toggle span { display: block; height: 2px; border-radius: 2px; background: var(--bone); transition: transform .2s, opacity .2s; }
+  .nav--open .nav__toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav--open .nav__toggle span:nth-child(2) { opacity: 0; }
+  .nav--open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .js .nav__panel {
+    position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px var(--gutter) 28px; background: var(--ink);
+    border-bottom: 1px solid var(--rule-strong); box-shadow: 0 30px 40px -20px rgba(0, 0, 0, .85);
+    visibility: hidden; opacity: 0; transition: opacity .18s, visibility .18s;
+  }
+  .js .nav--open .nav__panel { visibility: visible; opacity: 1; }
+  .js .nav__link { font-size: 18px; padding: 15px 0; border-bottom: 1px solid var(--rule); }
+  .js .nav__link[aria-current="true"]::after { display: none; }
+  .js .nav__link[aria-current="true"] { box-shadow: inset 3px 0 0 var(--amber); padding-left: 14px; }
+  .js .nav__cta { margin-top: 22px; min-height: 48px; }
+  html:not(.js) .nav__in { height: auto; flex-wrap: wrap; padding-block: 10px; }
+  html:not(.js) .nav__panel { flex-wrap: wrap; gap: 4px 18px; }
+}
+
+/* ======================================================================
+   THE SIGNATURE, part 1: the lifecycle band in the hero
+   ====================================================================== */
+.hero { position: relative; padding-block: clamp(28px, 4.5vh, 64px) clamp(36px, 5vh, 56px); }
+.hero__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-areas: "proof lead" "act lead"; column-gap: clamp(32px, 5vw, 80px); align-items: start; margin-top: clamp(18px, 2vw, 28px); }
+.hero__proof-line { grid-area: proof; }
+.hero__lead { grid-area: lead; }
+.hero__act { grid-area: act; }
+.hero__kicker { font: italic 400 clamp(18px, 1.5vw, 21px)/1.4 var(--serif); color: var(--steel); margin-bottom: clamp(14px, 1.6vw, 22px); }
+.hero__title {
+  font: 600 clamp(38px, 4.7vw, 70px)/1.06 var(--serif); letter-spacing: -.025em; color: var(--bone);
+  text-wrap: balance; max-width: 19em;
+}
+.hero__side { padding-top: 4px; }
+.hero__proof-line { font: 500 clamp(20px, 1.75vw, 25px)/1.42 var(--serif); color: var(--bone); max-width: 28em; text-wrap: pretty; }
+.hero__lead { margin-top: 0; font-size: 16.5px; line-height: 1.62; max-width: 58ch; text-wrap: pretty; }
+.hero__actions { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
+.hero__running { margin-top: 16px; font: 400 14px/1.5 var(--sans); color: var(--steel); }
+
+.band { margin-top: clamp(28px, 4.5vh, 60px); }
+.band__phases { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
+.ph { position: relative; }
+.ph > a {
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
+  height: 100%; min-height: 104px; padding: 11px 10px 12px 11px;
+  text-decoration: none; background: var(--slate);
+  border-top: 2px solid rgba(157, 176, 196, .35); border-radius: 2px 2px 4px 4px;
+  transition: background-color .2s;
+}
+.ph > a:hover { background: #1A3050; }
+.ph__n { font: 600 13px/1.3 var(--sans); color: var(--steel); font-variant-numeric: tabular-nums; margin-bottom: auto; }
+.ph__name { font: 600 clamp(14px, 1.06vw, 17px)/1.22 var(--serif); color: var(--bone); }
+.ph__sub { font: 400 13px/1.35 var(--sans); color: var(--steel); }
+/* the handover: every gap between segments is a handover where the model is rebuilt */
+.ph + .ph::before {
+  content: ''; position: absolute; left: -6px; top: 18px; bottom: 18px; width: 6px;
+  background: repeating-linear-gradient(180deg, rgba(157, 176, 196, .8) 0 3px, transparent 3px 7px);
+  background-size: 1px 100%; background-repeat: no-repeat; background-position: center;
+}
+/* coverage: where DiPGOS stands */
+.ph--cov > a { border-top-color: var(--cov); background: #172D4D; }
+.ph--cov > a:hover { background: #1D3860; }
+.ph--planned > a { border-top: 2px dashed rgba(156, 185, 224, .55); background: rgba(19, 36, 63, .55); }
+.ph__cov { display: block; }
+.cov__name { display: inline-flex !important; align-items: center; gap: 6px; font: 700 15px/1.2 var(--sans); letter-spacing: .02em; color: var(--cov); }
+.cov__name img { width: 18px; height: 18px; }
+.ph--planned .cov__name img { opacity: .45; filter: grayscale(1); }
+.cov__st { font: 500 13px/1.3 var(--sans); color: var(--text); }
+.ph--planned .cov__name { color: var(--steel); }
+.ph--planned .cov__st { color: var(--steel); }
+@media (min-width: 900px) {
+  .band { padding-top: 62px; }
+  .ph__cov {
+    position: absolute; left: 0; right: 0; bottom: calc(100% + 10px);
+    padding-bottom: 9px; text-align: center; pointer-events: none;
+  }
+  .ph__cov::after {           /* the bracket */
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 7px;
+    border: 1.5px solid var(--cov); border-bottom: 0; border-radius: 2px 2px 0 0;
+  }
+  .ph--planned .ph__cov::after { border-style: dashed; border-color: rgba(156, 185, 224, .6); }
+  .cov__name, .cov__st { display: block; white-space: nowrap; }
+}
+.band__cap {
+  margin-top: 14px; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 10px 6px;
+  font: 400 14px/1.5 var(--sans); color: var(--steel);
+}
+.band__cap p { padding-right: 12px; max-width: 60ch; }
+.band__cap b { color: var(--cov); font-weight: 700; letter-spacing: .02em; }
+.band__cap p:nth-child(1) { grid-column: 1 / 4; color: var(--text); }
+.band__cap p:nth-child(2) { grid-column: 4 / 7; }
+.band__cap p:nth-child(3) { grid-column: 7 / 9; }
+.band__cap p:nth-child(4) { grid-column: 9 / 10; padding-right: 0; }
+
+/* ======================================================================
+   THE SIGNATURE, part 2: the rail (desktop) and progress bar (tablet, phone)
+   ====================================================================== */
+.rail {
+  position: fixed; left: 0; right: 0; top: var(--nav-h); z-index: 45;
+  height: var(--rail-h); background: var(--ink);
+  border-bottom: 1px solid var(--rule-strong);
+  transform: translateY(-101%); visibility: hidden;
+  transition: transform .32s var(--ease), visibility 0s linear .32s;
+}
+.rail.is-on { transform: none; visibility: visible; transition: transform .32s var(--ease), visibility 0s; }
+.rail__in { height: 100%; }
+.rail__phases { height: 100%; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; }
+.rail__phases li { position: relative; min-width: 0; }
+.rail__phases a {
+  position: relative; display: flex; align-items: center; gap: 7px; height: 100%; padding: 0 8px 3px 2px;
+  text-decoration: none; font: 500 13px/1.2 var(--sans); color: var(--steel); white-space: nowrap; overflow: hidden;
+}
+.rail__phases a:hover { color: var(--bone); }
+.rail__n { font-variant-numeric: tabular-nums; opacity: .8; }
+.rail__nm { overflow: hidden; text-overflow: ellipsis; }
+.rail__mk { width: 14px; height: 14px; flex: 0 0 auto; margin-right: -2px; }
+.rail__phases .is-planned .rail__mk { opacity: .45; filter: grayscale(1); }
+/* the track and its fill */
+.rail__phases li::before, .rail__phases li::after { content: ''; position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 2px; }
+.rail__phases li::before { right: 0; background: rgba(157, 176, 196, .18); }
+.rail__phases li::after { width: calc(var(--f, 0) * 100%); background: var(--bone); }
+.rail__phases li.is-cov::before { background: rgba(156, 185, 224, .42); }
+.rail__phases li.is-cov::after { background: var(--cov); }
+.rail__phases li.is-planned::before { background: repeating-linear-gradient(90deg, rgba(156, 185, 224, .5) 0 5px, transparent 5px 9px); }
+.rail__phases li.is-cur a { color: var(--bone); font-weight: 600; }
+.rail__compact { display: none; }
+@media (max-width: 1099.98px) {
+  .rail__phases { display: none; }
+  .rail__compact { display: flex; flex-direction: column; justify-content: center; gap: 7px; height: 100%; }
+  .rail__row { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .rail__count { font: 500 13px/1.2 var(--sans); color: var(--steel); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rail__cur { font: 600 15px/1.2 var(--serif); color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rail__cov { margin-left: auto; font: 700 12px/1.2 var(--sans); letter-spacing: .03em; color: var(--cov); white-space: nowrap; }
+  .rail__cov.is-planned { color: var(--steel); font-weight: 500; }
+  .rail__bar { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
+  .rail__bar i { position: relative; height: 4px; border-radius: 2px; background: rgba(157, 176, 196, .2); overflow: hidden; }
+  .rail__bar i::after { content: ''; position: absolute; inset: 0 auto 0 0; width: calc(var(--f, 0) * 100%); background: var(--bone); }
+  .rail__bar i.is-cov { background: rgba(156, 185, 224, .42); }
+  .rail__bar i.is-cov::after { background: var(--cov); }
+}
+
+/* ======================================================================
+   Sections
+   ====================================================================== */
+.sec { padding-block: clamp(72px, 9vw, 128px); border-top: 1px solid var(--rule); }
+.h2 { font: 600 clamp(30px, 3.7vw, 52px)/1.1 var(--serif); letter-spacing: -.02em; color: var(--bone); text-wrap: balance; max-width: 20em; }
+.h3 { font: 600 clamp(24px, 2.4vw, 34px)/1.18 var(--serif); letter-spacing: -.012em; color: var(--bone); text-wrap: balance; max-width: 24em; }
+.lede { margin-top: clamp(18px, 2vw, 26px); font: 400 clamp(19px, 1.5vw, 22px)/1.55 var(--serif); color: var(--text); max-width: 34em; text-wrap: pretty; }
+.body { margin-top: 16px; max-width: 62ch; text-wrap: pretty; }
+.small { font-size: 14.5px; line-height: 1.55; color: var(--steel); max-width: 62ch; }
+.closing { margin-top: clamp(40px, 5vw, 64px); padding-top: 20px; border-top: 1px solid var(--rule-strong); font: 500 clamp(22px, 2.3vw, 32px)/1.35 var(--serif); color: var(--bone); max-width: 30em; text-wrap: balance; }
+
+/* --- stakes ------------------------------------------------------------ */
+.stakes__open { font: 400 clamp(20px, 1.8vw, 26px)/1.55 var(--serif); color: var(--text); max-width: 32em; text-wrap: pretty; }
+.stakes .h2 { margin-top: clamp(36px, 4vw, 56px); }
+.ledger { margin-top: clamp(28px, 3vw, 40px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(28px, 4vw, 64px); }
+.ledger li { display: grid; grid-template-columns: 158px minmax(0, 1fr); gap: 18px; align-items: baseline; padding: 20px 0; border-top: 1px solid var(--rule-strong); }
+.ledger__fig { font: 600 clamp(34px, 3.2vw, 46px)/1.05 var(--serif); color: var(--bone); letter-spacing: -.02em; font-variant-numeric: lining-nums; white-space: nowrap; }
+.ledger__fig small { font-size: .5em; letter-spacing: 0; }
+.ledger p { font-size: 16px; line-height: 1.55; }
+.stakes__body { margin-top: clamp(28px, 3vw, 40px); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px clamp(28px, 4vw, 64px); align-items: start; }
+.stakes__body .body { margin-top: 0; font: 400 19px/1.6 var(--serif); color: var(--bone); }
+.stakes__body .small { padding-left: 16px; border-left: 1px solid var(--rule-strong); }
+
+/* --- how a project runs -------------------------------------------------- */
+.parties { margin-top: clamp(36px, 4vw, 52px); }
+.parties__row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule-strong); }
+.parties__row li { padding: 16px 20px 18px 0; }
+.parties__row li + li { padding-left: 20px; border-left: 1px solid var(--rule); }
+.parties__row b { display: block; font: 600 19px/1.3 var(--serif); color: var(--bone); margin-bottom: 4px; }
+.parties__row span { font-size: 15.5px; line-height: 1.5; }
+.parties__sum { margin-top: 18px; font: italic 400 clamp(19px, 1.6vw, 23px)/1.45 var(--serif); color: var(--bone); }
+
+.sec--life { padding-bottom: clamp(40px, 5vw, 64px); }
+/* --- phase chapters ------------------------------------------------------ */
+.phases { margin-top: clamp(48px, 5vw, 72px); }
+.phases__head, .chap__grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 3fr) minmax(0, 3.4fr); column-gap: clamp(20px, 2.6vw, 40px); }
+.phases__head { padding-bottom: 10px; }
+.phases__head span:first-child { visibility: hidden; }
+.chap { border-top: 1px solid var(--rule-strong); padding-block: 22px 24px; }
+.chap__title { display: flex; flex-direction: column; gap: 2px; }
+.chap__n { font: 600 14px/1.3 var(--sans); color: var(--steel); font-variant-numeric: tabular-nums; }
+.chap__name { font: 600 22px/1.2 var(--serif); color: var(--bone); letter-spacing: -.01em; }
+.chap__sub { font: 400 14px/1.4 var(--sans); color: var(--steel); }
+.chap dl { display: contents; }
+.chap dl > div { min-width: 0; }
+.chap dt { display: none; }
+.chap dd, .covnote, .construct__dl dd, .rel__ex, .step__typ p, .ledger p { max-width: 62ch; }
+.chap dd { font-size: 16px; line-height: 1.52; }
+.chap dd.breaks { color: var(--bone); }
+.chap--cov { border-top: 2px solid var(--cov); }
+.chap--planned { border-top: 2px dashed rgba(156, 185, 224, .55); }
+.covnote {
+  grid-column: 2 / -1; margin-top: 18px; padding: 12px 16px; border-left: 2px solid var(--cov);
+  background: rgba(156, 185, 224, .06); font-size: 15.5px; line-height: 1.5;
+}
+.covnote b { font: 700 14px/1 var(--sans); letter-spacing: .03em; color: var(--cov); margin-right: 8px; }
+.chap--planned .covnote { border-left: 2px dashed rgba(156, 185, 224, .6); background: transparent; }
+.chap--planned .covnote b { color: var(--steel); }
+/* the three late chapters show their labels, since the header row is far above */
+.chap--solo dt { display: block; font: var(--label); color: var(--steel); margin-bottom: 4px; }
+.chap--solo .chap__grid { row-gap: 14px; }
+
+/* --- construction opens up -------------------------------------------------- */
+.construct { background: var(--navy); border-top: 2px solid var(--cov); }
+.construct__head { padding-block: clamp(56px, 6vw, 88px) clamp(40px, 5vw, 64px); }
+.construct__phase { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.construct__n { font: 600 clamp(15px, 1.2vw, 17px)/1.3 var(--sans); color: var(--steel); }
+.construct__name { font: 600 clamp(48px, 6.6vw, 96px)/1 var(--serif); letter-spacing: -.03em; color: var(--bone); }
+.construct__tag { font: 700 14px/1.3 var(--sans); letter-spacing: .03em; color: var(--cov); border: 1px solid rgba(156, 185, 224, .5); padding: 4px 10px; border-radius: 3px; }
+.construct__tag span { font-weight: 500; color: var(--text); letter-spacing: 0; margin-left: 6px; }
+.construct__dl { margin-top: clamp(26px, 3vw, 38px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px clamp(24px, 3vw, 48px); border-top: 1px solid var(--rule-strong); padding-top: 18px; }
+.construct__dl dt { font: var(--label); color: var(--steel); margin-bottom: 4px; }
+.construct__dl dd { font: 400 18px/1.5 var(--serif); color: var(--text); }
+.construct__dl dd.breaks { color: var(--bone); }
+.construct__into { margin-top: clamp(22px, 2.4vw, 30px); font-size: 15.5px; color: var(--steel); max-width: 62ch; }
+/* the band again, zoomed: phase 7 opens to fill the width, its chapters inside it */
+.zoom { margin-top: clamp(36px, 4vw, 52px); display: grid; grid-template-columns: repeat(6, 12px) minmax(0, 1fr) repeat(2, 12px); gap: 5px; }
+.zoom__sl { background: rgba(157, 176, 196, .45); border-radius: 2px; min-height: 72px; }
+.zoom__sl--cov { background: var(--cov); opacity: .75; }
+.zoom__sl--after { background: rgba(157, 176, 196, .12); }
+.zoom__sl--planned { background: transparent; border: 1px dashed rgba(156, 185, 224, .55); }
+.zoom__seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #172D4D; border-top: 2px solid var(--cov); border-radius: 2px 2px 4px 4px; }
+.zoom__seg li + li { border-left: 1px dashed rgba(156, 185, 224, .35); }
+.zoom__seg a { display: flex; align-items: flex-end; height: 100%; min-height: 72px; padding: 12px 16px; font: 600 16.5px/1.25 var(--serif); color: var(--bone); text-decoration: none; transition: background-color .2s; }
+.zoom__seg a:hover { background: #1D3860; }
+.sub { padding-block: clamp(64px, 7vw, 104px); border-top: 1px solid var(--rule); }
+
+/* where the stack breaks */
+.breaks-grid { margin-top: clamp(32px, 4vw, 52px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(24px, 3vw, 48px); }
+.breaks-grid li { padding: 20px 0 26px; border-top: 1px solid var(--rule-strong); }
+.breaks-grid h4 { font: 600 20px/1.28 var(--serif); color: var(--bone); margin-bottom: 8px; text-wrap: balance; }
+.breaks-grid p { font-size: 15.5px; line-height: 1.58; }
+
+/* the model */
+.chain { margin-top: clamp(30px, 3.4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 0; }
+.chain li { display: flex; align-items: center; font: 600 17px/1.3 var(--serif); color: var(--bone); }
+.chain li + li::before { content: ''; width: 26px; height: 1px; background: var(--steel); margin: 0 10px; position: relative; }
+.chain .node { padding: 7px 12px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--ink); }
+.chain .node--wf { border-color: var(--cov); }
+.chain__cap { margin-top: 12px; font-size: 15.5px; color: var(--steel); max-width: 62ch; }
+.nouns { margin-top: clamp(26px, 3vw, 36px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(24px, 3vw, 48px); }
+.nouns div { padding: 14px 0 18px; border-top: 1px solid var(--rule); }
+.nouns dt { font: 600 18px/1.3 var(--serif); color: var(--bone); margin-bottom: 4px; }
+.nouns dd { font-size: 15.5px; line-height: 1.55; }
+.model-cols { margin-top: clamp(44px, 5vw, 68px); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px clamp(32px, 5vw, 80px); }
+.rel { margin-top: 18px; }
+.rel li { padding: 14px 0; border-top: 1px solid var(--rule); }
+.rel__line { display: grid; grid-template-columns: 7.2em minmax(0, 1fr) auto; align-items: center; max-width: 620px; }
+.rel__line .node:first-child { justify-self: start; }
+.rel .node { font: 600 16px/1.3 var(--serif); color: var(--bone); padding: 6px 11px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--ink); }
+.rel .node--wf { border-color: var(--cov); }
+.edge { position: relative; display: inline-flex; flex-direction: column; align-items: center; text-align: center; padding: 0 18px 7px; font: italic 400 15px/1.3 var(--serif); color: var(--cov); }
+.edge::after { content: ''; position: absolute; left: 6px; right: 12px; bottom: 0; height: 1px; background: var(--cov-line); }
+.edge::before { content: ''; position: absolute; right: 6px; bottom: -4px; border: 4.5px solid transparent; border-left: 7px solid var(--cov); }
+.rel__ex { margin-top: 8px; font-size: 15px; color: var(--steel); }
+.verbs { margin-top: 18px; }
+.verbs li { padding: 10px 0; border-top: 1px solid var(--rule); font: 500 17px/1.4 var(--serif); color: var(--bone); }
+.verbs li span { font: 400 13.5px/1.4 var(--sans); color: var(--steel); margin-left: 8px; }
+.ms { margin-top: clamp(52px, 6vw, 80px); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px clamp(32px, 5vw, 80px); align-items: start; }
+.spec { width: 100%; border-collapse: collapse; font-size: 16px; }
+.spec caption { text-align: left; padding-bottom: 10px; }
+.spec th, .spec td { text-align: left; padding: 11px 14px 11px 0; border-top: 1px solid var(--rule-strong); vertical-align: top; }
+.spec thead th { font: var(--label); color: var(--steel); border-top: 0; padding-top: 0; }
+.spec tbody th { font: 600 16.5px/1.4 var(--serif); color: var(--bone); width: 36%; }
+.spec td { color: var(--text); font-variant-numeric: tabular-nums; }
+.verdict { margin-top: clamp(44px, 5vw, 64px); padding: clamp(20px, 2.4vw, 28px); border: 1px dashed rgba(156, 185, 224, .45); border-radius: 4px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px clamp(24px, 4vw, 56px); align-items: center; }
+.verdict .h4 { font: 600 21px/1.3 var(--serif); color: var(--bone); }
+.verdict p.body { margin-top: 8px; font-size: 16px; }
+.verdict__eg { font: 500 17px/1.45 var(--serif); color: var(--bone); padding-left: 16px; border-left: 2px solid var(--bad); }
+.verdict__eg b { color: var(--bad-text); font-weight: 600; }
+
+/* one layer, one day */
+.day__setup { margin-top: 16px; max-width: 62ch; }
+.wf { font: 600 1em/1.4 var(--serif); color: var(--bone); white-space: normal; }
+.day__cols { margin-top: clamp(36px, 4vw, 52px); display: grid; grid-template-columns: 74px minmax(0, 1fr) minmax(0, 290px); column-gap: clamp(20px, 2.6vw, 40px); }
+.day__colhead { padding-bottom: 12px; }
+.day__colhead--typ { color: var(--steel); }
+.step { display: contents; }
+.step > * { border-top: 1px solid var(--rule-strong); padding-block: 20px 28px; }
+.step__time { font: 600 15px/1.4 var(--sans); color: var(--bone); font-variant-numeric: tabular-nums; }
+.step__time span { display: block; font-weight: 400; color: var(--steel); font-size: 13px; }
+.step__main h4 { font: 600 22px/1.25 var(--serif); color: var(--bone); margin-bottom: 6px; }
+.step__main > p { max-width: 62ch; }
+.step__typ { color: var(--steel); font-size: 15.5px; line-height: 1.5; }
+.step__typ p { padding-left: 14px; border-left: 1px solid var(--rule-strong); }
+.step__typ .t-lab { display: none; }
+.day__close { margin-top: 0; }
+
+/* the recreated paper record sheet */
+.sheet-wrap { margin-top: 20px; max-width: 640px; }
+.sheet {
+  background: #EEF0EC; color: #1B2433; border-radius: 2px; padding: 20px 22px 18px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 28px 60px -30px rgba(0, 0, 0, .9);
+  font: 400 13px/1.4 var(--sans); transform: rotate(-.6deg);
+}
+.sheet__hdr { font-size: 11.5px; line-height: 1.45; color: #3B4556; padding-bottom: 10px; border-bottom: 1.5px solid #1B2433; }
+.sheet__title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; }
+.sheet__title b { font: 700 18px/1.2 var(--sans); color: #111827; }
+.sheet__title span { font: 600 12px/1.2 var(--sans); color: #3B4556; border: 1px solid #3B4556; padding: 2px 6px; }
+.sheet__meta { margin-top: 10px; display: grid; grid-template-columns: 2.2fr 1fr 1fr 1.2fr; border: 1px solid #6B7280; }
+.sheet__meta div { padding: 5px 8px; min-width: 0; }
+.sheet__meta div + div { border-left: 1px solid #6B7280; }
+.sheet__meta small { display: block; font-size: 10.5px; color: #4B5563; }
+.ink { font: italic 500 16px/1.25 var(--serif); color: #1E3A8A; }
+.sheet table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+.sheet th, .sheet td { border: 1px solid #6B7280; padding: 5px 8px; text-align: left; }
+.sheet thead th { font-size: 10.5px; font-weight: 600; color: #374151; background: #E2E5E0; }
+.sheet td:last-child { width: 26%; }
+.sheet__note { margin-top: 10px; font-size: 11.5px; font-style: italic; color: #374151; }
+.cap { margin-top: 12px; font: 400 13.5px/1.5 var(--sans); color: var(--steel); }
+.cap b { color: var(--bone); font-weight: 600; }
+
+/* checks and verdicts */
+.checks { margin-top: 16px; width: 100%; max-width: 640px; border-collapse: collapse; font-size: 15.5px; }
+.checks th, .checks td { text-align: left; padding: 9px 12px 9px 0; border-top: 1px solid var(--rule); }
+.checks thead th { font: var(--label); color: var(--steel); border-top: 0; }
+.checks td { font-variant-numeric: tabular-nums; }
+.checks tbody th { font-weight: 500; color: var(--bone); }
+.v { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; white-space: nowrap; }
+.v::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
+.v--ok { color: var(--ok-text); } .v--ok::before { background: var(--ok); }
+.v--bad { color: var(--bad-text); } .v--bad::before { background: var(--bad); }
+.ncrs { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 640px; }
+.ncrs li { padding: 10px 12px; border: 1px solid rgba(239, 68, 68, .45); border-left: 3px solid var(--bad); border-radius: 3px; font-size: 14.5px; line-height: 1.4; }
+.ncrs b { display: block; color: var(--bone); font-weight: 600; }
+.ncrs span { color: var(--bad-text); font-weight: 600; }
+
+/* screenshots: a crop of the real app, with markers in source pixels */
+.shot {
+  --x: var(--dx); --y: var(--dy); --w: var(--dw); --h: var(--dh);
+  position: relative; overflow: hidden; aspect-ratio: var(--w) / var(--h);
+  border: 1px solid var(--rule-strong); border-radius: 6px; background: #0a1322;
+}
+.shot > img {
+  position: absolute; max-width: none; height: auto;
+  width: calc(var(--sw) / var(--w) * 100%);
+  left: calc(var(--x) / var(--w) * -100%);
+  top: calc(var(--y) / var(--h) * -100%);
+}
+.mk {
+  position: absolute; pointer-events: none;
+  left: calc((var(--mx) - var(--x)) / var(--w) * 100%);
+  top: calc((var(--my) - var(--y)) / var(--h) * 100%);
+  width: calc(var(--mw) / var(--w) * 100%);
+  height: calc(var(--mh) / var(--h) * 100%);
+  border: 1.5px solid var(--cov); border-radius: 5px;
+  box-shadow: 0 0 0 3px rgba(7, 15, 28, .55);
+  transition: background-color .2s, border-color .2s;
+}
+.mk__tag {
+  position: absolute; left: -1.5px; bottom: calc(100% + 6px);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 3px 9px 3px 7px; border-radius: 999px;
+  background: rgba(7, 15, 28, .95); border: 1px solid var(--cov);
+  font: 600 12.5px/1.35 var(--sans); color: var(--bone);
+}
+.mk__tag::before, .term::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+  background: radial-gradient(circle at 50% 40%, #fff, #EAF1FB 40%, #9CB9E0);
+}
+.mk--below .mk__tag { bottom: auto; top: calc(100% + 6px); }
+.mk--right .mk__tag { left: auto; right: -1.5px; }
+.mk--inside .mk__tag { bottom: auto; top: 6px; left: 6px; }
+.mk--after .mk__tag { left: calc(100% + 8px); bottom: auto; top: 50%; transform: translateY(-50%); }
+.mk--left .mk__tag { left: auto; right: calc(100% + 8px); bottom: auto; top: 50%; transform: translateY(-50%); }
+.fig[data-hot="where"] .mk--where, .fig[data-hot="what"] .mk--what, .fig[data-hot="how"] .mk--how,
+.fig[data-hot="a"] .mk--a, .fig[data-hot="b"] .mk--b, .fig[data-hot="c"] .mk--c { background: rgba(156, 185, 224, .14); border-color: #fff; }
+.mask {
+  position: absolute; background: #0F1D36;
+  left: calc((var(--kx) - var(--x)) / var(--w) * 100%); top: calc((var(--ky) - var(--y)) / var(--h) * 100%);
+  width: calc(var(--kw) / var(--w) * 100%); height: calc(var(--kh) / var(--h) * 100%);
+  display: flex; align-items: center; justify-content: center;
+  font: italic 400 12px/1.3 var(--sans); color: var(--steel);
+}
+.term { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--bone); border-bottom: 1px dashed rgba(187, 213, 255, .5); line-height: 1.35; cursor: default; }
+.fig__cap { margin-top: 12px; font: 400 14px/1.55 var(--sans); color: var(--steel); max-width: 62ch; }
+.fig__cap b { color: var(--bone); font-weight: 600; }
+.stitch { display: grid; grid-template-columns: 608fr 190fr 205fr; gap: 0; border: 1px solid var(--rule-strong); border-radius: 6px; overflow: hidden; }
+.stitch .shot { border: 0; border-radius: 0; }
+.stitch .shot + .shot { border-left: 3px double rgba(157, 176, 196, .5); }
+.day .shot-wrap { margin-top: 20px; max-width: 880px; }
+
+.screens__cc { margin-top: clamp(30px, 3.4vw, 44px); }
+.shot--m { display: none; }
+.trio { margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px clamp(22px, 3vw, 44px); }
+.trio p { font-size: 15.5px; line-height: 1.55; border-top: 1px solid var(--rule-strong); padding-top: 12px; }
+.strips { margin-top: clamp(48px, 5vw, 72px); display: grid; gap: clamp(40px, 4.4vw, 60px); }
+.strip .h4 { font: 600 20px/1.3 var(--serif); color: var(--bone); margin-bottom: 4px; }
+.strip > p { font-size: 15.5px; color: var(--text); margin-bottom: 30px; max-width: 62ch; }
+.strip .shot { margin-top: 0; }
+
+/* --- operations, AI, principles ------------------------------------------ */
+.after { padding-block: clamp(36px, 4vw, 56px); border-top: 0; }
+.after .chap:first-child { border-top: 1px solid var(--rule-strong); }
+.ai__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px clamp(32px, 5vw, 80px); align-items: end; }
+.ai__aside { font: italic 400 clamp(20px, 1.8vw, 25px)/1.45 var(--serif); color: var(--bone); padding-left: 18px; border-left: 2px solid var(--rule-strong); }
+.prin { margin-top: clamp(32px, 3.4vw, 48px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(24px, 3vw, 48px); }
+.prin li { padding: 18px 0 26px; border-top: 1px solid var(--rule-strong); }
+.prin h3 { font: 600 20px/1.3 var(--serif); color: var(--bone); margin-bottom: 6px; }
+.prin p { font-size: 15.5px; line-height: 1.58; }
+
+/* --- company ------------------------------------------------------------- */
+.company { background: var(--navy); border-top: 0; }
+.company__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px clamp(32px, 5vw, 80px); }
+.company .body { font: 400 19px/1.62 var(--serif); }
+.sig { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.sig::before { content: ''; width: 36px; height: 1px; background: var(--steel); align-self: center; }
+.sig b { font: italic 500 22px/1.35 var(--serif); color: var(--bone); }
+.facts div { padding: 12px 0; border-top: 1px solid var(--rule-strong); }
+.facts dt { font: var(--label); color: var(--steel); }
+.facts dd { margin-top: 3px; font-size: 16px; color: var(--bone); }
+
+/* --- contact ------------------------------------------------------------- */
+.contact { border-top: 0; padding-block: clamp(88px, 11vw, 150px); }
+.contact__title { font: 600 clamp(38px, 5.2vw, 76px)/1.06 var(--serif); letter-spacing: -.025em; color: var(--bone); text-wrap: balance; max-width: 14em; }
+.mail { margin-top: clamp(30px, 3.4vw, 44px); }
+.mail__addr { font: 500 clamp(22px, 2.6vw, 34px)/1.35 var(--serif); color: var(--bone); user-select: all; -webkit-user-select: all; overflow-wrap: anywhere; }
+.mail__actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; }
+.mail__status { margin-top: 10px; min-height: 1.5em; font-size: 14px; color: var(--steel); }
+html:not(.js) .mail { display: none; }
+
+/* --- sources ------------------------------------------------------------- */
+.sources { padding-block: 48px 56px; border-top: 1px solid var(--rule); }
+.sources summary { cursor: pointer; font: 600 20px/1.3 var(--serif); color: var(--bone); list-style: none; display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.sources summary::-webkit-details-marker { display: none; }
+.sources summary::after { content: ''; width: 8px; height: 8px; border-right: 1.5px solid var(--steel); border-bottom: 1.5px solid var(--steel); transform: rotate(45deg); margin-top: -4px; transition: transform .2s; }
+.sources details[open] summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.src { margin-top: 16px; padding-left: 0; list-style: none; counter-reset: s; columns: 2; column-gap: clamp(28px, 4vw, 64px); }
+.src li { counter-increment: s; break-inside: avoid; display: grid; grid-template-columns: 2em minmax(0, 1fr); padding: 7px 0; font-size: 14px; line-height: 1.5; color: var(--steel); }
+.src li::before { content: counter(s); color: var(--cov); font-weight: 600; font-variant-numeric: tabular-nums; }
+.src li:target { background: rgba(156, 185, 224, .08); }
+.src a { color: var(--text); text-decoration-color: rgba(157, 176, 196, .5); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.src a:hover { color: var(--bone); }
+.src__note { max-width: 62ch; margin-top: 18px; font-size: 14px; color: var(--steel); }
+
+/* --- footer -------------------------------------------------------------- */
+.foot__grid { border-top: 1px solid var(--rule); padding-block: 44px 64px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr); gap: 28px; }
+.foot__motto { margin-top: 12px; font: italic 400 17px/1.5 var(--serif); color: var(--steel); }
+.foot__tag { margin-top: 4px; font-size: 14.5px; color: var(--steel); }
+.foot h2 { font: var(--label); color: var(--bone); margin-bottom: 10px; }
+.foot a:not(.brand) { font-size: 15px; color: var(--steel); text-decoration: none; display: inline-block; padding: 3px 0; }
+.foot a:not(.brand):hover { color: var(--bone); text-decoration: underline; text-underline-offset: 4px; }
+.foot__note { font-size: 14px; line-height: 1.5; color: var(--steel); }
+.foot__bottom { grid-column: 1 / -1; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 24px; }
+
+/* --- mock tag -------------------------------------------------------------- */
+.mocktag {
+  position: fixed; left: 12px; bottom: 12px; z-index: 40;
+  font: 500 12px/1.3 var(--sans); color: var(--steel); text-decoration: none;
+  background: rgba(7, 15, 28, .94); border: 1px solid var(--rule-strong); padding: 6px 11px; border-radius: 999px;
+}
+.mocktag:hover { color: var(--bone); }
+
+/* ======================================================================
+   Responsive
+   ====================================================================== */
+@media (max-width: 1199.98px) {
+  .hero__grid { grid-template-columns: minmax(0, 1fr); }
+  .hero__title { max-width: 15em; }
+  .hero__grid { grid-template-areas: "proof" "lead" "act"; row-gap: 14px; }
+  .ph__name { font-size: 15px; }
+  .ph > a { padding: 10px 9px; }
+  .breaks-grid, .prin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nouns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .day__cols { grid-template-columns: 64px minmax(0, 1fr) minmax(0, 230px); }
+}
+/* below 900 the band stands up: a vertical list with the coverage at the right */
+@media (max-width: 899.98px) {
+  .band { margin-top: 44px; }
+  .band__phases { grid-template-columns: minmax(0, 1fr); gap: 0; border-left: 2px solid rgba(157, 176, 196, .3); }
+  .ph + .ph::before { left: 12px; right: 0; top: -1px; bottom: auto; width: auto; height: 1px; background: repeating-linear-gradient(90deg, rgba(157, 176, 196, .38) 0 3px, transparent 3px 7px); }
+  .ph > a { flex-direction: row; justify-content: flex-start; align-items: baseline; gap: 12px; min-height: 48px; padding: 11px 14px 11px 14px; border-top: 0; border-radius: 0; background: transparent; }
+  .ph__n { margin: 0; width: 1.1em; }
+  .ph__name { font-size: 17px; }
+  .ph__sub { font-size: 13.5px; }
+  .ph__cov { order: 9; margin-left: auto; text-align: right; display: flex; align-items: center; gap: 8px; }
+  .cov__name { font-size: 13.5px; }
+  .cov__st { font-size: 12.5px; }
+  .ph--cov { margin-left: -2px; border-left: 2px solid var(--cov); }
+  .ph--cov > a { background: rgba(156, 185, 224, .07); }
+  .ph--planned { margin-left: -2px; border-left: 2px dashed rgba(156, 185, 224, .6); }
+  .ph--planned > a { border-top: 0; background: transparent; }
+  .band__cap { grid-template-columns: minmax(0, 1fr); }
+  .band__cap p:nth-child(n) { grid-column: auto; }
+  .phases__head { display: none; }
+  .chap__grid { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+  .chap dt { display: block; font: var(--label); color: var(--steel); margin-bottom: 2px; }
+  .covnote { grid-column: auto; margin-top: 6px; }
+  .parties__row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .parties__row li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .parties__row li:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .stakes__body, .model-cols, .ms, .ai__grid, .company__grid, .verdict { grid-template-columns: minmax(0, 1fr); }
+  .construct__dl { grid-template-columns: minmax(0, 1fr); }
+  .day__cols { grid-template-columns: minmax(0, 1fr); }
+  .day__colhead { display: none; }
+  .step { display: block; border-top: 1px solid var(--rule-strong); padding-block: 20px 26px; }
+  .step > * { border-top: 0; padding: 0; }
+  .step__time { display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+  .step__time span { display: inline; }
+  .step__typ:not(:empty) { margin-top: 16px; }
+  .step__typ p { padding: 10px 12px; border-left: 2px solid var(--rule-strong); background: rgba(157, 176, 196, .05); }
+  .step__typ .t-lab { display: block; font: var(--label); color: var(--steel); margin-bottom: 2px; }
+  .src { columns: 1; }
+  .foot__grid { grid-template-columns: 1fr 1fr; }
+  .foot__brandcol { grid-column: 1 / -1; }
+  .mocktag { position: absolute; top: calc(var(--nav-h) + 10px); bottom: auto; left: var(--gutter); }
+  .hero { padding-top: 64px; }
+}
+@media (max-width: 699.98px) {
+  body { font-size: 16px; }
+  .hero { padding-top: 64px; }                 /* room for the mock tag under the nav */
+  .hero__title { font-size: clamp(34px, 9.4vw, 44px); }
+  .ledger { grid-template-columns: minmax(0, 1fr); }
+  .ledger li { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 15px 0; }
+  .ledger__fig { font-size: 30px; }
+  .ledger p { font-size: 15px; }
+  .stakes__body .body { font-size: 17.5px; }
+  .breaks-grid, .prin, .nouns { grid-template-columns: minmax(0, 1fr); }
+  .breaks-grid li { padding: 16px 0 18px; }
+  .breaks-grid h4 { font-size: 19px; }
+  .breaks-grid p, .prin p { font-size: 15px; }
+  .ncrs { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .sheet { padding: 14px 12px 12px; transform: none; }
+  .sheet__meta { grid-template-columns: 1fr 1fr; }
+  .sheet__meta div:nth-child(3) { border-left: 0; }
+  .sheet__meta div:nth-child(n+3) { border-top: 1px solid #6B7280; }
+  .trio { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .construct__name { font-size: 48px; }
+  .zoom { grid-template-columns: repeat(6, 4px) minmax(0, 1fr) repeat(2, 4px); gap: 3px; }
+  .zoom__seg { grid-template-columns: 1fr 1fr; }
+  .zoom__seg li:nth-child(3) { border-left: 0; }
+  .zoom__seg li:nth-child(n+3) { border-top: 1px dashed rgba(156, 185, 224, .35); }
+  .zoom__seg a { min-height: 58px; padding: 10px 12px; font-size: 15px; }
+  .chain li { font-size: 15.5px; }
+  .chain li + li::before { width: 14px; margin: 0 5px; }
+  .edge { font-size: 14px; padding: 0 12px 7px; }
+  .rel__line { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .rel .node { font-size: 15px; }
+  .foot__grid { grid-template-columns: minmax(0, 1fr); }
+  .mail__actions .btn { flex: 1 1 auto; }
+  .mocktag { position: absolute; top: calc(var(--nav-h) + 10px); bottom: auto; left: var(--gutter); font-size: 11.5px; padding: 5px 10px; }
+
+  /* screenshots: art-directed crops for a phone */
+  .shot { --x: var(--px, var(--dx)); --y: var(--py, var(--dy)); --w: var(--pw, var(--dw)); --h: var(--ph, var(--dh)); }
+  .mk--desk, .shot--d { display: none; }
+  .shot--m { display: block; }
+  .cc-crops { display: grid; gap: 14px; }
+  .stitch { display: block; }
+  .stitch .shot--rest { display: none; }
+
+  /* phone cuts, to keep the page near 13 screens */
+  .m-cut { display: none !important; }
+
+  /* phone rhythm: tighter sections */
+  .sec { padding-block: 52px; }
+  .sub { padding-block: 48px; }
+  .h2 { font-size: 29px; }
+  .lede { font-size: 17.5px; margin-top: 12px; }
+  .closing { margin-top: 28px; padding-top: 14px; font-size: 20px; }
+  .hero__proof-line { font-size: 19px; }
+  .hero__lead { font-size: 15.5px; }
+  .band { margin-top: 32px; }
+  .ph > a { justify-content: flex-start; min-height: 38px; padding: 8px 12px; }
+  .hero__actions { flex-wrap: nowrap; gap: 8px; margin-top: 0; }
+  .hero__actions .btn { flex: 0 1 auto; padding: 0 16px; font-size: 14.5px; }
+  .after .chap dl > div:first-child { display: none; }
+  .ph__name { font-size: 16px; }
+  .band__cap p:nth-child(n+2) { display: none; }
+  .band__cap p:first-child { font-size: 14px; }
+  .stakes .h2 { margin-top: 0; }
+  .ledger { margin-top: 16px; }
+  .stakes__body { margin-top: 16px; gap: 14px; }
+  .parties { margin-top: 24px; }
+  .parties__row li { padding: 10px 12px 12px 0; }
+  .parties__row li:nth-child(even) { padding-left: 12px; }
+  .parties__row b { font-size: 16.5px; margin-bottom: 0; }
+  .parties__row span { font-size: 14.5px; }
+  .parties__sum { font-size: 17px; margin-top: 12px; }
+  .phases { margin-top: 28px; }
+  .chap { padding-block: 14px 16px; }
+  .chap__grid { row-gap: 5px; }
+  .chap__title { flex-direction: row; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .chap__name { font-size: 19px; }
+  .phases .chap dl > div:first-child { display: none; }
+  .chap dl > div { display: grid; grid-template-columns: 6.4em minmax(0, 1fr); gap: 10px; }
+  .chap dt { font-size: 12.5px; margin: 0; padding-top: 2px; }
+  .chap dd { font-size: 15px; line-height: 1.45; }
+  .covnote { font-size: 14.5px; padding: 8px 12px; margin-top: 8px; }
+  .construct__head { padding-block: 44px 36px; }
+  .construct__dl { margin-top: 18px; gap: 10px; padding-top: 12px; }
+  .construct__dl dd { font-size: 16.5px; }
+  .zoom { margin-top: 24px; }
+  .breaks-grid { margin-top: 20px; }
+  .chain { margin-top: 20px; }
+  .chain .node { padding: 5px 8px; }
+  .nouns { margin-top: 16px; }
+  .ms { margin-top: 32px; gap: 16px; }
+  .spec th, .spec td { padding: 8px 10px 8px 0; font-size: 14.5px; }
+  .day__cols { margin-top: 20px; }
+  .step { padding-block: 16px 20px; }
+  .step__main h4 { font-size: 20px; }
+  .step__main > p { font-size: 15px; }
+  .sheet-wrap { margin-top: 14px; }
+  .sheet__hdr { font-size: 10.5px; }
+  .sheet th, .sheet td { padding: 3px 6px; }
+  .ink { font-size: 14.5px; }
+  .checks { font-size: 14px; }
+  .checks th, .checks td { padding: 7px 8px 7px 0; }
+  .step__typ:not(:empty) { margin-top: 12px; }
+  .step__typ p { font-size: 14.5px; padding: 8px 10px; }
+  .strips { margin-top: 32px; }
+  .strip > p { margin-bottom: 12px; font-size: 15px; }
+  .strip .h4 { font-size: 18px; }
+  .after { padding-block: 24px; }
+  .prin { margin-top: 18px; }
+  .prin li { padding: 14px 0 16px; }
+  .prin h3 { font-size: 18.5px; }
+  .company .body { font-size: 17px; }
+  .contact { padding-block: 48px 40px; }
+  .contact__title { font-size: 36px; }
+  .sources { padding-block: 20px 24px; }
+  .foot__grid { padding-block: 32px 72px; gap: 18px; }
+  .foot nav { display: none; }
+}
+
+/* ======================================================================
+   Motion: one orchestrated moment. The band assembles phase by phase,
+   the handovers break it, then DiPGOS's coverage lands on it.
+   ====================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .ph > a { animation: segIn .7s var(--ease) both; animation-delay: calc(.25s + var(--i) * 70ms); }
+  html.js .ph + .ph::before { animation: fade .5s ease both; animation-delay: calc(.55s + var(--i) * 70ms); }
+  html.js .ph__cov { animation: covIn .7s var(--ease) both; animation-delay: 1.15s; }
+  html.js .ph--planned .ph__cov { animation-delay: 1.35s; }
+  html.js .band__cap { animation: fade .8s ease 1.5s both; }
+  .btn:active { translate: 0 1px; }
+}
+@keyframes segIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes covIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes fade  { from { opacity: 0; } to { opacity: 1; } }
+</style>
+<script>document.documentElement.className = 'js';</script>
+</head>
+<body>
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__in">
+    <a class="brand" href="#top" aria-label="Indus, home">
+      <span class="wordmark" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span>
+    </a>
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+    <nav class="nav__panel" id="nav-panel" aria-label="Main">
+      <a class="nav__link" href="#lifecycle" data-key="lifecycle">Lifecycle</a>
+      <a class="nav__link" href="#p7" data-key="construction">Construction</a>
+      <a class="nav__link" href="#principles" data-key="principles">Principles</a>
+      <a class="nav__link" href="#company" data-key="company">Company</a>
+      <a class="btn btn--ghost btn--sm nav__cta" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<!-- the band, once it has scrolled away, lives on as this rail -->
+<nav class="rail" id="rail" aria-label="Project lifecycle">
+  <div class="wrap rail__in">
+    <ol class="rail__phases">
+      <li data-i="1"><a href="#p1"><span class="rail__n">1</span><span class="rail__nm">Feasibility</span></a></li>
+      <li data-i="2"><a href="#p2"><span class="rail__n">2</span><span class="rail__nm">Scope</span></a></li>
+      <li data-i="3"><a href="#p3"><span class="rail__n">3</span><span class="rail__nm">Front-end design</span></a></li>
+      <li data-i="4" class="is-cov" title="CPDS covers tender to proposal"><a href="#p4"><span class="rail__n">4</span><img class="rail__mk" src="../../assets/dipgos-mark-light.svg" alt="" width="14" height="14"><span class="rail__nm">Tender</span><span class="sr-only">, CPDS</span></a></li>
+      <li data-i="5"><a href="#p5"><span class="rail__n">5</span><span class="rail__nm">Engineering</span></a></li>
+      <li data-i="6"><a href="#p6"><span class="rail__n">6</span><span class="rail__nm">Procurement</span></a></li>
+      <li data-i="7" class="is-cov" title="ACCS covers execution control"><a href="#p7"><span class="rail__n">7</span><img class="rail__mk" src="../../assets/dipgos-mark-light.svg" alt="" width="14" height="14"><span class="rail__nm">Construction</span><span class="sr-only">, ACCS</span></a></li>
+      <li data-i="8"><a href="#p8"><span class="rail__n">8</span><span class="rail__nm">Commissioning</span></a></li>
+      <li data-i="9" class="is-planned" title="AOS covers operations. Planned"><a href="#p9"><span class="rail__n">9</span><img class="rail__mk" src="../../assets/dipgos-mark-light.svg" alt="" width="14" height="14"><span class="rail__nm">Operations</span><span class="sr-only">, AOS planned</span></a></li>
+    </ol>
+    <div class="rail__compact" aria-hidden="true">
+      <div class="rail__row"><span class="rail__count" id="rc-count">Phase 1 of 9</span><span class="rail__cur" id="rc-name">Feasibility</span><span class="rail__cov" id="rc-cov"></span></div>
+      <div class="rail__bar"><i></i><i></i><i></i><i class="is-cov"></i><i></i><i></i><i class="is-cov"></i><i></i><i></i></div>
+    </div>
+  </div>
+</nav>
+
+<main id="content" tabindex="-1">
+
+<!-- ================================ HERO ================================ -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap">
+    <p class="hero__kicker">The world needs a new way to build.</p>
+    <h1 class="hero__title" id="hero-title">We’re rebuilding how the world builds, starting with the work itself.</h1>
+    <div class="hero__grid">
+      <p class="hero__proof-line">Every pour checked against the method, owned by a named engineer, and counted the day it happens.</p>
+      <p class="hero__lead m-cut">DiPGOS is the project operating system for engineering and construction megaprojects. It models the project the way it is actually built: every scope, work front, operation, crew, machine and material, and the method that governs them. People decide. The system keeps the record.</p>
+      <div class="hero__act">
+        <div class="hero__actions">
+          <a class="btn btn--solid" href="#day">See a day on a work front</a>
+          <a class="btn btn--ghost" href="#contact">Get in touch</a>
+        </div>
+        <p class="hero__running">Running on an RCC dam: Stage 1, Blocks 12–24, EL 898–990 m.<span class="dag">†</span></p>
+      </div>
+    </div>
+
+    <figure class="band" id="band" aria-labelledby="band-cap">
+      <ol class="band__phases" aria-label="The nine phases of a capital project">
+        <li class="ph" style="--i:0"><a href="#p1"><span class="ph__n">1</span><span class="ph__name">Feasibility</span><span class="ph__sub">FEL 1</span></a></li>
+        <li class="ph" style="--i:1"><a href="#p2"><span class="ph__n">2</span><span class="ph__name">Scope</span><span class="ph__sub">FEL 2</span></a></li>
+        <li class="ph" style="--i:2"><a href="#p3"><span class="ph__n">3</span><span class="ph__name">Front-end design</span><span class="ph__sub">FEL 3</span></a></li>
+        <li class="ph ph--cov" style="--i:3"><a href="#p4"><span class="ph__cov"><span class="cov__name"><img src="../../assets/dipgos-mark-light.svg" alt="" width="18" height="18">CPDS</span><span class="cov__st">Built</span></span><span class="ph__n">4</span><span class="ph__name">Tender &amp; bid</span></a></li>
+        <li class="ph" style="--i:4"><a href="#p5"><span class="ph__n">5</span><span class="ph__name">Detailed engineering</span></a></li>
+        <li class="ph" style="--i:5"><a href="#p6"><span class="ph__n">6</span><span class="ph__name">Procurement</span></a></li>
+        <li class="ph ph--cov" style="--i:6"><a href="#p7"><span class="ph__cov"><span class="cov__name"><img src="../../assets/dipgos-mark-light.svg" alt="" width="18" height="18">ACCS</span><span class="cov__st">Built</span></span><span class="ph__n">7</span><span class="ph__name">Construction</span></a></li>
+        <li class="ph" style="--i:7"><a href="#p8"><span class="ph__n">8</span><span class="ph__name">Commissioning</span><span class="ph__sub">and handover</span></a></li>
+        <li class="ph ph--planned" style="--i:8"><a href="#p9"><span class="ph__cov"><span class="cov__name"><img src="../../assets/dipgos-mark-light.svg" alt="" width="18" height="18">AOS</span><span class="cov__st">Planned</span></span><span class="ph__n">9</span><span class="ph__name">Operations</span></a></li>
+      </ol>
+      <figcaption class="band__cap" id="band-cap">
+        <p>Each phase makes its decisions in its own tools, then hands the next phase a pile of documents. Each break in the band is one of those handovers.</p>
+        <p><b>CPDS</b> covers tender to proposal. Built, and piloted with an EPC contractor’s engineers.<span class="dag">†</span></p>
+        <p><b>ACCS</b> covers execution control. Built, and running on an RCC dam.<span class="dag">†</span></p>
+        <p><b>AOS</b> covers operations. Planned.</p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================ STAKES ================================ -->
+<section class="sec stakes" id="stakes" aria-labelledby="stakes-title">
+  <div class="wrap">
+    <p class="stakes__open m-cut">Roads, dams, cities, power plants: every physical thing around us was delivered by engineering and construction. It is the largest industry on earth, at <span class="todo" style="white-space:nowrap">$15 trillion a year</span>. Its greatest work is still ahead: the build now coming is the largest in the history of human civilisation.</p>
+    <h2 class="h2" id="stakes-title">And the largest things we build run late as a rule.</h2>
+    <ul class="ledger">
+      <li><span class="ledger__fig">96%</span><p>The average cost overrun across 245 large dams in 65 countries. Three in four ran over budget; eight in ten ran late, by 2.3 years on average.<sup class="fn"><a href="#src-1" aria-label="Source 1">1</a></sup></p></li>
+      <li><span class="ledger__fig">16 <small>years</small></span><p>How long Neelum-Jhelum took against a planned 8. Its cost went from Rs 84.5 bn to Rs 423 bn.<sup class="fn"><a href="#src-2" aria-label="Source 2">2</a></sup></p></li>
+      <li class="m-cut"><span class="ledger__fig">59%</span><p>The share of Pakistan’s 931 ongoing federal development projects that were running late.<sup class="fn"><a href="#src-3" aria-label="Source 3">3</a></sup></p></li>
+      <li class="m-cut"><span class="ledger__fig">98%</span><p>The share of megaprojects that overrun their budget by more than 30%. 77% finish at least 40% late.<sup class="fn"><a href="#src-4" aria-label="Source 4">4</a></sup></p></li>
+    </ul>
+    <div class="stakes__body">
+      <p class="body">None of this comes from a shortage of engineering talent. It comes from not having a shared, current and trusted account of the work: what was done, where, by whom, to what standard, and who approved it.</p>
+      <p class="small">Dams completed after 2000 have overrun less than earlier ones, at 33% on cost and 18% on schedule on average.<sup class="fn"><a href="#src-5" aria-label="Source 5">5</a></sup> The trend is better, but the problem remains.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW A PROJECT RUNS ============================ -->
+<section class="sec sec--life" id="lifecycle" aria-labelledby="life-title" data-nav="lifecycle">
+  <div class="wrap">
+    <h2 class="h2" id="life-title">The model of the project gets rebuilt at every handover.</h2>
+    <p class="lede">A megaproject passes through nine phases. Each makes its decisions in its own tools, then hands the next phase a pile of documents.</p>
+
+    <div class="parties m-cut">
+      <ul class="parties__row">
+        <li><b>The Employer</b><span>pays.</span></li>
+        <li><b>The Engineer</b><span>administers the contract and rules on claims (FIDIC Red and Yellow Books).<sup class="fn"><a href="#src-9" aria-label="Source 9">9</a></sup></span></li>
+        <li><b>The contractor</b><span>builds.</span></li>
+        <li><b>Subcontractors and suppliers</b><span>deliver packages.</span></li>
+      </ul>
+      <p class="parties__sum">Four parties, four sets of systems, one piece of concrete.</p>
+    </div>
+
+    <div class="phases">
+      <div class="phases__head label" aria-hidden="true"><span>Phase</span><span>Decides</span><span>Lives in today</span><span>Breaks when</span></div>
+
+      <section class="chap" id="p1" data-phase="1" aria-labelledby="p1-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p1-t"><span class="chap__n">1</span><span class="chap__name">Feasibility</span><span class="chap__sub">FEL 1</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>Is there a project worth doing?</dd></div>
+            <div><dt>Lives in today</dt><dd>Spreadsheets, studies</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">Estimates carry a −50%/+100% range.<sup class="fn"><a href="#src-6" aria-label="Source 6">6</a></sup></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chap" id="p2" data-phase="2" aria-labelledby="p2-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p2-t"><span class="chap__n">2</span><span class="chap__name">Scope</span><span class="chap__sub">FEL 2</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>Which single option to take forward</dd></div>
+            <div><dt>Lives in today</dt><dd>Spreadsheets, early schedules</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">The chosen option’s assumptions are never carried forward as data</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chap" id="p3" data-phase="3" aria-labelledby="p3-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p3-t"><span class="chap__n">3</span><span class="chap__name">Front-end design</span><span class="chap__sub">FEL 3</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>Final investment decision, contract strategy</dd></div>
+            <div><dt>Lives in today</dt><dd>P6, estimating tools</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">The control budget is set at −20%/+30% and then treated as fact<sup class="fn"><a href="#src-6" aria-label="Source 6">6</a></sup></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chap chap--cov" id="p4" data-phase="4" aria-labelledby="p4-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p4-t"><span class="chap__n">4</span><span class="chap__name">Tender and bid</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>Price, programme, method</dd></div>
+            <div><dt>Lives in today</dt><dd>Excel, Word, norms in people’s heads</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">Man-hours rest on norms nobody can trace</dd></div>
+          </dl>
+          <p class="covnote"><b>CPDS</b>covers tender to proposal. Built, and piloted with an EPC contractor’s engineers.<span class="dag">†</span></p>
+        </div>
+      </section>
+
+      <section class="chap" id="p5" data-phase="5" aria-labelledby="p5-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p5-t"><span class="chap__n">5</span><span class="chap__name">Detailed engineering</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>Issued-for-construction drawings</dd></div>
+            <div><dt>Lives in today</dt><dd>BIM, document control (Aconex, Forma)</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">Drawings and the schedule describe the work in different words</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chap" id="p6" data-phase="6" aria-labelledby="p6-t">
+        <div class="chap__grid">
+          <h3 class="chap__title" id="p6-t"><span class="chap__n">6</span><span class="chap__name">Procurement</span></h3>
+          <dl>
+            <div><dt>Decides</dt><dd>What arrives, and when</dd></div>
+            <div><dt>Lives in today</dt><dd>ERP (SAP), spreadsheets</dd></div>
+            <div><dt>Breaks when</dt><dd class="breaks">Deliveries aren’t tied to the operations that need them</dd></div>
+          </dl>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CONSTRUCTION: THE PAGE OPENS UP ========================= -->
+<section class="construct" id="p7" data-phase="7" data-nav="construction" aria-labelledby="p7-t">
+  <div class="wrap">
+    <header class="construct__head">
+      <div class="construct__phase">
+        <span class="construct__n">Phase 7 of 9</span>
+      </div>
+      <div class="construct__phase" style="margin-top:6px">
+        <h2 class="construct__name" id="p7-t">Construction</h2>
+        <span class="construct__tag">ACCS<span>Built, and running on an RCC dam.†</span></span>
+      </div>
+      <dl class="construct__dl">
+        <div><dt>Decides</dt><dd>Sequence, quality, change, payment</dd></div>
+        <div><dt>Lives in today</dt><dd>P6 monthly, site bar charts, paper forms, Excel</dd></div>
+        <div><dt>Breaks when</dt><dd class="breaks">The site and the plan drift apart within weeks.<sup class="fn"><a href="#src-7" aria-label="Source 7">7</a><a href="#src-8" aria-label="Source 8">8</a></sup></dd></div>
+      </dl>
+      <nav class="zoom" aria-label="Inside construction">
+        <span class="zoom__sl" aria-hidden="true"></span><span class="zoom__sl" aria-hidden="true"></span><span class="zoom__sl" aria-hidden="true"></span><span class="zoom__sl zoom__sl--cov" aria-hidden="true"></span><span class="zoom__sl" aria-hidden="true"></span><span class="zoom__sl" aria-hidden="true"></span>
+        <ol class="zoom__seg">
+          <li><a href="#breaks">Where the stack breaks</a></li>
+          <li><a href="#model">The model</a></li>
+          <li><a href="#day">One day on a work front</a></li>
+          <li><a href="#screens">Where you run it</a></li>
+        </ol>
+        <span class="zoom__sl zoom__sl--after" aria-hidden="true"></span><span class="zoom__sl zoom__sl--after zoom__sl--planned" aria-hidden="true"></span>
+      </nav>
+    </header>
+
+    <!-- 4 · where the stack breaks -->
+    <section class="sub" id="breaks" aria-labelledby="breaks-t">
+      <h3 class="h2" id="breaks-t">The tools record the project. None of them runs it.</h3>
+      <p class="lede">Primavera P6 is the industry’s schedule of record, and it is very good at being one. The trouble is everything that has to happen outside it.</p>
+      <ul class="breaks-grid">
+        <li><h4>The plan is monthly. The site is daily.</h4><p>Schedule updates are normally monthly, while superintendents run the job from one- or two-week bar charts.<sup class="fn"><a href="#src-7" aria-label="Source 7">7</a></sup> Only about half of the work assigned to crews at the start of a week is completed as planned.<sup class="fn"><a href="#src-8" aria-label="Source 8">8</a></sup></p></li>
+        <li class="m-cut"><h4>Percent complete is an opinion.</h4><p>A supervisor’s estimate is the measure “most prone to overstatement and the hardest to audit”.<sup class="fn"><a href="#src-10" aria-label="Source 10">10</a></sup> In one documented case a contractor reported activities as “90% complete for several months” to hide missed starts.<sup class="fn"><a href="#src-11" aria-label="Source 11">11</a></sup></p></li>
+        <li><h4>The method statement is a PDF.</h4><p>The limits that decide whether a layer is acceptable (thickness, unloading height, temperature, roller passes) live in a document. They aren’t data that anything checks.</p></li>
+        <li class="m-cut"><h4>Every system names the work differently.</h4><p>The WBS in the schedule, the cost codes in the ERP and the numbers in the document register each describe the same concrete.<sup class="fn"><a href="#src-12" aria-label="Source 12">12</a></sup> Moving data between them is manual in 49% of cases.<sup class="fn"><a href="#src-13" aria-label="Source 13">13</a></sup></p></li>
+        <li><h4>Nobody can say who approved what.</h4><p>On Tarbela’s 5th extension, a contractor’s cofferdam change the contract did not allow was accepted conditionally by the Engineer and approved by the employer. The inquiry held all three responsible, and the cost rose from Rs 82 bn to about Rs 317 bn.<sup class="fn"><a href="#src-14" aria-label="Source 14">14</a></sup></p></li>
+        <li class="m-cut"><h4>Data is collected, then ignored.</h4><p>95.5% of engineering and construction data goes unused.<sup class="fn"><a href="#src-15" aria-label="Source 15">15</a></sup> Team members spend 14 hours a week on conflict, rework and hunting for information, 5.5 of them hunting for data alone.<sup class="fn"><a href="#src-16" aria-label="Source 16">16</a></sup></p></li>
+      </ul>
+      <p class="closing">The industry does not need another tool on the pile. It needs a model of the work that every tool, and every person, can read.</p>
+    </section>
+
+    <!-- 5 · the model -->
+    <section class="sub" id="model" aria-labelledby="model-t">
+      <h3 class="h2" id="model-t">DiPGOS starts from what the project is made of.</h3>
+      <p class="lede">Most software models documents, dates or geometry. DiPGOS models <em>the work</em>: the things a project is made of, how they relate, and the method that governs them. Every screen, form, check and figure reads from that one model.</p>
+
+      <ol class="chain m-cut" aria-label="The breakdown of the job">
+        <li><span class="node">Project</span></li>
+        <li><span class="node">Contract</span></li>
+        <li><span class="node">Scope</span></li>
+        <li><span class="node">Activity</span></li>
+        <li><span class="node">Process</span></li>
+        <li><span class="node">Operation</span></li>
+      </ol>
+      <p class="chain__cap m-cut">The breakdown of the job, down to a single operation such as “Place &amp; spread RCC”.</p>
+
+      <dl class="nouns m-cut">
+        <div><dt>Work front</dt><dd>A bounded place and time where an operation happens. For example: <span class="wf">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</span>.</dd></div>
+        <div><dt>Atom</dt><dd>Anything the work consumes or uses, in six classes: material, workforce, equipment, temporary works, deliverable, storage. Each <em>unit</em> is one physical thing, such as roller 3 of 12, or formwork set 037 of 581.</dd></div>
+        <div class="m-cut"><dt>Run</dt><dd>One filed report of work on a work front.</dd></div>
+        <div class="m-cut"><dt>Data point</dt><dd>One measured check on that report.</dd></div>
+        <div class="m-cut"><dt>Alarm / NCR</dt><dd>A breach, with its margin.</dd></div>
+        <div class="m-cut"><dt>Decision</dt><dd>A sign-off, with its approver and reason.</dd></div>
+      </dl>
+
+      <div class="model-cols m-cut">
+        <div>
+          <h4 class="h3">How the things relate</h4>
+          <ul class="rel">
+            <li><div class="rel__line"><span class="node">Operation</span><span class="edge">performed at</span><span class="node node--wf">Work front</span></div></li>
+            <li><div class="rel__line"><span class="node">Operation</span><span class="edge">precedes, with a lag in hours</span><span class="node">Operation</span></div></li>
+            <li><div class="rel__line"><span class="node">Operation</span><span class="edge">requires, with quantities</span><span class="node">Atom</span></div><p class="rel__ex">Batch &amp; mix, for instance, uses 90 kg of pozzolan and 95 L of water.</p></li>
+            <li><div class="rel__line"><span class="node">Atom</span><span class="edge">needs</span><span class="node">Atom</span></div><p class="rel__ex">A vibratory roller needs one operator per machine-hour and 8 L/h of diesel.</p></li>
+          </ul>
+        </div>
+        <div class="m-cut">
+          <h4 class="h3">What people do to them</h4>
+          <ul class="verbs">
+            <li>File a run</li>
+            <li>Check it against the method</li>
+            <li>Raise an NCR</li>
+            <li>Request a sign-off</li>
+            <li>Approve or reject, with a reason</li>
+            <li>Freeze a baseline</li>
+            <li>Certify quantities for billing<span>in progress</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ms">
+        <div>
+          <h4 class="h3">The method statement becomes the model</h4>
+          <p class="body">Diamer-Basha’s RCC method statement<span class="dag">†</span> is loaded as data: 6 processes and 21 operations, each with its limits.</p>
+          <p class="body">The same limits generate the paper form the foreman fills in, the screen form, the checks, the alarms, and the approver each output goes to.</p>
+        </div>
+        <table class="spec">
+          <caption class="label">MS-348<span class="dag">†</span>, as data</caption>
+          <thead><tr><th scope="col">Operation</th><th scope="col">Limit</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Place &amp; spread</th><td>Unloading height ≤ 1.5 m; layer 33 cm</td></tr>
+            <tr><th scope="row">Compact</th><td>Roller ≤ 2.5 km/h; compacted layer 30 cm; before initial set</td></tr>
+            <tr><th scope="row">Bedding mortar</th><td>10–15 mm</td></tr>
+            <tr><th scope="row">Aggregate</th><td>Moisture ≤ 5%</td></tr>
+            <tr><th scope="row">Haul</th><td>Dump truck ≤ 15 km/h (safety)</td></tr>
+            <tr><th scope="row">Cure</th><td>14 days</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="verdict m-cut">
+        <div>
+          <p class="label">The model’s shape; in development</p>
+          <h4 class="h4" style="margin-top:6px">One verdict per discipline, never a single pass/fail</h4>
+          <p class="body">A check is judged separately by each discipline that owns part of it: the site engineer for geometry, the materials engineer for physical properties, the scheduler for sequence, the cost controller for money, and so on across nine owners.</p>
+        </div>
+        <p class="verdict__eg">A verdict reads like “<b>Not satisfied</b>: physical, 5 °C short, materials engineer”, not a red cross.</p>
+      </div>
+    </section>
+
+    <!-- 6 · one layer, one day -->
+    <section class="sub day" id="day" aria-labelledby="day-t">
+      <h3 class="h2" id="day-t">One layer, one day.</h3>
+      <p class="day__setup">Work front <span class="wf">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</span>. Operation: Place &amp; spread RCC. 820 m³.<span class="dag">†</span> <span class="small">(Illustrative timeline. The values come from a real sample record sheet.)</span></p>
+
+      <div class="day__cols">
+        <span class="day__colhead label" aria-hidden="true">Time</span>
+        <span class="day__colhead label" aria-hidden="true">With DiPGOS</span>
+        <span class="day__colhead day__colhead--typ label" aria-hidden="true">The same day, in a typical stack</span>
+
+        <div class="step">
+          <p class="step__time">06:40</p>
+          <div class="step__main">
+            <h4>Paper</h4>
+            <p>The foreman fills in the RCC-PL sheet on paper, as always. The sheet itself says: <em>“A blank is recorded as ‘not answered’, never as a pass.”</em></p>
+            <figure class="sheet-wrap">
+              <div class="sheet" role="img" aria-label="Recreated RCC-PL record sheet for Blocks 14–15, Lift 2, Layer 7: slope recorded 1:11 against at most 1:10; unloading height 2 m against at most 1.5 m; layer 35 cm against 33 cm; temperature 18.5 °C against under 18 °C.">
+                <p class="sheet__hdr">PFJV / Descon† · RCC Dam Construction Stage 1 · Method Statement MS-348 · Daily site record</p>
+                <p class="sheet__title"><b>Place &amp; Spread RCC</b><span>RCC-PL</span></p>
+                <div class="sheet__meta">
+                  <div><small>Panel</small><span class="ink">Blocks 14–15 · EL 922.0–932.2</span></div>
+                  <div><small>Lift</small><span class="ink">2</span></div>
+                  <div><small>Layer</small><span class="ink">7</span></div>
+                  <div><small>Volume</small><span class="ink">820 m³</span></div>
+                </div>
+                <table>
+                  <thead><tr><th>Check</th><th>Limit</th><th>Recorded</th></tr></thead>
+                  <tbody>
+                    <tr><td>Slope</td><td>≤ 1:10</td><td><span class="ink">1:11</span></td></tr>
+                    <tr><td>Unloading height</td><td>≤ 1.5 m</td><td><span class="ink">2</span></td></tr>
+                    <tr><td>Layer</td><td>33 cm</td><td><span class="ink">35</span></td></tr>
+                    <tr><td>Temperature</td><td>&lt; 18 °C</td><td><span class="ink">18.5</span></td></tr>
+                  </tbody>
+                </table>
+                <p class="sheet__note">A blank is recorded as “not answered”, never as a pass.</p>
+              </div>
+              <figcaption class="cap"><b>Recreated from a real record sheet.</b></figcaption>
+            </figure>
+          </div>
+          <div class="step__typ"><p><span class="t-lab">In a typical stack</span>The sheet goes into a folder.</p></div>
+        </div>
+
+        <div class="step">
+          <p class="step__time">07:05</p>
+          <div class="step__main">
+            <h4>Read</h4>
+            <p>A photo of the sheet lands in the site-reports folder. DiPGOS reads it and matches it to its work front by the site’s own words. A person confirms each value, because nothing is written without a source. A sheet that could belong to two fronts is parked, not guessed.</p>
+            <figure class="shot-wrap fig" id="fig-folder">
+              <div class="stitch">
+                <div class="shot" style="--sw:1920; --dx:92; --dy:170; --dw:608; --dh:300; --px:210; --py:282; --pw:480; --ph:120">
+                  <img src="assets/app-site-reports-folder.png" width="1920" height="935" alt="Document manager, site reports folder: the day’s files named “2026-09-07 Place &amp; Spread RCC — Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 8” and “Layer 9”, and the RCC-PL form" decoding="async" loading="lazy">
+                  <span class="mk mk--a mk--below" style="--mx:214; --my:288; --mw:470; --mh:110"><span class="mk__tag">The site’s own words</span></span>
+                </div>
+                <div class="shot shot--rest" style="--sw:1920; --dx:1330; --dy:170; --dw:190; --dh:300">
+                  <img src="assets/app-site-reports-folder.png" width="1920" height="935" alt="" decoding="async" loading="lazy">
+                </div>
+                <div class="shot shot--rest" style="--sw:1920; --dx:1680; --dy:170; --dw:205; --dh:300">
+                  <img src="assets/app-site-reports-folder.png" width="1920" height="935" alt="" decoding="async" loading="lazy">
+                  <span class="mk mk--b mk--right" style="--mx:1778; --my:288; --mw:90; --mh:176"><span class="mk__tag">Evaluate</span></span>
+                </div>
+              </div>
+              <figcaption class="fig__cap"><b>From the running system. Pilot data.</b> The day’s <span class="term" data-r="a">Place &amp; Spread files</span>, named in the site’s own words, each with <span class="term" data-r="b">Evaluate</span>. Empty middle of the table and the originator column cut out; staff names removed.</figcaption>
+            </figure>
+          </div>
+          <div class="step__typ"><p><span class="t-lab">In a typical stack</span>The numbers are retyped into a spreadsheet days later.</p></div>
+        </div>
+
+        <div class="step">
+          <p class="step__time">07:06</p>
+          <div class="step__main">
+            <h4>Checked</h4>
+            <p>Four checks against the method:</p>
+            <table class="checks">
+              <thead><tr><th scope="col">Check</th><th scope="col">Recorded</th><th scope="col">Method</th><th scope="col">Verdict</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Slope</th><td>1:11</td><td>≤ 1:10</td><td><span class="v v--ok">satisfied</span></td></tr>
+                <tr><th scope="row">Unloading height</th><td>2.0 m</td><td>≤ 1.5 m</td><td><span class="v v--bad">0.5 m over</span></td></tr>
+                <tr><th scope="row">Layer</th><td>35 cm</td><td>33 cm</td><td><span class="v v--bad">2 cm over</span></td></tr>
+                <tr><th scope="row">Temperature</th><td>18.5 °C</td><td>&lt; 18 °C</td><td><span class="v v--bad">0.5 °C over</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="step__typ"></div>
+        </div>
+
+        <div class="step">
+          <p class="step__time">07:06</p>
+          <div class="step__main">
+            <h4>Owned</h4>
+            <p>Three NCRs are raised, each with its margin, and routed to the approver the method names.</p>
+            <ul class="ncrs m-cut" aria-label="The three NCRs">
+              <li><b>NCR: unloading height</b><span>0.5 m over</span></li>
+              <li><b>NCR: layer</b><span>2 cm over</span></li>
+              <li><b>NCR: temperature</b><span>0.5 °C over</span></li>
+            </ul>
+          </div>
+          <div class="step__typ"><p><span class="t-lab">In a typical stack</span>The 2 cm, if anyone notices it, becomes an email.</p></div>
+        </div>
+
+        <div class="step">
+          <p class="step__time">11:30</p>
+          <div class="step__main">
+            <h4>Decided</h4>
+            <p>The consultant’s representative reviews the layer and records the decision with a reason. Closing or reopening an NCR also needs a reason, and every step stays in the history.</p>
+          </div>
+          <div class="step__typ"></div>
+        </div>
+
+        <div class="step">
+          <p class="step__time">18:00</p>
+          <div class="step__main">
+            <h4>Counted</h4>
+            <p>820 m³ counts against the frozen baseline. Float on the following operations recomputes, and the day’s quantities are ready for certification.</p>
+          </div>
+          <div class="step__typ"><p><span class="t-lab">In a typical stack</span>At month-end the activity’s percent complete goes up in P6.</p></div>
+        </div>
+      </div>
+      <p class="closing day__close">Same concrete, same people. The difference is that the record exists the day the work does.</p>
+    </section>
+
+    <!-- 7 · where you run it -->
+    <section class="sub" id="screens" aria-labelledby="screens-t">
+      <h3 class="h2" id="screens-t">The command centre, not a dashboard.</h3>
+      <p class="lede m-cut">The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+
+      <figure class="fig screens__cc" id="fig-cc">
+        <div class="shot shot--d" style="--sw:1912; --dx:0; --dy:0; --dw:1912; --dh:935">
+          <img src="../../assets/command-center.webp" width="1912" height="935" alt="DiPGOS command centre: scope navigation at left, a live project map at the centre, and productivity, quality and business panels at right" decoding="async" loading="lazy">
+          <span class="mk mk--what" style="--mx:62; --my:66; --mw:282; --mh:862"><span class="mk__tag">What</span></span>
+          <span class="mk mk--where" style="--mx:352; --my:66; --mw:1214; --mh:862"><span class="mk__tag">Where</span></span>
+          <span class="mk mk--how mk--right" style="--mx:1576; --my:66; --mw:330; --mh:862"><span class="mk__tag">How</span></span>
+        </div>
+        <div class="cc-crops shot--m">
+          <div class="shot" style="--sw:1912; --dx:56; --dy:60; --dw:760; --dh:560"><img src="../../assets/command-center.webp" width="1912" height="935" alt="" decoding="async" loading="lazy"><span class="mk mk--what mk--inside" style="--mx:62; --my:66; --mw:282; --mh:550"><span class="mk__tag">What</span></span><span class="mk mk--where mk--inside" style="--mx:352; --my:66; --mw:460; --mh:550"><span class="mk__tag">Where</span></span></div>
+          <div class="shot m-cut" style="--sw:1912; --dx:60; --dy:66; --dw:350; --dh:306"><img src="../../assets/command-center.webp" width="1912" height="935" alt="" decoding="async" loading="lazy"><span class="mk mk--what mk--inside" style="--mx:60; --my:66; --mw:350; --mh:306"><span class="mk__tag">What</span></span></div>
+          <div class="shot m-cut" style="--sw:1912; --dx:1560; --dy:64; --dw:350; --dh:340"><img src="../../assets/command-center.webp" width="1912" height="935" alt="" decoding="async" loading="lazy"><span class="mk mk--how mk--inside" style="--mx:1560; --my:64; --mw:350; --mh:340"><span class="mk__tag">How</span></span></div>
+        </div>
+        <figcaption class="fig__cap"><b>From the running system. Pilot data.</b></figcaption>
+        <div class="trio">
+          <p><span class="term" data-r="where">Where</span>: the live map.</p>
+          <p><span class="term" data-r="what">What</span>: scope and work fronts.</p>
+          <p class="m-cut"><span class="term" data-r="how">How</span>: productivity, quality and business.</p>
+        </div>
+      </figure>
+
+      <div class="strips">
+        <figure class="strip fig" id="fig-atom">
+          <p class="h4">Atom Manager: the whole catalogue, right now</p>
+          <p>536 people, 134 machines, 710 sets and 24 vessels, <span class="term" data-r="b">LIVE · as of 19 Sep 2026</span>.</p>
+          <div class="shot" style="--sw:1440; --dx:92; --dy:168; --dw:1306; --dh:232; --px:322; --py:212; --pw:424; --ph:152">
+            <img src="assets/app-atom-manager-home.png" width="1440" height="900" alt="Atom Manager: the whole catalogue by class: 28 material types, 536 people, 134 machines, 710 temporary-works sets, 0 deliverables, 24 storage vessels; stamped LIVE, as of 19 Sep 2026" decoding="async" loading="lazy">
+            <span class="mk mk--a mk--inside" style="--mx:322; --my:216; --mw:420; --mh:144"><span class="mk__tag">536 people, 134 machines</span></span>
+            <span class="mk mk--b mk--desk mk--left" style="--mx:1236; --my:184; --mw:148; --mh:24"><span class="mk__tag">Live, with its date</span></span>
+          </div>
+          <figcaption class="fig__cap"><b>From the running system. Pilot data.</b></figcaption>
+        </figure>
+
+        <figure class="strip fig m-cut" id="fig-sched">
+          <p class="h4">Schedule forecast: who is claimed, out or short over the next 8 weeks</p>
+          <p>Lanes such as <span class="term" data-r="a">3 × Formwork climb — Block 21</span>, and the <span class="term" data-r="b">clashes</span> between them.</p>
+          <div class="shot" style="--sw:1440; --dx:92; --dy:140; --dw:1306; --dh:224">
+            <img src="assets/app-schedule-forecast.png" width="1440" height="900" alt="Schedule forecast for equipment over eight weeks: lanes such as 3 × Formwork climb — Block 21, 3 × Curing — Block 12, 5 × Place &amp; Spread — Block 3, and a clash on Place &amp; Spread" decoding="async" loading="lazy">
+            <span class="mk mk--a mk--after" style="--mx:364; --my:196; --mw:708; --mh:17"><span class="mk__tag">Claimed</span></span>
+            <span class="mk mk--b mk--after" style="--mx:455; --my:340; --mw:111; --mh:17"><span class="mk__tag">Clash</span></span>
+          </div>
+          <figcaption class="fig__cap"><b>From the running system. Pilot data.</b></figcaption>
+        </figure>
+
+        <figure class="strip fig m-cut" id="fig-record">
+          <p class="h4">Record what happened</p>
+          <p>A fault recorded against one unit: <span class="term" data-r="a">appended, never overwritten — a correction is a new dated row</span>.</p>
+          <div class="shot" style="--sw:1440; --dx:92; --dy:246; --dw:1306; --dh:172">
+            <img src="assets/app-record-what-happened.png" width="1440" height="900" alt="Record what happened for handheld vibrator 001-017: fault since 19 Sep, on Place &amp; Spread — Block 3; the record is appended, never overwritten" decoding="async" loading="lazy">
+            <span class="mk mk--a" style="--mx:640; --my:362; --mw:374; --mh:24"><span class="mk__tag">Appended, never overwritten</span></span>
+          </div>
+          <figcaption class="fig__cap"><b>From the running system. Pilot data.</b></figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ============================ PHASES 8 AND 9 ============================ -->
+<section class="sec after" aria-label="After construction" data-nav="lifecycle">
+  <div class="wrap">
+    <section class="chap chap--solo" id="p8" data-phase="8" aria-labelledby="p8-t">
+      <div class="chap__grid">
+        <h3 class="chap__title" id="p8-t"><span class="chap__n">8</span><span class="chap__name">Commissioning and handover</span></h3>
+        <dl>
+          <div><dt>Decides</dt><dd>Take-over</dd></div>
+          <div><dt>Lives in today</dt><dd>Completion systems, document registers</dd></div>
+          <div><dt>Breaks when</dt><dd class="breaks">As-built truth is reconstructed from paper</dd></div>
+        </dl>
+      </div>
+    </section>
+    <section class="chap chap--solo chap--planned" id="p9" data-phase="9" aria-labelledby="p9-t">
+      <div class="chap__grid">
+        <h3 class="chap__title" id="p9-t"><span class="chap__n">9</span><span class="chap__name">Operations</span></h3>
+        <dl>
+          <div><dt>Decides</dt><dd>Keeping the asset running</dd></div>
+          <div><dt>Lives in today</dt><dd>CMMS / asset systems</dd></div>
+          <div><dt>Breaks when</dt><dd class="breaks">The history of how it was built is gone</dd></div>
+        </dl>
+        <p class="covnote"><b>AOS</b>covers operations. Planned.</p>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ================================ AI ================================ -->
+<section class="sec m-cut" id="ai" aria-labelledby="ai-t">
+  <div class="wrap ai__grid">
+    <div>
+      <h2 class="h2" id="ai-t">AI proposes. A named engineer decides. The record keeps both.</h2>
+      <p class="body">DiPGOS uses AI where it removes the typing, not the judgement. It reads a photographed site sheet into a proposal for a person to confirm. It answers questions over the tender, the design documents and the delivered record, and cites its sources every time. It never writes a value without a source, and it never signs anything off.</p>
+    </div>
+    <p class="ai__aside">AI can only act on ground it understands. The model of the work is that ground.</p>
+  </div>
+</section>
+
+<!-- ============================ PRINCIPLES ============================ -->
+<section class="sec" id="principles" aria-labelledby="prin-t" data-nav="principles">
+  <div class="wrap">
+    <h2 class="h2" id="prin-t">How the record stays true.</h2>
+    <ul class="prin">
+      <li><h3>Records in, state out.</h3><p>Nothing is typed as a total. Stock, hours, progress and earned value are all computed from dated records, so you can ask what any figure said on any past date.</p></li>
+      <li class="m-cut"><h3>A blank is not a pass.</h3><p>“Nothing reported” and “we looked, and there is none” are different answers, and DiPGOS keeps them apart.</p></li>
+      <li class="m-cut"><h3>Every verdict has an owner.</h3><p>A breach arrives with its margin and the name of the person who must act.</p></li>
+      <li class="m-cut"><h3>Two denominators, both named.</h3><p>Progress is shown against the fronts that have started and against the whole job. The first can read 101% while the second reads 36%, and both are true.</p></li>
+      <li class="m-cut"><h3>Paper stays paper.</h3><p>Forms are printed from the method and read back from photos. Nobody retypes a sheet.</p></li>
+      <li><h3>It sits alongside what you have.</h3><p>DiPGOS works with the contract schedule as issued and the folders your site already uses. It doesn’t ask you to throw away P6.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ COMPANY ============================ -->
+<section class="sec company" id="company" aria-labelledby="co-t" data-nav="company">
+  <div class="wrap company__grid">
+    <div>
+      <h2 class="h2" id="co-t">We lived the problem before we built the answer.</h2>
+      <p class="body">Indus is built by engineers and builders who spent their careers inside real projects, and felt the gridlock first-hand. We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      <p class="sig"><b>M. Kamran Basit</b><span class="label">Founder &amp; CEO</span></p>
+    </div>
+    <dl class="facts m-cut">
+      <div><dt>Experience</dt><dd><span class="todo">[Years in heavy civil and hydropower]</span></dd></div>
+      <div><dt>Delivered</dt><dd><span class="todo">[Projects delivered]</span></dd></div>
+      <div><dt>Offices</dt><dd><span class="todo">[Offices: Pakistan · USA]</span></dd></div>
+      <div><dt>Entities</dt><dd>Indus Technology Solutions (Pvt) Ltd<br>Indus Technologies LLC, USA</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================ CONTACT ============================ -->
+<section class="sec contact" id="contact" aria-labelledby="contact-t">
+  <div class="wrap">
+    <h2 class="contact__title" id="contact-t">Let’s shape the future of how the world gets built.</h2>
+    <p class="lede">Bring us the project you trust least. We’ll show you what its record would look like.</p>
+    <div class="mail" data-u="kamran" data-d="industechsol.com">
+      <p class="mail__addr"><span class="addr"></span></p>
+      <div class="mail__actions">
+        <button class="btn btn--ghost mail__copy" type="button">Copy</button>
+        <a class="btn btn--solid mail__send" href="#contact">Email us</a>
+      </div>
+      <p class="mail__status" role="status" aria-live="polite"></p>
+    </div>
+    <noscript><p class="lede">Write to <span class="em">kamran (at) industechsol.com</span>.</p></noscript>
+  </div>
+</section>
+
+<!-- ============================ SOURCES ============================ -->
+<section class="sources" id="sources" aria-label="Sources">
+  <div class="wrap">
+    <details id="src-box" open>
+      <summary>Sources</summary>
+      <ol class="src">
+        <li id="src-1"><span>Ansar, Flyvbjerg, Budzier &amp; Lunn (2014), <a href="https://arxiv.org/pdf/1409.0002">“Should we build more large dams?”</a>, <em>Energy Policy</em>.</span></li>
+        <li id="src-2"><span>Water Power Magazine, <a href="https://www.waterpowermagazine.com/news/audit-declares-neelum-jhelum-hydropower-project-a-failure/">“Audit declares Neelum-Jhelum hydropower project a failure”</a>.</span></li>
+        <li id="src-3"><span>PIDE Working Paper 2023:10, <a href="https://file.pide.org.pk/pdfpideresearch/wp-23-10-reforming-the-federal-public-sector-development-programme.pdf"><em>Reforming the Federal PSDP</em></a>.</span></li>
+        <li id="src-4"><span>McKinsey (2015), <a href="https://www.mckinsey.com/capabilities/operations/our-insights/the-construction-productivity-imperative"><em>The construction productivity imperative</em></a>.</span></li>
+        <li id="src-5"><span>Plummer Braeckman, Disselhoff &amp; Kirchherr (2020), <a href="https://ideas.repec.org/a/taf/cijwxx/v36y2020i5p839-854.html"><em>International Journal of Water Resources Development</em></a>.</span></li>
+        <li id="src-6"><span>AACE International 18R-97, <a href="https://web.aacei.org/docs/default-source/toc/toc_18r-97.pdf">cost estimate classification</a>.</span></li>
+        <li id="src-7"><span>Long International, <a href="https://www.long-intl.com/articles/contract-scheduling-provisions/">“Contract scheduling provisions”</a>.</span></li>
+        <li id="src-8"><span>Ballard (2000), <a href="https://lean-construction-gcs.storage.googleapis.com/wp-content/uploads/2022/09/08152942/the-last-planner-system-of-production-control-ballard2000-dissertation.pdf"><em>The Last Planner System of Production Control</em></a>.</span></li>
+        <li id="src-9"><span>ICCP, <a href="https://www.instituteccp.com/fidic-red-yellow-and-silver-books-a-brief-overview/">“FIDIC Red, Yellow and Silver Books”</a>.</span></li>
+        <li id="src-10"><span>Gather Insights, <a href="https://www.gatherinsights.com/en/earned-value/definitions/progress-measurement">progress measurement</a>.</span></li>
+        <li id="src-11"><span>Ankura, <a href="https://ankura.com/insights/construction-schedules-why-owners-should-monitor-and-care">“Construction schedules: why owners should monitor and care”</a>.</span></li>
+        <li id="src-12"><span>Quollnet, <a href="https://quollnet.com/article/work-breakdown-structure-explained">“Work breakdown structure explained”</a>.</span></li>
+        <li id="src-13"><span>JBKnowledge 2020 ConTech Report, <a href="https://www.constructiondive.com/news/construction-app-usage-increases-despite-continued-lack-of-integration/592922/">via Construction Dive</a>.</span></li>
+        <li id="src-14"><span>Dawn, <a href="https://www.dawn.com/news/2014942">Tarbela 5th extension inquiry</a>.</span></li>
+        <li id="src-15"><span>FMI &amp; Autodesk (2021), <a href="https://fmicorp.com/insights/quick-reads/harnessing-the-data-advantage-in-engineering-and-construction"><em>Harnessing the Data Advantage</em></a>.</span></li>
+        <li id="src-16"><span>FMI &amp; PlanGrid (2018), <a href="https://www.prnewswire.com/news-releases/new-research-from-plangrid-and-fmi-identifies-factors-costing-the-construction-industry-more-than-177-billion-annually-300689826.html"><em>Construction Disconnected</em></a>.</span></li>
+      </ol>
+      <p class="src__note">† Named with the client’s permission pending. The $15 trillion figure is the owner’s, from the current site, and still needs a source.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div class="foot__brandcol">
+      <a class="brand" href="#top" aria-label="Indus, back to top"><span class="wordmark" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span></a>
+      <p class="foot__motto">The project thinks; the human commands.</p>
+      <p class="foot__tag m-cut">The world’s oldest industry, reimagined from the ground up.</p>
+    </div>
+    <nav aria-label="Footer">
+      <h2>Explore</h2>
+      <ul>
+        <li><a href="#lifecycle">Lifecycle</a></li>
+        <li><a href="#p7">Construction</a></li>
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#company">Company</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h2>Contact</h2>
+      <ul>
+        <li><a href="#contact">Get in touch</a></li>
+        <li class="foot__note">Indus Technology Solutions (Pvt) Ltd</li>
+        <li class="foot__note">Indus Technologies LLC, USA</li>
+      </ul>
+    </div>
+    <div class="foot__bottom"><span>© 2026 Indus Technology Solutions.</span><span>† Named with the client’s permission pending.</span></div>
+  </div>
+</footer>
+
+<a class="mocktag" href="../../index.html" target="_top">R2 · D · The lifecycle · ← all mocks</a>
+
+<script>
+(function () {
+  /* --- contact: the address is assembled here, never written in the source */
+  var box = document.querySelector('.mail');
+  if (box) {
+    var addr = box.getAttribute('data-u') + '@' + box.getAttribute('data-d');
+    var out = box.querySelector('.addr'), send = box.querySelector('.mail__send');
+    var copy = box.querySelector('.mail__copy'), status = box.querySelector('.mail__status'), timer;
+    out.textContent = addr;
+    send.href = 'mail' + 'to:' + addr;
+    var selectAddr = function () { var r = document.createRange(); r.selectNodeContents(out); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    copy.addEventListener('click', function () {
+      var done = function (ok) {
+        copy.textContent = ok ? 'Copied' : 'Copy';
+        status.textContent = ok ? 'Address copied to your clipboard.' : 'Select the address above and copy it.';
+        clearTimeout(timer);
+        timer = setTimeout(function () { copy.textContent = 'Copy'; status.textContent = ''; }, 2400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(addr).then(function () { done(true); }, function () { selectAddr(); done(false); });
+      else { selectAddr(); done(false); }
+    });
+  }
+
+  /* --- mobile menu */
+  var nav = document.getElementById('nav'), toggle = document.getElementById('nav-toggle');
+  function setMenu(open) {
+    nav.classList.toggle('nav--open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('nav--open')); });
+  document.querySelectorAll('#nav-panel a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('nav--open')) { setMenu(false); toggle.focus(); } });
+
+  /* --- sources: folded on phones; a footnote opens them */
+  var srcBox = document.getElementById('src-box');
+  if (matchMedia('(max-width: 699.98px)').matches) srcBox.removeAttribute('open');
+  document.querySelectorAll('.fn a').forEach(function (a) { a.addEventListener('click', function () { srcBox.setAttribute('open', ''); }); });
+
+  /* --- a term in a caption lights its marker on the screenshot */
+  document.querySelectorAll('.fig').forEach(function (fig) {
+    fig.querySelectorAll('.term[data-r]').forEach(function (t) {
+      t.addEventListener('mouseenter', function () { fig.setAttribute('data-hot', t.getAttribute('data-r')); });
+      t.addEventListener('mouseleave', function () { fig.removeAttribute('data-hot'); });
+    });
+  });
+
+  /* --- the rail and the nav, both driven by where the reader is */
+  var rail = document.getElementById('rail');
+  var railItems = Array.prototype.slice.call(rail.querySelectorAll('.rail__phases li'));
+  var barItems = Array.prototype.slice.call(rail.querySelectorAll('.rail__bar i'));
+  var phases = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (n) { return document.getElementById('p' + n); });
+  var names = ['Feasibility', 'Scope', 'Front-end design', 'Tender and bid', 'Detailed engineering', 'Procurement', 'Construction', 'Commissioning and handover', 'Operations'];
+  var cov = { 4: 'CPDS', 7: 'ACCS', 9: 'AOS, planned' };
+  var lifeStart = document.getElementById('lifecycle');
+  var rcCount = document.getElementById('rc-count'), rcName = document.getElementById('rc-name'), rcCov = document.getElementById('rc-cov');
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
+  var navKeyed = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+  var lastCur = -1, ticking = false;
+
+  function update() {
+    ticking = false;
+    var vh = innerHeight, line = vh * 0.38;
+    var navH = nav.getBoundingClientRect().height;
+
+    /* each phase fills by how far the reading line has travelled through it */
+    var cur = 0;
+    phases.forEach(function (el, i) {
+      var r = el.getBoundingClientRect();
+      var f = Math.max(0, Math.min(1, (line - r.top) / r.height));
+      railItems[i].style.setProperty('--f', f.toFixed(3));
+      barItems[i].style.setProperty('--f', f.toFixed(3));
+      if (f > 0) cur = i + 1;
+    });
+    var shown = cur || 1;
+    if (shown !== lastCur) {
+      lastCur = shown;
+      railItems.forEach(function (li, i) {
+        li.classList.toggle('is-cur', i + 1 === cur);
+        var a = li.querySelector('a');
+        if (i + 1 === cur) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
+      });
+      rcCount.textContent = 'Phase ' + shown + ' of 9';
+      rcName.textContent = names[shown - 1];
+      rcCov.textContent = cov[shown] || '';
+      rcCov.classList.toggle('is-planned', shown === 9);
+    }
+
+    /* the rail shows from the lifecycle chapter to the end of operations */
+    var top = lifeStart.getBoundingClientRect().top;
+    var end = phases[8].getBoundingClientRect().bottom;
+    rail.classList.toggle('is-on', top < navH + 40 && end > navH + 60);
+
+    /* nav: the section under the reading line; hero, stakes, AI and contact clear it */
+    var key = null;
+    for (var i = 0; i < navKeyed.length; i++) {
+      var r2 = navKeyed[i].getBoundingClientRect();
+      if (r2.top <= line && r2.bottom > line) { key = navKeyed[i].getAttribute('data-nav'); break; }
+    }
+    links.forEach(function (a) {
+      if (key && a.getAttribute('data-key') === key) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  window.__railUpdate = update;
+  update();
+})();
+</script>
+</body>
+</html>

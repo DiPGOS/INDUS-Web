@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DiPGOS by Indus: the operating system for megaprojects</title>
+<meta name="description" content="Every pour checked against the method, owned by a named engineer, and counted the day it happens. DiPGOS models how a megaproject is really built.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070F1C">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&amp;family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   R2-A · "The record" — an editorial long-read.
+   Signature, spent in one place: sidenote citations in the margin,
+   and the ring of the real day grown from the DiPGOS mark.
+   ================================================================ */
+:root {
+  --page:  #070F1C;
+  --navy:  #0B182C;
+  --slate: #12233F;
+  --bone:  #FBF9F4;
+  --text:  #D3DCE6;          /* 13.9:1 on --page */
+  --steel: #9DB0C4;          /* 8.9:1 on --page, 8.3:1 on --navy */
+  --node:  #9CB9E0;          /* the mark's node colour: links, pins, diagrams */
+  --link:  #5F86C4;          /* the mark's link lines */
+  --amber: #E8A020;          /* actions only */
+  --amber-hi: #FFC24D;
+  --amber-rgb: 232, 160, 32;
+  --ok:     #22c55e;         /* verdict: satisfied */
+  --breach: #ef4444;         /* verdict: over, by a margin */
+  --rule:        rgba(157, 176, 196, .18);
+  --rule-strong: rgba(157, 176, 196, .32);
+
+  --serif: 'Gelasio', Georgia, serif;
+  --sans:  'Instrument Sans', system-ui, sans-serif;
+  --hand:  'Caveat', 'Segoe Print', cursive;
+
+  /* the one label style */
+  --label: 600 13px/1.4 var(--sans);
+
+  --gutter: clamp(20px, 5vw, 64px);
+  --max: 1312px;
+  --nav-h: 64px;
+  --rail: 9.5rem;
+  --measure: 33rem;
+  --gap: clamp(32px, 3.6vw, 56px);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--page); color: var(--text);
+  font: 400 19px/1.65 var(--serif);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+section[id] { scroll-margin-top: var(--nav-h); }
+[id^="day-"], [id^="src-"] { scroll-margin-top: calc(var(--nav-h) + 24px); }
+:focus-visible { outline: 2px solid var(--amber-hi); outline-offset: 3px; border-radius: 3px; }
+::selection { background: rgba(var(--amber-rgb), .3); color: var(--bone); }
+
+.wrap { width: min(var(--max), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.label { font: var(--label); color: var(--steel); letter-spacing: .01em; }
+.em { color: var(--bone); font-weight: 600; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.dg { font-family: var(--sans); font-size: .7em; vertical-align: .45em; color: var(--steel); text-decoration: none; margin-left: 1px; }
+
+.skip {
+  position: fixed; left: 16px; top: 12px; z-index: 100; transform: translateY(-160%);
+  background: var(--amber); color: var(--page);
+  font: 600 14px/1.2 var(--sans); padding: 12px 18px; border-radius: 999px; text-decoration: none;
+}
+.skip:focus { transform: none; }
+
+.todo { outline: 1.5px dashed var(--amber); outline-offset: 3px; border-radius: 2px; }
+.todo::after {
+  content: attr(data-todo); display: inline-block; vertical-align: .15em; margin-left: .55em;
+  font: 600 10px/1.4 var(--sans); font-style: normal; letter-spacing: .02em;
+  color: #F2D49A; border: 1px solid rgba(var(--amber-rgb), .5); padding: 0 5px; border-radius: 2px; white-space: nowrap;
+}
+
+/* --- wordmark ----------------------------------------------------- */
+.wordmark { font: 600 25px/1 var(--serif); color: var(--bone); letter-spacing: -.2px; }
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .05em; transform: translateX(-50%);
+  width: .30em; height: .30em; background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+
+/* --- buttons: the only solid amber on the page -------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 24px; border-radius: 999px;
+  font: 600 15px/1.25 var(--sans); text-decoration: none; cursor: pointer; text-align: center;
+  border: 1px solid transparent; transition: background-color .18s, border-color .18s;
+}
+.btn--solid { background: var(--amber); color: var(--page); }
+.btn--solid:hover { background: var(--amber-hi); }
+.btn--ghost { background: transparent; color: var(--bone); border-color: rgba(var(--amber-rgb), .6); }
+.btn--ghost:hover { background: rgba(var(--amber-rgb), .12); border-color: var(--amber); }
+.btn--sm { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+/* --- nav ----------------------------------------------------------- */
+.nav { position: sticky; top: 0; z-index: 50; background: var(--page); border-bottom: 1px solid var(--rule); }
+.nav__in { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; }
+.nav__panel { display: flex; align-items: center; gap: clamp(18px, 2.2vw, 34px); }
+.nav__link { position: relative; text-decoration: none; font: 500 15px/1.3 var(--sans); color: var(--steel); padding: 8px 0; }
+.nav__link:hover, .nav__link[aria-current="true"] { color: var(--bone); }
+.nav__link[aria-current="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: var(--amber); }
+.nav__toggle { display: none; }
+@media (max-width: 919.98px) {
+  .js .nav__toggle {
+    display: inline-flex; flex-direction: column; justify-content: center; gap: 5px;
+    width: 44px; height: 44px; padding: 0 11px; margin-right: -11px; background: none; border: 0; cursor: pointer;
+  }
+  .nav__toggle span { display: block; height: 2px; border-radius: 2px; background: var(--bone); transition: transform .2s, opacity .2s; }
+  .nav--open .nav__toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav--open .nav__toggle span:nth-child(2) { opacity: 0; }
+  .nav--open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .js .nav__panel {
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px var(--gutter) 28px;
+    background: var(--page);                       /* opaque */
+    border-bottom: 1px solid var(--rule-strong);
+    box-shadow: 0 30px 40px -20px rgba(0, 0, 0, .8);
+    visibility: hidden; opacity: 0; transition: opacity .18s, visibility .18s;
+  }
+  .js .nav--open .nav__panel { visibility: visible; opacity: 1; }
+  .js .nav__link { font-size: 18px; padding: 15px 0; border-bottom: 1px solid var(--rule); }
+  .js .nav__link[aria-current="true"]::after { display: none; }
+  .js .nav__link[aria-current="true"] { box-shadow: inset 3px 0 0 var(--amber); padding-left: 14px; }
+  .js .nav__cta { margin-top: 22px; min-height: 48px; }
+  html:not(.js) .nav__panel { flex-wrap: wrap; gap: 4px 16px; }
+}
+
+/* --- mock tag: absolute, under the nav, never over content -------- */
+.mocktag {
+  position: absolute; z-index: 40; top: calc(var(--nav-h) + 12px);
+  left: max(var(--gutter), (100% - var(--max)) / 2);
+  font: 500 12px/1.3 var(--sans); color: var(--steel); text-decoration: none;
+  background: var(--navy); border: 1px solid var(--rule-strong); padding: 5px 11px; border-radius: 999px;
+}
+.mocktag:hover { color: var(--bone); }
+
+/* ================================================================
+   Hero
+   ================================================================ */
+.hero { position: relative; overflow: hidden; }
+.hero::before {
+  content: ''; position: absolute; pointer-events: none;
+  width: 980px; height: 980px; right: -180px; top: 46%; transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(62, 116, 214, .11), transparent 62%);
+}
+.hero__grid {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(32px, 4vw, 64px); align-items: center;
+  padding-block: 76px 40px;
+  min-height: calc(100svh - var(--nav-h));
+}
+.kicker { font: italic 400 clamp(18px, 1.5vw, 21px)/1.45 var(--serif); color: var(--steel); }
+.hero__title {
+  margin-top: 14px;
+  font: 600 clamp(40px, 4.2vw, 62px)/1.08 var(--serif);
+  letter-spacing: -.022em; color: var(--bone); text-wrap: balance;
+}
+.hero__title span { display: block; }
+.hero__sub { margin-top: clamp(20px, 2.2vw, 28px); max-width: 26em; font-size: clamp(18px, 1.45vw, 21px); line-height: 1.55; color: var(--text); text-wrap: pretty; }
+.hero__actions { margin-top: clamp(24px, 2.6vw, 34px); display: flex; flex-wrap: wrap; gap: 12px; }
+.hero__proof {
+  margin-top: clamp(24px, 2.8vw, 36px); padding-top: 14px; border-top: 1px solid var(--rule);
+  max-width: 30em; font: 400 15px/1.5 var(--sans); color: var(--steel);
+}
+
+/* the ring of the real day (signature) */
+.ring { margin: 0; position: relative; }
+.ring__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ring__svg .track { fill: none; stroke: var(--link); stroke-opacity: .75; stroke-width: 1.5; }
+.ring__svg .ret { fill: none; stroke: var(--amber); stroke-width: 2; stroke-linecap: round; }
+.ring__svg .spoke { fill: none; stroke: var(--link); stroke-opacity: .55; stroke-width: 1.3; stroke-linecap: round; }
+.ring__svg .chev { fill: none; stroke: var(--node); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ring__svg .chev--ret { stroke: var(--amber); stroke-width: 2; }
+.ring__svg .nl { font: italic 500 14px var(--serif); fill: #F2C46A; }
+.ring__svg .st { cursor: pointer; }
+.ring__svg .st circle { fill: var(--navy); stroke: var(--node); stroke-width: 1.5; transition: fill .2s; }
+.ring__svg .st:hover circle, .ring__svg .st:focus-visible circle { fill: #1E3C6B; }
+.ring__svg .st:focus-visible { outline: none; }
+.ring__svg .st:focus-visible circle { stroke: var(--amber-hi); stroke-width: 2.5; }
+.ring__svg .st .num { font: 600 16px var(--sans); fill: var(--bone); text-anchor: middle; dominant-baseline: central; }
+.ring__svg .n { font: 600 22px var(--serif); fill: var(--bone); }
+.ring__svg .t { font: 500 14px var(--sans); fill: var(--steel); font-variant-numeric: tabular-nums; }
+.ring__svg .d { font: 400 14px var(--sans); fill: var(--steel); }
+.ring__svg .ok { fill: var(--ok); }
+.ring__svg .br { fill: #F87171; }
+.ring__svg .sm { display: none; }
+.ring__cap { margin-top: 10px; max-width: 34em; font: 400 14.5px/1.55 var(--sans); color: var(--steel); }
+.ring__cap b { font-weight: 600; color: var(--bone); }
+.ring__cap .wf { color: var(--text); white-space: nowrap; }
+
+/* the standfirst: what DiPGOS is, in one paragraph */
+.standfirst { position: relative; padding-block: 28px clamp(64px, 7vw, 100px); }
+.standfirst p {
+  max-width: 34em;
+  font: 400 clamp(20px, 1.75vw, 24px)/1.55 var(--serif); color: var(--text); text-wrap: pretty;
+  padding-top: 22px; border-top: 1px solid var(--rule-strong);
+}
+.standfirst p .last { color: var(--bone); font-weight: 600; }
+
+/* ================================================================
+   The essay: rail | measure | margin
+   ================================================================ */
+.essay {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  padding-block: clamp(64px, 8vw, 112px);
+  border-top: 1px solid var(--rule);
+}
+.essay > * { min-width: 0; }
+.rail { display: none; }
+
+@media (min-width: 800px) {
+  .essay { grid-template-columns: [text] minmax(0, var(--measure)) [margin] minmax(0, 1fr) [end]; column-gap: var(--gap); }
+  .essay > * { grid-column: text; }
+  .essay > .wide, .essay > .h2 { grid-column: text / end; }
+  .essay > .r { grid-column: text / end; display: grid; grid-template-columns: subgrid; align-items: start; }
+  .r > .notes { grid-column: 2; }
+}
+@media (min-width: 1100px) {
+  .essay { grid-template-columns: [rail] var(--rail) [text] minmax(0, var(--measure)) [margin] minmax(0, 1fr) [end]; }
+  .essay > .rail { display: block; grid-column: rail; position: absolute; left: 0; top: 0; bottom: 0; width: var(--rail); }
+  .standfirst p { margin-left: calc(var(--rail) + var(--gap)); max-width: 36em; }
+  .rail__head {
+    position: sticky; top: calc(var(--nav-h) + 28px);
+    margin-top: clamp(64px, 8vw, 112px); padding-top: 12px;
+    border-top: 1px solid var(--rule-strong);
+    font: var(--label); color: var(--bone);
+  }
+}
+
+.h2 { font: 600 clamp(31px, 3.8vw, 54px)/1.12 var(--serif); letter-spacing: -.02em; color: var(--bone); text-wrap: balance; max-width: 19em; }
+.h3 { margin-top: clamp(48px, 5vw, 72px); font: 600 clamp(23px, 2.2vw, 30px)/1.25 var(--serif); letter-spacing: -.01em; color: var(--bone); text-wrap: balance; max-width: 24em; }
+.h4 { margin-top: clamp(32px, 3.4vw, 44px); font: var(--label); color: var(--bone); font-size: 14px; }
+.lede { margin-top: clamp(20px, 2.2vw, 28px); font-size: clamp(19px, 1.5vw, 21.5px); line-height: 1.6; text-wrap: pretty; }
+.essay p.body, .r > p, .r > .main > p { text-wrap: pretty; }
+.essay > * + .r, .essay > .r + .r, .essay > .r + p, .essay > p + p { margin-top: 1.05em; }
+.essay > .h2 + .r, .essay > .h2 + p { margin-top: clamp(20px, 2.2vw, 28px); }
+.essay > .h3 + .r, .essay > .h3 + p, .essay > .h4 + .r, .essay > .h4 + p { margin-top: 14px; }
+.opening { font-size: clamp(19px, 1.5vw, 21px); }
+.small { font: 400 15.5px/1.6 var(--sans); color: var(--steel); }
+
+.pull {
+  margin-top: clamp(44px, 5vw, 72px); padding-top: 20px; position: relative;
+  font: 500 clamp(23px, 2.5vw, 34px)/1.38 var(--serif); letter-spacing: -.01em; color: var(--bone);
+  text-wrap: balance; max-width: 24em;
+}
+.pull::before { content: ''; position: absolute; top: 0; left: 0; width: 72px; height: 1px; background: var(--steel); }
+
+/* --- footnote marks and sidenotes (signature) ---------------------- */
+.fn {
+  font: 600 .64em/0 var(--sans); vertical-align: .62em; margin-left: 1px;
+  color: var(--node); text-decoration: none;
+  padding: 0 1px; border-radius: 2px;
+}
+.fn + .fn { margin-left: 3px; }
+.fn:hover { color: var(--bone); text-decoration: underline; text-underline-offset: 2px; }
+.fn[aria-expanded="true"] { color: var(--page); background: var(--node); }
+
+.notes { font: 400 13.5px/1.5 var(--sans); color: var(--steel); }
+.sn { position: relative; padding-left: 14px; border-left: 1px solid var(--link); max-width: 21rem; }
+.sn + .sn { margin-top: 12px; }
+.sn__n { font-weight: 600; color: var(--bone); text-decoration: none; margin-right: 4px; font-variant-numeric: tabular-nums; }
+.sn i { font-style: italic; }
+.sn__url { color: var(--node); text-decoration: underline; text-decoration-color: rgba(156, 185, 224, .4); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.sn__url:hover { color: var(--bone); }
+@media (min-width: 800px) {
+  .r > .notes { padding-top: .35em; }
+  .notes--below { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 12px 28px; }
+  .notes--below .sn + .sn { margin-top: 0; }
+}
+/* phones: sidenotes collapse into tap-to-reveal superscripts */
+@media (max-width: 799.98px) {
+  .js .notes .sn { display: none; }
+  .js .notes .sn.open { display: block; margin-top: 10px; animation: none; }
+  .js .notes .sn.open + .sn.open { margin-top: 8px; }
+  html:not(.js) .notes { margin-top: 12px; }
+  .fn { display: inline-block; min-width: 20px; min-height: 22px; line-height: 22px; text-align: center; vertical-align: .45em; font-size: 11.5px; border: 1px solid rgba(156, 185, 224, .45); border-radius: 4px; margin-left: 3px; padding: 0 3px; }
+}
+
+/* ================================================================
+   Chapter furniture
+   ================================================================ */
+/* stakes: the figures */
+.fig-row .main { display: grid; grid-template-columns: 7.4rem minmax(0, 1fr); column-gap: 20px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.fig-row .num { font: 600 clamp(40px, 3.6vw, 52px)/1.1 var(--serif); color: var(--bone); letter-spacing: -.02em; font-variant-numeric: lining-nums; white-space: nowrap; }
+.fig-row .num small { display: block; margin-top: 2px; font: 500 15px/1.3 var(--sans); color: var(--steel); letter-spacing: 0; }
+.fig-row .main p { font-size: 18px; line-height: 1.6; }
+.fig-row .main p.num { font: 600 clamp(40px, 3.6vw, 52px)/1.1 var(--serif); }
+.essay > .fig-row + .fig-row { margin-top: 22px; }
+.essay > .fig-row:first-of-type, .essay > .h2 + .fig-row { margin-top: clamp(28px, 3vw, 40px); }
+.counter { font: 400 15.5px/1.6 var(--sans); color: var(--steel); }
+.counter b { font-weight: 600; color: var(--text); }
+
+/* lifecycle table */
+.life { margin-top: clamp(28px, 3vw, 40px); }
+.life table { width: 100%; border-collapse: collapse; font: 400 15px/1.5 var(--sans); color: var(--text); }
+.life th { font: var(--label); color: var(--steel); text-align: left; padding: 0 16px 10px 0; border-bottom: 1px solid var(--rule-strong); vertical-align: bottom; }
+.life td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.life td:first-child { padding-left: 14px; font: 600 16.5px/1.35 var(--serif); color: var(--bone); width: 17%; }
+.life tr > *:first-child { border-left: 2px solid transparent; }
+.life th:first-child { padding-left: 14px; }
+.life td:nth-child(2) { width: 25%; }
+.life td:nth-child(3) { width: 24%; color: var(--steel); }
+.life tr.cov > td:first-child { border-left-color: var(--node); }
+.life tr.cov--plan > td:first-child { border-left: 2px dashed rgba(156, 185, 224, .55); }
+.life tr.cov--plan td:first-child .tag { color: var(--steel); border-style: dashed; }
+.tag { display: inline-block; margin-top: 6px; font: 600 12px/1.3 var(--sans); color: var(--node); border: 1px solid rgba(156, 185, 224, .55); border-radius: 3px; padding: 2px 6px; }
+.sits { margin-top: 26px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 32px; }
+.sits li { padding-left: 14px; border-left: 2px solid var(--node); font: 400 15px/1.5 var(--sans); color: var(--text); }
+.sits li.plan { border-left-style: dashed; border-left-color: rgba(156, 185, 224, .55); color: var(--steel); }
+.sits b { display: block; font: 600 17px/1.35 var(--serif); color: var(--bone); }
+
+.parties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--rule-strong); }
+.parties li { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--rule); font-size: 17.5px; line-height: 1.55; }
+.parties li:nth-child(odd) { padding-right: 22px; border-right: 1px solid var(--rule); }
+.parties li:nth-child(even) { padding-left: 22px; }
+.parties b { color: var(--bone); font-weight: 600; }
+.parties__end { margin-top: 14px; font-style: italic; color: var(--bone); }
+
+/* the stack: run-in heads */
+.runin { color: var(--bone); font-weight: 600; }
+.brk > p { padding-top: 16px; border-top: 1px solid var(--rule); }
+
+/* the model */
+.chain { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 6px; font: 600 17px/1.35 var(--serif); color: var(--bone); }
+.chain li { display: inline-flex; align-items: center; gap: 6px; }
+.chain li + li::before { content: ''; width: 16px; height: 1px; background: var(--node); margin-right: 2px; position: relative; }
+.chain li + li::after { content: none; }
+.chain .op { padding: 1px 8px; border: 1px solid rgba(156, 185, 224, .55); border-radius: 3px; }
+.defs { margin-top: 20px; }
+.defs div { padding: 11px 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); column-gap: 18px; }
+.defs dt { font: 600 17px/1.5 var(--serif); color: var(--bone); }
+.defs dd { font-size: 17px; line-height: 1.55; }
+.defs .wf { font-style: italic; }
+
+.rels { margin-top: 16px; }
+.rel { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; column-gap: 0; padding: 14px 0 12px; border-top: 1px solid var(--rule); }
+.rel .node { justify-self: start; font: 600 16px/1.3 var(--serif); color: var(--bone); padding: 6px 12px; border: 1px solid rgba(156, 185, 224, .55); border-radius: 999px; background: var(--navy); white-space: nowrap; }
+.rel .node:last-of-type { justify-self: end; }
+.rel .edge { position: relative; min-width: 12rem; text-align: center; font: italic 400 15.5px/1.3 var(--serif); color: var(--node); padding: 0 12px 10px; }
+.rel .edge::after { content: ''; position: absolute; left: 0; right: 8px; bottom: 0; height: 1px; background: var(--node); }
+.rel .edge::before { content: ''; position: absolute; right: 0; bottom: -4px; border: 4.5px solid transparent; border-left: 8px solid var(--node); border-right: 0; }
+.rel .eg { grid-column: 1 / -1; margin-top: 8px; font: 400 14.5px/1.5 var(--sans); color: var(--steel); }
+@media (min-width: 800px) { .rels { grid-template-columns: subgrid; } }
+
+.verbs { margin-top: 14px; columns: 2; column-gap: 32px; }
+.verbs li { break-inside: avoid; padding: 8px 0 8px 18px; border-top: 1px solid var(--rule); position: relative; font-size: 17.5px; line-height: 1.45; color: var(--bone); }
+.verbs li::before { content: ''; position: absolute; left: 2px; top: 1.05em; width: 7px; height: 7px; border-radius: 50%; background: var(--node); }
+.verbs li.wip { color: var(--steel); }
+.verbs li.wip::before { background: transparent; border: 1px dashed var(--node); }
+.verbs em { font: 400 13px/1.4 var(--sans); color: var(--steel); font-style: normal; }
+
+.spec { margin-top: 18px; width: 100%; border-collapse: collapse; }
+.spec caption { caption-side: top; text-align: left; padding-bottom: 10px; font: var(--label); color: var(--steel); }
+.spec th, .spec td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.spec thead th { font: var(--label); color: var(--steel); border-bottom-color: var(--rule-strong); }
+.spec tbody th { font: 600 16.5px/1.4 var(--serif); color: var(--bone); width: 36%; }
+.spec td { font: 400 15.5px/1.5 var(--sans); color: var(--text); font-variant-numeric: tabular-nums; }
+
+.shape { margin-top: 10px; }
+.gen p { font: italic 400 clamp(19px, 1.6vw, 22px)/1.5 var(--serif); color: var(--bone); padding-left: 16px; border-left: 2px solid var(--node); max-width: 20em; }
+@media (min-width: 800px) { .r > .gen { padding-top: 52px; } }
+@media (max-width: 799.98px) { .gen { margin-top: 18px; } .gen p { font-size: 18px; } }
+.verdict {
+  margin-top: 18px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  padding: 14px 18px; border: 1px solid rgba(239, 68, 68, .45); border-left: 3px solid var(--breach); border-radius: 4px;
+  background: rgba(239, 68, 68, .06); font: 400 16px/1.5 var(--sans); color: var(--text);
+}
+.verdict b { color: #FCA5A5; font-weight: 600; }
+
+/* the recreated record sheet */
+.sheetfig { margin-top: clamp(28px, 3vw, 40px); }
+.sheet {
+  background: #ECE6D8; color: #1C2330; border-radius: 2px;
+  padding: 22px clamp(16px, 2.4vw, 28px) 20px;
+  font: 400 14px/1.45 var(--sans);
+  box-shadow: 0 34px 60px -30px rgba(0, 0, 0, .85), 0 0 0 1px rgba(0, 0, 0, .3);
+  background-image: linear-gradient(transparent 0 0);
+}
+.sheet__hd { font: 500 12.5px/1.45 var(--sans); color: #424A5A; padding-bottom: 10px; border-bottom: 2px solid #1C2330; }
+.sheet__hd .dg { color: #424A5A; }
+.sheet__title { margin-top: 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font: 700 21px/1.2 var(--serif); letter-spacing: .05em; }
+.sheet__code { font: 600 14px/1.2 var(--sans); letter-spacing: .06em; border: 1.5px solid #1C2330; padding: 3px 8px; }
+.sheet__fields { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #1C2330; }
+.sheet__fields > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid #1C2330; }
+.sheet__fields > div:nth-child(2) { border-left: 0; }
+.sheet__fields > div { padding: 6px 10px 4px; border-left: 1px solid #1C2330; min-width: 0; }
+.sheet__fields > div:first-child { border-left: 0; }
+.sheet__fields span { display: block; font: 600 11px/1.35 var(--sans); color: #4A5263; }
+.hand { font: 600 24px/1.15 var(--hand); color: #1E3A8A; white-space: nowrap; }
+.sheet table { margin-top: 14px; width: 100%; border-collapse: collapse; }
+.sheet th, .sheet td { border: 1px solid #1C2330; padding: 6px 10px; text-align: left; vertical-align: middle; }
+.sheet thead th { font: 600 11.5px/1.35 var(--sans); color: #4A5263; background: rgba(28, 35, 48, .06); }
+.sheet tbody th { font: 600 14px/1.35 var(--sans); }
+.sheet td.lim { font: 500 14px/1.35 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sheet td.rec { width: 28%; padding-block: 2px; }
+.sheet__rule { margin-top: 14px; font: italic 500 15px/1.45 var(--serif); color: #1C2330; }
+.sheetcap { font: 400 14.5px/1.55 var(--sans); color: var(--steel); }
+.sheetcap b { color: var(--bone); font-weight: 600; }
+
+/* the day */
+.day { position: relative; margin-top: 8px; }
+.day > li { position: relative; display: grid; grid-template-columns: 4.4rem minmax(0, 1fr); column-gap: 18px; padding-bottom: 26px; }
+.day > li::before { content: ''; position: absolute; left: 15px; top: 66px; bottom: 2px; width: 1px; background: var(--link); opacity: .7; }
+.day > li:last-child::before { display: none; }
+.day__n { width: 31px; height: 31px; border-radius: 50%; border: 1.5px solid var(--node); background: var(--navy); display: grid; place-items: center; font: 600 14px/1 var(--sans); color: var(--bone); margin-top: 3px; }
+.day__t { display: block; margin-top: 7px; font: 500 14px/1.3 var(--sans); color: var(--steel); font-variant-numeric: tabular-nums; }
+.day__h { font: 600 22px/1.3 var(--serif); color: var(--bone); }
+.day__h + p { margin-top: 4px; font-size: 18px; }
+.day__side { grid-row: 1 / span 2; }
+.day q { font-style: italic; quotes: '“' '”' '‘' '’'; }
+.day > li:target .day__n, .day > li.lit .day__n { border-color: var(--amber-hi); box-shadow: 0 0 0 4px rgba(var(--amber-rgb), .18); }
+.checks { margin-top: 12px; border-top: 1px solid var(--rule-strong); }
+.checks li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--rule); font: 400 15.5px/1.45 var(--sans); }
+.checks .what b { color: var(--bone); font-weight: 600; }
+.v { display: inline-flex; align-items: center; gap: 7px; font: 600 14.5px/1.3 var(--sans); white-space: nowrap; }
+.v::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.v--ok { color: var(--ok); }
+.v--over { color: #F87171; }
+.r > .notes--day { align-self: stretch; }
+.contrast { position: sticky; top: calc(var(--nav-h) + 28px); padding: 18px 20px; background: var(--navy); border: 1px solid var(--rule); border-radius: 6px; max-width: 24rem; }
+.contrast .label { color: var(--bone); margin-bottom: 8px; }
+.contrast li { position: relative; padding: 7px 0 7px 18px; border-top: 1px solid var(--rule); font: 400 15px/1.5 var(--sans); color: var(--steel); }
+.contrast li::before { content: ''; position: absolute; left: 2px; top: 15px; width: 8px; height: 1px; background: var(--steel); }
+
+/* screens */
+.shot { margin-top: clamp(28px, 3vw, 40px); }
+.shot__view {
+  --x: 0; --y: 0; --w: 1912; --h: 935; --iw: 1912; --ih: 935;
+  position: relative; overflow: hidden; border-radius: 8px; border: 1px solid var(--rule-strong); background: #000;
+  aspect-ratio: var(--w) / var(--h); box-shadow: 0 40px 90px -50px rgba(0, 0, 0, .9);
+}
+.shot__view > img { position: absolute; max-width: none; height: auto; width: calc(var(--iw) / var(--w) * 100%); left: calc(var(--x) / var(--w) * -100%); top: calc(var(--y) / var(--h) * -100%); }
+.region, .pin, .mask { position: absolute; }
+.region {
+  left: calc((var(--rx) - var(--x)) / var(--w) * 100%); top: calc((var(--ry) - var(--y)) / var(--h) * 100%);
+  width: calc(var(--rw) / var(--w) * 100%); height: calc(var(--rh) / var(--h) * 100%);
+  border: 1px dashed rgba(187, 213, 255, .5); border-radius: 6px; pointer-events: none; transition: border-color .2s, background-color .2s;
+}
+[data-hot] .region.hot { border: 1.5px solid var(--node); background: rgba(156, 185, 224, .1); }
+.pin {
+  left: calc((var(--px) - var(--x)) / var(--w) * 100%); top: calc((var(--py) - var(--y)) / var(--h) * 100%);
+  transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 7px; padding: 3px 10px 3px 6px; border-radius: 999px;
+  background: rgba(7, 15, 28, .95); border: 1px solid var(--node);
+  font: 600 13px/1.35 var(--sans); color: var(--bone); white-space: nowrap; box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
+}
+.pin--r { transform: translate(-100%, -50%); }
+.pin i, .term i { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; background: radial-gradient(circle at 50% 40%, #fff, #EAF1FB 40%, #9CB9E0); }
+.mask {
+  left: calc((var(--mx) - var(--x)) / var(--w) * 100%); top: calc((var(--my) - var(--y)) / var(--h) * 100%);
+  width: calc(var(--mw) / var(--w) * 100%); height: calc(var(--mh) / var(--h) * 100%);
+  background: #0f1e35; border: 1px dashed rgba(157, 176, 196, .4); border-radius: 4px;
+  display: grid; place-items: center; font: italic 400 12px/1.3 var(--sans); color: var(--steel); text-align: center; padding: 4px;
+}
+.shot__cap { margin-top: 12px; max-width: 44em; font: 400 14.5px/1.55 var(--sans); color: var(--steel); }
+.shot__cap b { font-weight: 600; color: var(--bone); }
+.prov { display: block; margin-top: 2px; font: italic 400 14px/1.5 var(--serif); color: var(--steel); }
+.term { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--bone); border-bottom: 1px dashed rgba(187, 213, 255, .5); line-height: 1.3; cursor: default; }
+.term i { width: 8px; height: 8px; }
+.trio { margin-top: clamp(22px, 2.6vw, 32px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 44px); }
+.trio > div { border-top: 1px solid var(--rule-strong); padding-top: 14px; font-size: 17px; line-height: 1.55; }
+
+/* the cc figure: two views. Desktop shows the whole screen; phones get art-directed crops */
+.cc .shot__view { --w: 1912; --h: 935; }
+.cc .r-what  { --rx: 65;   --ry: 68; --rw: 277;  --rh: 855; }
+.cc .r-where { --rx: 352;  --ry: 68; --rw: 1216; --rh: 855; }
+.cc .r-how   { --rx: 1577; --ry: 68; --rw: 327;  --rh: 855; }
+.cc .p-what  { --px: 170;  --py: 96; }
+.cc .p-where { --px: 1147; --py: 126; }
+.cc .p-how   { --px: 1694; --py: 90; }
+.cc .mask { --mx: 150; --my: 13; --mw: 190; --mh: 29; background: #080808; font-size: 10px; padding: 0; border-color: rgba(157, 176, 196, .3); }
+.cc-how { display: none; }
+
+.am .shot__view { --x: 92; --y: 80; --w: 1306; --h: 320; --iw: 1440; --ih: 900; }
+.am .r-cat  { --rx: 108;  --ry: 218; --rw: 1274; --rh: 142; }
+.am .r-live { --rx: 1236; --ry: 185; --rw: 148;  --rh: 22; }
+.am .p-cat  { --px: 430;  --py: 196; }
+.am .p-live { --px: 1226; --py: 196; }
+
+.sr .shot__view { --x: 80; --y: 60; --w: 1816; --h: 430; --iw: 1920; --ih: 935; }
+.sr .r-files { --rx: 212; --ry: 284; --rw: 482; --rh: 128; }
+.sr .r-eval  { --rx: 1776; --ry: 288; --rw: 92; --rh: 180; }
+.sr .p-files { --px: 712; --py: 348; }
+.sr .p-eval  { --px: 1868; --py: 262; }
+.sr .mask    { --mx: 1524; --my: 226; --mw: 168; --mh: 244; }
+
+.ev-row { margin-top: clamp(28px, 3vw, 40px); }
+.ev-row .shot { margin-top: 0; }
+@media (min-width: 800px) { .ev-row .notes { padding-top: 0; align-self: end; } }
+.ev .shot__view { --x: 680; --y: 297; --w: 560; --h: 341; --iw: 1920; --ih: 935; }
+.ev .r-clause { --rx: 694; --ry: 536; --rw: 440; --rh: 24; }
+.ev .p-clause { --px: 706; --py: 580; }
+
+/* AI */
+.ai-aside { margin-top: clamp(40px, 4.4vw, 60px); }
+
+/* principles */
+.princ { margin-top: clamp(26px, 3vw, 38px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(28px, 3.4vw, 52px); }
+.princ li { padding: 18px 0 22px; border-top: 1px solid var(--rule-strong); font-size: 17.5px; line-height: 1.6; }
+.princ h3 { font: 600 20px/1.3 var(--serif); color: var(--bone); margin-bottom: 6px; }
+.princ .two { display: inline-flex; gap: 14px; margin-top: 10px; font: 600 14px/1.4 var(--sans); color: var(--text); flex-wrap: wrap; }
+.princ .two span { padding: 3px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; font-variant-numeric: tabular-nums; }
+
+/* company */
+.sec--company { background: var(--navy); }
+.sec--company .essay { border-top: 0; }
+.sec--company .h2 { font-size: clamp(29px, 3.3vw, 46px); }
+.sig { margin-top: clamp(26px, 3vw, 36px); display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; }
+.sig::before { content: ''; width: 40px; height: 1px; background: var(--steel); align-self: center; }
+.sig__name { font: italic 500 clamp(21px, 2vw, 25px)/1.35 var(--serif); color: var(--bone); }
+.sig__role { font: var(--label); color: var(--steel); }
+.facts .label { color: var(--bone); padding-bottom: 8px; border-bottom: 1px solid var(--rule-strong); }
+.facts dl div { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.facts dt { font: var(--label); color: var(--steel); }
+.facts dd { margin-top: 2px; font: 400 16px/1.5 var(--serif); color: var(--bone); }
+@media (min-width: 800px) { .co .facts { grid-column: margin; grid-row: 1 / span 4; align-self: start; padding-top: 10px; } .essay.co > .h2 { grid-column: text; } }
+
+/* contact */
+.sec--contact { position: relative; overflow: hidden; }
+.sec--contact .essay { border-top: 0; padding-block: clamp(84px, 10vw, 150px) clamp(72px, 8vw, 116px); }
+.contact__ring { position: absolute; pointer-events: none; right: max(-170px, calc((100vw - var(--max)) / 2 - 230px)); top: 50%; width: 560px; height: 467px; transform: translateY(-40%); opacity: .9; }
+.contact__title { font: 600 clamp(36px, 5vw, 74px)/1.08 var(--serif); letter-spacing: -.024em; color: var(--bone); text-wrap: balance; max-width: 13em; }
+.contact__sub { margin-top: clamp(18px, 2vw, 26px); font-size: clamp(19px, 1.5vw, 22px); max-width: 28em; }
+.mail { margin-top: clamp(30px, 3.4vw, 44px); }
+.mail__addr { font: 500 clamp(22px, 2.5vw, 32px)/1.35 var(--serif); color: var(--bone); user-select: all; -webkit-user-select: all; overflow-wrap: anywhere; }
+.mail__actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; }
+.mail__status { margin-top: 10px; min-height: 1.5em; font: 400 14px/1.5 var(--sans); color: var(--steel); }
+.mail__fallback { margin-top: 16px; }
+html:not(.js) .mail { display: none; }
+
+/* sources */
+.sources .essay { padding-block: clamp(48px, 6vw, 80px); }
+.srcs summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 600 clamp(22px, 2vw, 28px)/1.3 var(--serif); color: var(--bone); }
+.srcs summary::-webkit-details-marker { display: none; }
+.srcs summary::after { content: ''; width: 9px; height: 9px; border-right: 1.5px solid var(--steel); border-bottom: 1.5px solid var(--steel); transform: rotate(45deg) translateY(-3px); transition: transform .2s; }
+.srcs[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+.srcs ol { margin-top: 16px; counter-reset: none; }
+.srcs li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); padding: 9px 0; border-top: 1px solid var(--rule); font: 400 14.5px/1.5 var(--sans); color: var(--text); }
+@media (min-width: 1100px) { .srcs ol { columns: 2; column-gap: 48px; } .srcs li { break-inside: avoid; } }
+.srcs li:target { background: rgba(156, 185, 224, .08); }
+.srcs li > span:first-child { font-weight: 600; color: var(--bone); font-variant-numeric: tabular-nums; }
+.srcs a { color: var(--node); overflow-wrap: anywhere; text-underline-offset: 3px; text-decoration-color: rgba(156, 185, 224, .4); }
+.srcs a:hover { color: var(--bone); }
+.dagger-note { margin-top: 18px; font: italic 400 16px/1.5 var(--serif); color: var(--steel); }
+
+/* footer */
+.foot__grid { border-top: 1px solid var(--rule); padding-block: clamp(40px, 5vw, 56px) 44px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr); gap: 28px 32px; }
+.foot__motto { margin-top: 14px; font: italic 400 17px/1.5 var(--serif); color: var(--bone); }
+.foot__tag { margin-top: 4px; font: italic 400 16px/1.5 var(--serif); color: var(--steel); }
+.foot h2 { font: var(--label); color: var(--bone); margin-bottom: 10px; }
+.foot a:not(.brand) { font: 400 15px/1.5 var(--sans); color: var(--steel); text-decoration: none; display: inline-block; padding: 3px 0; }
+.foot a:not(.brand):hover { color: var(--bone); text-decoration: underline; text-underline-offset: 4px; }
+.foot__note { font: 400 14px/1.5 var(--sans); color: var(--steel); }
+.foot__bottom { grid-column: 1 / -1; padding-top: 18px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font: 400 13px/1.5 var(--sans); color: var(--steel); }
+
+/* ================================================================
+   Responsive
+   ================================================================ */
+@media (min-width: 1280px) {
+  .ring { margin-right: -24px; }
+}
+@media (max-width: 1099.98px) {
+  .hero__grid { grid-template-columns: minmax(0, 1fr); min-height: 0; align-items: start; padding-top: 72px; }
+  .hero__copy { max-width: 40em; }
+  .ring { margin-top: 44px; max-width: 700px; }
+  .hero::before { right: auto; left: 50%; top: 52%; width: 720px; height: 720px; transform: translate(-50%, -50%); }
+  .cc .pin { font-size: 11.5px; padding: 2px 8px 2px 5px; gap: 5px; box-shadow: none; }
+  .cc .pin i { width: 8px; height: 8px; }
+  .ev { max-width: 560px; }
+}
+@media (min-width: 800px) and (max-width: 1099.98px) {
+  :root { --measure: 29rem; }
+  body { font-size: 18px; }
+  .sits { grid-template-columns: 1fr; }
+  .trio { grid-template-columns: 1fr; }
+  .trio > div { max-width: 36em; }
+  .rel .edge { min-width: 9rem; }
+}
+@media (max-width: 919.98px) {
+  .foot__grid { grid-template-columns: 1fr 1fr; }
+  .foot__brandcol { grid-column: 1 / -1; }
+}
+@media (max-width: 799.98px) {
+  .r > .notes:empty { display: none; }
+  .fig-row .main { grid-template-columns: 1fr; row-gap: 2px; }
+  .sits { grid-template-columns: 1fr; gap: 14px; }
+  .trio { grid-template-columns: 1fr; gap: 18px; }
+  .princ { grid-template-columns: 1fr; }
+  .contrast { position: static; margin-top: 18px; max-width: none; }
+  .co .facts { margin-top: 32px; }
+
+  /* lifecycle: phones keep the phase and where it breaks */
+  .life thead { display: none; }
+  .life table, .life tbody, .life tr, .life td { display: block; width: auto !important; }
+  .life tr { padding: 10px 0 10px 12px; border-bottom: 1px solid var(--rule); border-left: 2px solid transparent; }
+  .life tr.cov { border-left-color: var(--node); }
+  .life tr.cov--plan { border-left: 2px dashed rgba(156, 185, 224, .55); }
+  .life td { padding: 0; border: 0 !important; }
+  .life td:first-child { padding-left: 0; }
+  .life td:nth-child(2), .life td:nth-child(3) { display: none; }
+  .life td:nth-child(4) { margin-top: 3px; font-size: 15px; }
+  .life td:nth-child(4)::before { content: 'Breaks when: '; font-weight: 600; color: var(--steel); }
+  .life .tag { margin: 0 0 0 8px; vertical-align: .1em; }
+}
+@media (max-width: 699.98px) {
+  body { font-size: 17px; }
+  .mocktag { font-size: 11.5px; padding: 4px 9px; }
+  .hero__grid { padding-top: 58px; padding-bottom: 24px; }
+  .kicker { font-size: 17.5px; }
+  .hero__title { font-size: clamp(34px, 9.4vw, 44px); line-height: 1.1; margin-top: 10px; }
+  .hero__sub { font-size: 18px; }
+  .hero__actions .btn { flex: 1 1 auto; padding: 0 16px; }
+  .hero__proof { font-size: 14px; }
+  .ring { margin-top: 30px; }
+  .ring__svg { width: calc(100% + 12px); margin-inline: -6px; max-width: none; }
+  .ring__svg .lg { display: none; }
+  .ring__svg .sm { display: inline; }
+  .ring__svg .n { font-size: 31px; }
+  .ring__svg .t { font-size: 21px; }
+  .ring__svg .st .num { font-size: 21px; }
+  .ring__svg .st circle { r: 22; }
+  .ring__svg .nl { font-size: 21px; }
+  .standfirst { padding-bottom: 48px; }
+  .essay { padding-block: 52px; }
+  .sec--contact .essay { padding-block: 64px 56px; }
+  .foot__grid { padding-block: 36px 28px; gap: 20px; }
+  .standfirst p { font-size: 19px; padding-top: 18px; }
+  .h3 { margin-top: 40px; }
+  .pull { margin-top: 36px; font-size: 21.5px; }
+  .lede { font-size: 18px; }
+  .fig-row .main p.num { font-size: 38px; }
+  .fig-row .main p { font-size: 17px; }
+  .fig-row .num small { display: inline; margin-left: 6px; }
+  .parties { grid-template-columns: 1fr; }
+  .parties li, .parties li:nth-child(odd), .parties li:nth-child(even) { padding: 9px 0; border-right: 0; font-size: 16.5px; }
+  .defs div { grid-template-columns: 1fr; }
+  .rel { grid-template-columns: auto minmax(0, 1fr); row-gap: 8px; }
+  .rel .node { font-size: 15px; padding: 4px 10px; }
+  .rel .node:last-of-type { grid-column: 1 / -1; justify-self: start; }
+  .rel .edge { min-width: 0; text-align: left; padding: 0 16px 8px 12px; font-size: 15px; }
+  .rel .eg { margin-top: 2px; }
+  .verbs { columns: 1; }
+  .sheet { padding: 16px 14px; }
+  .sheet__hd { font-size: 11.5px; }
+  .sheet__title { font-size: 18px; }
+  .sheet th, .sheet td { padding: 5px 7px; }
+  .sheet tbody th, .sheet td.lim { font-size: 13px; }
+  .hand { font-size: 22px; }
+  .day > li { grid-template-columns: 3.2rem minmax(0, 1fr); column-gap: 12px; }
+  .day__h { font-size: 20px; }
+  .day__h + p { font-size: 17px; }
+  .checks li { grid-template-columns: 1fr; font-size: 15px; }
+  .v { margin-top: 2px; }
+
+  /* the command centre: art-directed crops, legible at phone width */
+  .cc .shot__view { --x: 60; --y: 66; --w: 700; --h: 600; }
+  .cc .p-where { --px: 420; --py: 96; }
+  .cc .pin, .cc .pin i { font-size: 13px; }
+  .cc-how { display: block; margin-top: 18px; }
+  .cc .shot__view.cc-how { --x: 1560; --y: 64; --w: 350; --h: 340; }
+  .cc-how .pin { --px: 1596; --py: 388; }
+  .am .shot__view { --x: 316; --y: 212; --w: 644; --h: 162; }
+  .am .p-cat { --px: 334; --py: 350; }
+  .am .p-live, .am .r-live { display: none; }
+  .sr .shot__view { --x: 96; --y: 170; --w: 620; --h: 320; }
+  .sr .p-files { --px: 224; --py: 268; }
+  .sr .p-eval, .sr .r-eval, .sr .mask { display: none; }
+  .pin { font-size: 12.5px; }
+
+  .contact__ring { display: none; }
+  .mail__actions .btn { flex: 1 1 auto; }
+  .foot__grid { grid-template-columns: 1fr; }
+
+  /* phone cuts (keeps the page near 13 screens) */
+  .ph-cut { display: none !important; }
+}
+
+/* ================================================================
+   Motion: one orchestrated moment. The ring grows out of the mark,
+   the six stations arrive in order, and a single light walks the
+   day: Paper to Counted, and round again for the next layer.
+   ================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  html.js .ring__svg .track { stroke-dasharray: 1005.3; animation: draw 1.6s var(--ease) .15s both; }
+  html.js .ring__svg .ret { stroke-dasharray: 168; animation: draw2 .9s var(--ease) 1.45s both; }
+  html.js .ring__svg .hub { transform-box: fill-box; transform-origin: center; animation: hubIn 1s var(--ease) both; }
+  html.js .ring__svg .spoke { stroke-dasharray: 100; animation: spoke .8s var(--ease) both; }
+  html.js .ring__svg .spoke:nth-of-type(1) { animation-delay: .35s; }
+  html.js .ring__svg .spoke:nth-of-type(2) { animation-delay: .45s; }
+  html.js .ring__svg .spoke:nth-of-type(3) { animation-delay: .55s; }
+  html.js .ring__svg .spoke:nth-of-type(4) { animation-delay: .65s; }
+  html.js .ring__svg .spoke:nth-of-type(5) { animation-delay: .75s; }
+  html.js .ring__svg .spoke:nth-of-type(6) { animation-delay: .85s; }
+  html.js .ring__svg .st { animation: fade .6s ease both; }
+  html.js .ring__svg .st1 { animation-delay: .7s; }
+  html.js .ring__svg .st2 { animation-delay: .82s; }
+  html.js .ring__svg .st3 { animation-delay: .94s; }
+  html.js .ring__svg .st4 { animation-delay: 1.06s; }
+  html.js .ring__svg .st5 { animation-delay: 1.18s; }
+  html.js .ring__svg .st6 { animation-delay: 1.3s; }
+  html.js .ring__svg .chevs, html.js .ring__svg .nl { animation: fade .6s ease 1.6s both; }
+  html.js .ring__svg .orbit { transform-box: view-box; transform-origin: 300px 250px; animation: fade .6s ease 1.9s both, orbit 15s linear 2.4s infinite; }
+  html.js .ring__svg .st circle { animation: lit 15s linear infinite; }
+  html.js .ring__svg .st1 circle { animation-delay: 2.3s; }
+  html.js .ring__svg .st2 circle { animation-delay: 4.8s; }
+  html.js .ring__svg .st3 circle { animation-delay: 7.3s; }
+  html.js .ring__svg .st4 circle { animation-delay: 9.8s; }
+  html.js .ring__svg .st5 circle { animation-delay: 12.3s; }
+  html.js .ring__svg .st6 circle { animation-delay: 14.8s; }
+  html.js .ring.is-paused .orbit, html.js .ring.is-paused .st circle { animation-play-state: paused; }
+  .btn:active { translate: 0 1px; }
+}
+@keyframes draw  { from { stroke-dashoffset: 1005.3; } to { stroke-dashoffset: 0; } }
+@keyframes draw2 { from { stroke-dashoffset: 168; } to { stroke-dashoffset: 0; } }
+@keyframes spoke { from { stroke-dashoffset: 100; opacity: 0; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes hubIn { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
+@keyframes fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes lit {
+  0%   { fill: var(--navy); }
+  3%   { fill: #2B5494; }
+  15%  { fill: var(--navy); }
+  100% { fill: var(--navy); }
+}
+</style>
+<script>document.documentElement.className = 'js';</script>
+</head>
+<body>
+
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__in">
+    <a class="brand" href="#top" aria-label="Indus, home">
+      <span class="wordmark" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span>
+    </a>
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+    <nav class="nav__panel" id="nav-panel" aria-label="Main">
+      <a class="nav__link" href="#stakes" data-nav="problem">The problem</a>
+      <a class="nav__link" href="#model" data-nav="model">The model</a>
+      <a class="nav__link" href="#day" data-nav="day">One day</a>
+      <a class="nav__link" href="#screens" data-nav="system">The system</a>
+      <a class="nav__link" href="#company" data-nav="company">Company</a>
+      <a class="btn btn--ghost btn--sm nav__cta" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<a class="mocktag" href="index.html">R2 · A · The record · ← all mocks</a>
+
+<main id="content" tabindex="-1">
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <p class="kicker">The world needs a new way to build.</p>
+      <h1 class="hero__title" id="hero-title"><span>The world’s oldest industry has never had an operating system.</span> <span>Now it does.</span></h1>
+      <p class="hero__sub">Every pour checked against the method, owned by a named engineer, and counted the day it happens.</p>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="#day">See a day on a work front</a>
+        <a class="btn btn--ghost" href="#contact">Get in touch</a>
+      </div>
+      <p class="hero__proof">Running on an RCC dam: Stage 1, Blocks 12–24, EL 898–990 m.<a class="dg" href="#dagger" aria-label="Name pending client permission">†</a></p>
+    </div>
+
+    <figure class="ring" id="ring" aria-labelledby="ring-cap">
+      <svg class="ring__svg" viewBox="0 0 600 500" role="group" aria-label="The six steps of one day on a work front, arranged as a ring around the DiPGOS mark">
+        <defs>
+          <linearGradient id="tail" gradientUnits="userSpaceOnUse" x1="220" y1="111.4" x2="300" y2="90">
+            <stop offset="0" stop-color="#E8A020" stop-opacity="0"/>
+            <stop offset=".6" stop-color="#E8A020" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#FFC24D"/>
+          </linearGradient>
+          <radialGradient id="hubglow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#E8A020" stop-opacity=".16"/>
+            <stop offset="1" stop-color="#E8A020" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="dotglow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#FFC24D" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#FFC24D" stop-opacity="0"/>
+          </radialGradient>
+          <path id="nl-path" d="M152.3 136.9 A186 186 0 0 1 283.8 64.7"/>
+        </defs>
+
+        <circle cx="300" cy="250" r="130" fill="url(#hubglow)"/>
+
+        <!-- spokes: the mark's own links, grown out to the six stations -->
+        <g>
+          <path class="spoke" d="M300 190 Q313.9 151 300 108"/>
+          <path class="spoke" d="M352 220 Q392.7 212.5 423 179"/>
+          <path class="spoke" d="M352 280 Q378.8 311.6 423 321"/>
+          <path class="spoke" d="M300 310 Q286.1 349 300 392"/>
+          <path class="spoke" d="M248 280 Q207.3 287.5 177 321"/>
+          <path class="spoke" d="M248 220 Q221.2 188.4 177 179"/>
+        </g>
+
+        <circle class="track" cx="300" cy="250" r="160" transform="rotate(-90 300 250)"/>
+        <!-- Counted returns to Paper: the next layer -->
+        <path class="ret" d="M161.44 170 A160 160 0 0 1 300 90"/>
+        <text class="nl" aria-hidden="true"><textPath href="#nl-path" startOffset="50%" text-anchor="middle">next layer</textPath></text>
+
+        <g class="chevs" aria-hidden="true">
+          <path class="chev" d="M-4 -5 L3 0 L-4 5" transform="translate(380 111.4) rotate(30)"/>
+          <path class="chev" d="M-4 -5 L3 0 L-4 5" transform="translate(460 250) rotate(90)"/>
+          <path class="chev" d="M-4 -5 L3 0 L-4 5" transform="translate(380 388.6) rotate(150)"/>
+          <path class="chev" d="M-4 -5 L3 0 L-4 5" transform="translate(220 388.6) rotate(210)"/>
+          <path class="chev" d="M-4 -5 L3 0 L-4 5" transform="translate(140 250) rotate(270)"/>
+          <path class="chev chev--ret" d="M-4 -5 L3 0 L-4 5" transform="translate(220 111.4) rotate(330)"/>
+        </g>
+
+        <g class="orbit" aria-hidden="true">
+          <path d="M220 111.4 A160 160 0 0 1 300 90" fill="none" stroke="url(#tail)" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="300" cy="90" r="13" fill="url(#dotglow)"/>
+          <circle cx="300" cy="90" r="4.2" fill="#FFC24D"/>
+        </g>
+
+        <image class="hub" href="../../assets/dipgos-mark-light.svg" x="222" y="172" width="156" height="156"/>
+
+        <!-- the six stations; each opens its step in the day -->
+        <a class="st st1" href="#day-1" aria-label="Step 1, 06:40: Paper">
+          <g transform="translate(300 90)"><circle r="20"/><text class="num">1</text></g>
+          <g class="lg" text-anchor="middle"><text class="n" x="300" y="21">Paper</text><text class="t" x="300" y="41">06:40</text><text class="d" x="300" y="60">RCC-PL sheet</text></g>
+          <g class="sm" text-anchor="middle"><text class="n" x="300" y="28">Paper</text><text class="t" x="300" y="54">06:40</text></g>
+        </a>
+        <a class="st st2" href="#day-2" aria-label="Step 2, 07:05: Read">
+          <g transform="translate(438.56 170)"><circle r="20"/><text class="num">2</text></g>
+          <g class="lg"><text class="n" x="468" y="166">Read</text><text class="t" x="468" y="186">07:05</text><text class="d" x="468" y="205">matched to its front</text></g>
+          <g class="sm"><text class="n" x="468" y="168">Read</text><text class="t" x="468" y="193">07:05</text></g>
+        </a>
+        <a class="st st3" href="#day-3" aria-label="Step 3, 07:06: Checked. One check satisfied, three over.">
+          <g transform="translate(438.56 330)"><circle r="20"/><text class="num">3</text></g>
+          <g class="lg"><text class="n" x="468" y="326">Checked</text><text class="t" x="468" y="346">07:06</text><text class="d" x="468" y="365"><tspan class="ok">1 satisfied</tspan>, <tspan class="br">3 over</tspan></text></g>
+          <g class="sm"><text class="n" x="468" y="328">Checked</text><text class="t" x="468" y="353">07:06</text></g>
+        </a>
+        <a class="st st4" href="#day-4" aria-label="Step 4, 07:06: Owned. Three NCRs raised.">
+          <g transform="translate(300 410)"><circle r="20"/><text class="num">4</text></g>
+          <g class="lg" text-anchor="middle"><text class="n" x="300" y="455">Owned</text><text class="t" x="300" y="475">07:06</text><text class="d" x="300" y="494">3 NCRs raised</text></g>
+          <g class="sm" text-anchor="middle"><text class="n" x="300" y="466">Owned</text><text class="t" x="300" y="492">07:06</text></g>
+        </a>
+        <a class="st st5" href="#day-5" aria-label="Step 5, 11:30: Decided">
+          <g transform="translate(161.44 330)"><circle r="20"/><text class="num">5</text></g>
+          <g class="lg" text-anchor="end"><text class="n" x="132" y="326">Decided</text><text class="t" x="132" y="346">11:30</text><text class="d" x="132" y="365">with a reason</text></g>
+          <g class="sm" text-anchor="end"><text class="n" x="132" y="328">Decided</text><text class="t" x="132" y="353">11:30</text></g>
+        </a>
+        <a class="st st6" href="#day-6" aria-label="Step 6, 18:00: Counted. 820 cubic metres.">
+          <g transform="translate(161.44 170)"><circle r="20"/><text class="num">6</text></g>
+          <g class="lg" text-anchor="end"><text class="n" x="132" y="166">Counted</text><text class="t" x="132" y="186">18:00</text><text class="d" x="132" y="205">820 m³</text></g>
+          <g class="sm" text-anchor="end"><text class="n" x="132" y="168">Counted</text><text class="t" x="132" y="193">18:00</text></g>
+        </a>
+      </svg>
+      <figcaption class="ring__cap" id="ring-cap"><b>One layer, one day.</b> Place &amp; spread RCC on <span class="wf">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</span>. Counted returns to Paper for the next layer. Each step opens below.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap standfirst">
+    <p>DiPGOS is the project operating system for engineering and construction megaprojects. It models the project the way it is actually built: every scope, work front, operation, crew, machine and material, and the method that governs them. Each day’s work is then checked, owned and counted the day it happens. <span class="last">People decide. The system keeps the record.</span></p>
+  </div>
+</section>
+
+<!-- ============================ THE STAKES ============================ -->
+<section class="sec" id="stakes" data-nav="problem" aria-labelledby="stakes-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">The stakes</p></div>
+
+    <p class="opening">Roads, dams, cities, power plants: every physical thing around us was delivered by engineering and construction. It is the largest industry on earth, at <span class="todo" data-todo="source needed">$15 trillion a year</span>. Its greatest work is still ahead: the build now coming is the largest in the history of human civilisation.</p>
+
+    <h2 class="h2" id="stakes-title" style="margin-top:clamp(40px,4.4vw,60px)">And the largest things we build run late as a rule.</h2>
+
+    <div class="r fig-row">
+      <div class="main"><p class="num">96%</p><p>The average cost overrun across 245 large dams in 65 countries. Three in four ran over budget; eight in ten ran late, by 2.3 years on average.<a class="fn" href="#src-1" data-n="1" aria-label="Source 1">1</a></p></div>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="1"><a class="sn__n" href="#src-1">1</a>Ansar, Flyvbjerg, Budzier &amp; Lunn (2014), “Should we build more large dams?”, <i>Energy Policy</i>. <a class="sn__url" href="https://arxiv.org/pdf/1409.0002" rel="noopener">arxiv.org</a></p></aside>
+    </div>
+    <div class="r fig-row">
+      <div class="main"><p class="num">16 <small>years</small></p><p>How long Neelum-Jhelum took against a planned 8. Its cost went from Rs 84.5 bn to Rs 423 bn.<a class="fn" href="#src-2" data-n="2" aria-label="Source 2">2</a></p></div>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="2"><a class="sn__n" href="#src-2">2</a>Water Power Magazine, “Audit declares Neelum-Jhelum hydropower project a failure”. <a class="sn__url" href="https://www.waterpowermagazine.com/news/audit-declares-neelum-jhelum-hydropower-project-a-failure/" rel="noopener">waterpowermagazine.com</a></p></aside>
+    </div>
+    <div class="r fig-row">
+      <div class="main"><p class="num">59%</p><p>The share of Pakistan’s 931 ongoing federal development projects that were running late.<a class="fn" href="#src-3" data-n="3" aria-label="Source 3">3</a></p></div>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="3"><a class="sn__n" href="#src-3">3</a>PIDE Working Paper 2023:10, <i>Reforming the Federal PSDP</i>. <a class="sn__url" href="https://file.pide.org.pk/pdfpideresearch/wp-23-10-reforming-the-federal-public-sector-development-programme.pdf" rel="noopener">pide.org.pk</a></p></aside>
+    </div>
+    <div class="r fig-row ph-cut">
+      <div class="main"><p class="num">98%</p><p>The share of megaprojects that overrun their budget by more than 30%. 77% finish at least 40% late.<a class="fn" href="#src-4" data-n="4" aria-label="Source 4">4</a></p></div>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="4"><a class="sn__n" href="#src-4">4</a>McKinsey (2015), <i>The construction productivity imperative</i>. <a class="sn__url" href="https://www.mckinsey.com/capabilities/operations/our-insights/the-construction-productivity-imperative" rel="noopener">mckinsey.com</a></p></aside>
+    </div>
+
+    <p class="pull wide">None of this comes from a shortage of engineering talent. It comes from not having a shared, current and trusted account of the work: what was done, where, by whom, to what standard, and who approved it.</p>
+
+    <div class="r ph-cut" style="margin-top:28px">
+      <p class="counter">Dams completed after 2000 have overrun less than earlier ones, at 33% on cost and 18% on schedule on average.<a class="fn" href="#src-5" data-n="5" aria-label="Source 5">5</a> The trend is better, but the problem remains.</p>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="5"><a class="sn__n" href="#src-5">5</a>Plummer Braeckman, Disselhoff &amp; Kirchherr (2020), <i>International Journal of Water Resources Development</i>. <a class="sn__url" href="https://ideas.repec.org/a/taf/cijwxx/v36y2020i5p839-854.html" rel="noopener">ideas.repec.org</a></p></aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW A PROJECT RUNS ============================ -->
+<section class="sec ph-cut" id="lifecycle" data-nav="problem" aria-labelledby="life-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">How a project runs</p></div>
+
+    <h2 class="h2" id="life-title">A megaproject passes through seven hands before it produces a single unit of power.</h2>
+    <p class="lede">Each phase makes its decisions in its own tools, then hands the next phase a pile of documents. The model of the project gets rebuilt at every handover.</p>
+
+    <figure class="wide life ph-cut">
+      <table>
+        <caption class="sr-only">The phases of a capital project: what each decides, where it lives today, and where it breaks. DiPGOS coverage is marked.</caption>
+        <thead><tr><th scope="col">Phase</th><th scope="col">Decides</th><th scope="col">Lives in today</th><th scope="col">Breaks when</th></tr></thead>
+        <tbody>
+          <tr><td>Feasibility (FEL 1)</td><td>Is there a project worth doing?</td><td>Spreadsheets, studies</td><td>Estimates carry a −50%/+100% range.<a class="fn" href="#src-6" data-n="6" aria-label="Source 6">6</a></td></tr>
+          <tr><td>Scope (FEL 2)</td><td>Which single option to take forward</td><td>Spreadsheets, early schedules</td><td>The chosen option’s assumptions are never carried forward as data</td></tr>
+          <tr><td>Front-end design (FEL 3)</td><td>Final investment decision, contract strategy</td><td>P6, estimating tools</td><td>The control budget is set at −20%/+30% and then treated as fact<a class="fn" href="#src-6" data-n="6" aria-label="Source 6">6</a></td></tr>
+          <tr class="cov"><td>Tender and bid <span class="tag">CPDS</span></td><td>Price, programme, method</td><td>Excel, Word, norms in people’s heads</td><td>Man-hours rest on norms nobody can trace</td></tr>
+          <tr><td>Detailed engineering</td><td>Issued-for-construction drawings</td><td>BIM, document control (Aconex, Forma)</td><td>Drawings and the schedule describe the work in different words</td></tr>
+          <tr><td>Procurement</td><td>What arrives, and when</td><td>ERP (SAP), spreadsheets</td><td>Deliveries aren’t tied to the operations that need them</td></tr>
+          <tr class="cov"><td>Construction <span class="tag">ACCS</span></td><td>Sequence, quality, change, payment</td><td>P6 monthly, site bar charts, paper forms, Excel</td><td>The site and the plan drift apart within weeks.<a class="fn" href="#src-7" data-n="7" aria-label="Source 7">7</a><a class="fn" href="#src-8" data-n="8" aria-label="Source 8">8</a></td></tr>
+          <tr><td>Commissioning and handover</td><td>Take-over</td><td>Completion systems, document registers</td><td>As-built truth is reconstructed from paper</td></tr>
+          <tr class="cov cov--plan"><td>Operations <span class="tag">AOS, planned</span></td><td>Keeping the asset running</td><td>CMMS / asset systems</td><td>The history of how it was built is gone</td></tr>
+        </tbody>
+      </table>
+      <aside class="notes notes--below" aria-label="Sources for the table">
+        <p class="sn" data-n="6"><a class="sn__n" href="#src-6">6</a>AACE International 18R-97, cost estimate classification. <a class="sn__url" href="https://web.aacei.org/docs/default-source/toc/toc_18r-97.pdf" rel="noopener">aacei.org</a></p>
+        <p class="sn" data-n="7"><a class="sn__n" href="#src-7">7</a>Long International, “Contract scheduling provisions”. <a class="sn__url" href="https://www.long-intl.com/articles/contract-scheduling-provisions/" rel="noopener">long-intl.com</a></p>
+        <p class="sn" data-n="8"><a class="sn__n" href="#src-8">8</a>Ballard (2000), <i>The Last Planner System of Production Control</i>. <a class="sn__url" href="https://lean-construction-gcs.storage.googleapis.com/wp-content/uploads/2022/09/08152942/the-last-planner-system-of-production-control-ballard2000-dissertation.pdf" rel="noopener">dissertation (PDF)</a></p>
+      </aside>
+    </figure>
+
+    <h3 class="h4 wide">Where DiPGOS sits</h3>
+    <ul class="wide sits">
+      <li><b>CPDS</b>Covers tender to proposal. Built, and piloted with an EPC contractor’s engineers.<a class="dg" href="#dagger" aria-label="Name pending client permission">†</a></li>
+      <li><b>ACCS</b>Covers execution control. Built, and running on an RCC dam.<a class="dg" href="#dagger" aria-label="Name pending client permission">†</a></li>
+      <li class="plan"><b>AOS</b>Covers operations. Planned.</li>
+    </ul>
+
+    <h3 class="h4 ph-cut">The parties</h3>
+    <div class="r ph-cut">
+      <div class="main">
+        <ul class="parties">
+          <li><b>The Employer</b> pays.</li>
+          <li><b>The Engineer</b> administers the contract and rules on claims (FIDIC Red and Yellow Books).<a class="fn" href="#src-9" data-n="9" aria-label="Source 9">9</a></li>
+          <li><b>The contractor</b> builds.</li>
+          <li><b>Subcontractors and suppliers</b> deliver packages.</li>
+        </ul>
+        <p class="parties__end">Four parties, four sets of systems, one piece of concrete.</p>
+      </div>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="9"><a class="sn__n" href="#src-9">9</a>ICCP, “FIDIC Red, Yellow and Silver Books”. <a class="sn__url" href="https://www.instituteccp.com/fidic-red-yellow-and-silver-books-a-brief-overview/" rel="noopener">instituteccp.com</a></p></aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ WHERE THE STACK BREAKS ============================ -->
+<section class="sec" id="stack" data-nav="problem" aria-labelledby="stack-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">Where the stack breaks</p></div>
+
+    <h2 class="h2" id="stack-title">The tools record the project. None of them runs it.</h2>
+    <p class="lede">Primavera P6 is the industry’s schedule of record, and it is very good at being one. The trouble is everything that has to happen outside it.</p>
+
+    <div class="r brk" style="margin-top:clamp(28px,3vw,40px)">
+      <p><span class="runin">The plan is monthly. The site is daily.</span> Schedule updates are normally monthly, while superintendents run the job from one- or two-week bar charts.<a class="fn" href="#src-7" data-n="7" aria-label="Source 7">7</a> Only about half of the work assigned to crews at the start of a week is completed as planned.<a class="fn" href="#src-8" data-n="8" aria-label="Source 8">8</a></p>
+      <aside class="notes" aria-label="Sources">
+        <p class="sn" data-n="7"><a class="sn__n" href="#src-7">7</a>Long International, “Contract scheduling provisions”. <a class="sn__url" href="https://www.long-intl.com/articles/contract-scheduling-provisions/" rel="noopener">long-intl.com</a></p>
+        <p class="sn" data-n="8"><a class="sn__n" href="#src-8">8</a>Ballard (2000), <i>The Last Planner System of Production Control</i>. <a class="sn__url" href="https://lean-construction-gcs.storage.googleapis.com/wp-content/uploads/2022/09/08152942/the-last-planner-system-of-production-control-ballard2000-dissertation.pdf" rel="noopener">dissertation (PDF)</a></p>
+      </aside>
+    </div>
+    <div class="r brk">
+      <p><span class="runin">Percent complete is an opinion.</span> A supervisor’s estimate is the measure “most prone to overstatement and the hardest to audit”.<a class="fn" href="#src-10" data-n="10" aria-label="Source 10">10</a> In one documented case a contractor reported activities as “90% complete for several months” to hide missed starts.<a class="fn" href="#src-11" data-n="11" aria-label="Source 11">11</a></p>
+      <aside class="notes" aria-label="Sources">
+        <p class="sn" data-n="10"><a class="sn__n" href="#src-10">10</a>Gather Insights, progress measurement. <a class="sn__url" href="https://www.gatherinsights.com/en/earned-value/definitions/progress-measurement" rel="noopener">gatherinsights.com</a></p>
+        <p class="sn" data-n="11"><a class="sn__n" href="#src-11">11</a>Ankura, “Construction schedules: why owners should monitor and care”. <a class="sn__url" href="https://ankura.com/insights/construction-schedules-why-owners-should-monitor-and-care" rel="noopener">ankura.com</a></p>
+      </aside>
+    </div>
+    <div class="r brk ph-cut">
+      <p><span class="runin">The method statement is a PDF.</span> The limits that decide whether a layer is acceptable (thickness, unloading height, temperature, roller passes) live in a document. They aren’t data that anything checks.</p>
+      <aside class="notes"></aside>
+    </div>
+    <div class="r brk ph-cut">
+      <p><span class="runin">Every system names the work differently.</span> The WBS in the schedule, the cost codes in the ERP and the numbers in the document register each describe the same concrete.<a class="fn" href="#src-12" data-n="12" aria-label="Source 12">12</a> Moving data between them is manual in 49% of cases.<a class="fn" href="#src-13" data-n="13" aria-label="Source 13">13</a></p>
+      <aside class="notes" aria-label="Sources">
+        <p class="sn" data-n="12"><a class="sn__n" href="#src-12">12</a>Quollnet, “Work breakdown structure explained”. <a class="sn__url" href="https://quollnet.com/article/work-breakdown-structure-explained" rel="noopener">quollnet.com</a></p>
+        <p class="sn" data-n="13"><a class="sn__n" href="#src-13">13</a>JBKnowledge 2020 ConTech Report, via Construction Dive. <a class="sn__url" href="https://www.constructiondive.com/news/construction-app-usage-increases-despite-continued-lack-of-integration/592922/" rel="noopener">constructiondive.com</a></p>
+      </aside>
+    </div>
+    <div class="r brk">
+      <p><span class="runin">Nobody can say who approved what.</span> On Tarbela’s 5th extension, a contractor’s cofferdam change the contract did not allow was accepted conditionally by the Engineer and approved by the employer. The inquiry held all three responsible, and the cost rose from Rs 82 bn to about Rs 317 bn.<a class="fn" href="#src-14" data-n="14" aria-label="Source 14">14</a></p>
+      <aside class="notes" aria-label="Source"><p class="sn" data-n="14"><a class="sn__n" href="#src-14">14</a>Dawn, Tarbela 5th extension inquiry. <a class="sn__url" href="https://www.dawn.com/news/2014942" rel="noopener">dawn.com</a></p></aside>
+    </div>
+    <div class="r brk ph-cut">
+      <p><span class="runin">Data is collected, then ignored.</span> 95.5% of engineering and construction data goes unused.<a class="fn" href="#src-15" data-n="15" aria-label="Source 15">15</a> Team members spend 14 hours a week on conflict, rework and hunting for information, 5.5 of them hunting for data alone.<a class="fn" href="#src-16" data-n="16" aria-label="Source 16">16</a></p>
+      <aside class="notes" aria-label="Sources">
+        <p class="sn" data-n="15"><a class="sn__n" href="#src-15">15</a>FMI &amp; Autodesk (2021), <i>Harnessing the Data Advantage</i>. <a class="sn__url" href="https://fmicorp.com/insights/quick-reads/harnessing-the-data-advantage-in-engineering-and-construction" rel="noopener">fmicorp.com</a></p>
+        <p class="sn" data-n="16"><a class="sn__n" href="#src-16">16</a>FMI &amp; PlanGrid (2018), <i>Construction Disconnected</i>. <a class="sn__url" href="https://www.prnewswire.com/news-releases/new-research-from-plangrid-and-fmi-identifies-factors-costing-the-construction-industry-more-than-177-billion-annually-300689826.html" rel="noopener">prnewswire.com</a></p>
+      </aside>
+    </div>
+
+    <p class="pull wide">The industry does not need another tool on the pile. It needs a model of the work that every tool, and every person, can read.</p>
+  </div>
+</section>
+
+<!-- ============================ THE MODEL ============================ -->
+<section class="sec" id="model" data-nav="model" aria-labelledby="model-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">The model</p></div>
+
+    <h2 class="h2" id="model-title">DiPGOS starts from what the project is made of.</h2>
+    <p class="lede">Most software models documents, dates or geometry. DiPGOS models <em>the work</em>: the things a project is made of, how they relate, and the method that governs them. Every screen, form, check and figure reads from that one model.</p>
+
+    <h3 class="h3 ph-cut">The nouns</h3>
+    <p class="ph-cut">The breakdown of the job, down to a single operation such as “Place &amp; spread RCC”.</p>
+    <ol class="chain wide ph-cut" aria-label="The breakdown of the job">
+      <li>Project</li><li>Contract</li><li>Scope</li><li>Activity</li><li>Process</li><li><span class="op">Operation</span></li>
+    </ol>
+    <dl class="defs ph-cut">
+      <div><dt>Work front</dt><dd>A bounded place and time where an operation happens. For example: <span class="wf">Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</span>.</dd></div>
+      <div><dt>Atom</dt><dd>Anything the work consumes or uses, in six classes: material, workforce, equipment, temporary works, deliverable, storage. Each <em>unit</em> is one physical thing, such as roller 3 of 12, or formwork set 037 of 581.</dd></div>
+      <div><dt>Run</dt><dd>One filed report of work on a work front.</dd></div>
+      <div><dt>Data point</dt><dd>One measured check on that report.</dd></div>
+      <div><dt>Alarm / NCR</dt><dd>A breach, with its margin.</dd></div>
+      <div><dt>Decision</dt><dd>A sign-off, with its approver and reason.</dd></div>
+    </dl>
+
+    <h3 class="h3 ph-cut">The relations</h3>
+    <div class="rels wide ph-cut" role="list" style="max-width:52rem">
+      <div class="rel" role="listitem"><span class="node">Operation</span><span class="edge">performed at</span><span class="node">Work front</span></div>
+      <div class="rel" role="listitem"><span class="node">Operation</span><span class="edge">precedes, with a lag in hours</span><span class="node">Operation</span></div>
+      <div class="rel" role="listitem"><span class="node">Operation</span><span class="edge">requires, with quantities</span><span class="node">Atom</span><p class="eg">Batch &amp; mix, for instance, uses 90 kg of pozzolan and 95 L of water.</p></div>
+      <div class="rel" role="listitem"><span class="node">Atom</span><span class="edge">needs</span><span class="node">Atom</span><p class="eg">A vibratory roller needs one operator per machine-hour and 8 L/h of diesel.</p></div>
+    </div>
+
+    <h3 class="h3 ph-cut">The verbs</h3>
+    <ul class="verbs ph-cut">
+      <li>File a run</li>
+      <li>Check it against the method</li>
+      <li>Raise an NCR</li>
+      <li>Request a sign-off</li>
+      <li>Approve or reject, with a reason</li>
+      <li>Freeze a baseline</li>
+      <li class="wip">Certify quantities for billing <em>(in progress)</em></li>
+    </ul>
+
+    <h3 class="h3">The method statement becomes the model</h3>
+    <p>Diamer-Basha’s RCC method statement<a class="dg" href="#dagger" aria-label="Name pending client permission">†</a> is loaded as data: 6 processes and 21 operations, each with its limits.</p>
+    <div class="r">
+      <table class="spec">
+        <caption>MS-348<span class="dg" aria-hidden="true">†</span>, as data</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Limit</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Place &amp; spread</th><td>Unloading height ≤ 1.5 m; layer 33 cm</td></tr>
+          <tr><th scope="row">Compact</th><td>Roller ≤ 2.5 km/h; compacted layer 30 cm; before initial set</td></tr>
+          <tr><th scope="row">Bedding mortar</th><td>10–15 mm</td></tr>
+          <tr><th scope="row">Aggregate</th><td>Moisture ≤ 5%</td></tr>
+          <tr><th scope="row">Haul</th><td>Dump truck ≤ 15 km/h (safety)</td></tr>
+          <tr><th scope="row">Cure</th><td>14 days</td></tr>
+        </tbody>
+      </table>
+      <aside class="notes gen"><p>The same limits generate the paper form the foreman fills in, the screen form, the checks, the alarms, and the approver each output goes to.</p></aside>
+    </div>
+
+    <h3 class="h3 ph-cut">One verdict per discipline, never a single pass/fail</h3>
+    <p class="label shape ph-cut">The model’s shape; in development</p>
+    <p class="ph-cut">A check is judged separately by each discipline that owns part of it: the site engineer for geometry, the materials engineer for physical properties, the scheduler for sequence, the cost controller for money, and so on across nine owners. A verdict reads like this, not a red cross:</p>
+    <p class="verdict ph-cut"><b>Not satisfied:</b> physical, 5 °C short, materials engineer</p>
+  </div>
+</section>
+
+<!-- ============================ ONE DAY ============================ -->
+<section class="sec" id="day" data-nav="day" aria-labelledby="day-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">One day on a work front</p></div>
+
+    <h2 class="h2" id="day-title">One layer, one day.</h2>
+    <p class="lede">Work front <em>Blocks 14–15 · EL 922.0–932.2 · Lift 2 · Layer 7</em>. Operation: Place &amp; spread RCC. 820 m³.<a class="dg" href="#dagger" aria-label="Name pending client permission">†</a> <span class="small">(Illustrative timeline. The values come from a real sample record sheet.)</span></p>
+
+    <div class="r sheetfig ph-cut">
+      <figure class="sheet" aria-label="The RCC-PL record sheet, recreated">
+        <p class="sheet__hd">PFJV / Descon<span class="dg">†</span> · RCC Dam Construction Stage 1 · Method Statement MS-348<span class="dg">†</span> · Daily site record</p>
+        <p class="sheet__title"><span>PLACE &amp; SPREAD RCC</span><span class="sheet__code">RCC-PL</span></p>
+        <div class="sheet__fields">
+          <div><span>Work front</span><b class="hand">Blocks 14–15 · EL 922.0–932.2</b></div>
+          <div><span>Lift</span><b class="hand">2</b></div>
+          <div><span>Layer</span><b class="hand">7</b></div>
+          <div><span>Quantity</span><b class="hand">820 m³</b></div>
+        </div>
+        <table>
+          <thead><tr><th scope="col">Check</th><th scope="col">Limit</th><th scope="col">Recorded</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Slope</th><td class="lim">≤ 1:10</td><td class="rec"><span class="hand">1:11</span></td></tr>
+            <tr><th scope="row">Unloading height</th><td class="lim">≤ 1.5 m</td><td class="rec"><span class="hand">2.0 m</span></td></tr>
+            <tr><th scope="row">Layer</th><td class="lim">33 cm</td><td class="rec"><span class="hand">35 cm</span></td></tr>
+            <tr><th scope="row">Temperature</th><td class="lim">&lt; 18 °C</td><td class="rec"><span class="hand">18.5 °C</span></td></tr>
+          </tbody>
+        </table>
+        <p class="sheet__rule">A blank is recorded as ‘not answered’, never as a pass.</p>
+      </figure>
+      <aside class="notes sheetcap"><p><b>Recreated from a real record sheet.</b> The values are the sample sheet’s own, in the foreman’s hand.</p></aside>
+    </div>
+
+    <div class="r" style="margin-top:clamp(36px,4vw,52px)">
+      <ol class="day" aria-label="The day, step by step">
+        <li id="day-1"><div class="day__side"><span class="day__n">1</span><span class="day__t">06:40</span></div><h3 class="day__h">Paper</h3><p>The foreman fills in the RCC-PL sheet on paper, as always. The sheet itself says: <q>A blank is recorded as ‘not answered’, never as a pass.</q></p></li>
+        <li id="day-2"><div class="day__side"><span class="day__n">2</span><span class="day__t">07:05</span></div><h3 class="day__h">Read</h3><p>A photo of the sheet lands in the site-reports folder. DiPGOS reads it and matches it to its work front by the site’s own words. A person confirms each value, because nothing is written without a source. A sheet that could belong to two fronts is parked, not guessed.</p></li>
+        <li id="day-3"><div class="day__side"><span class="day__n">3</span><span class="day__t">07:06</span></div><h3 class="day__h">Checked</h3><div><p>Four checks against the method:</p>
+          <ul class="checks">
+            <li><span class="what"><b>Slope</b> 1:11 against ≤ 1:10</span><span class="v v--ok">satisfied</span></li>
+            <li><span class="what"><b>Unloading height</b> 2.0 m against ≤ 1.5 m</span><span class="v v--over">0.5 m over</span></li>
+            <li><span class="what"><b>Layer</b> 35 cm against 33 cm</span><span class="v v--over">2 cm over</span></li>
+            <li><span class="what"><b>Temperature</b> 18.5 °C against &lt; 18 °C</span><span class="v v--over">0.5 °C over</span></li>
+          </ul></div></li>
+        <li id="day-4"><div class="day__side"><span class="day__n">4</span><span class="day__t">07:06</span></div><h3 class="day__h">Owned</h3><p>Three NCRs are raised, each with its margin, and routed to the approver the method names.</p></li>
+        <li id="day-5"><div class="day__side"><span class="day__n">5</span><span class="day__t">11:30</span></div><h3 class="day__h">Decided</h3><p>The consultant’s representative reviews the layer and records the decision with a reason. Closing or reopening an NCR also needs a reason, and every step stays in the history.</p></li>
+        <li id="day-6"><div class="day__side"><span class="day__n">6</span><span class="day__t">18:00</span></div><h3 class="day__h">Counted</h3><p>820 m³ counts against the frozen baseline. Float on the following operations recomputes, and the day’s quantities are ready for certification.</p></li>
+      </ol>
+      <aside class="notes notes--day">
+        <div class="contrast">
+          <p class="label">The same day, in a typical stack</p>
+          <ul>
+            <li>The sheet goes into a folder.</li>
+            <li>The numbers are retyped into a spreadsheet days later.</li>
+            <li>The 2 cm, if anyone notices it, becomes an email.</li>
+            <li>At month-end the activity’s percent complete goes up in P6.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <p class="pull wide">Same concrete, same people. The difference is that the record exists the day the work does.</p>
+  </div>
+</section>
+
+<!-- ============================ WHERE YOU RUN IT ============================ -->
+<section class="sec" id="screens" data-nav="system" aria-labelledby="screens-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">Where you run it</p></div>
+
+    <h2 class="h2" id="screens-title">The command centre, not a dashboard.</h2>
+    <p class="lede">The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+
+    <figure class="wide shot cc hotfig" id="cc">
+      <div class="shot__view">
+        <img src="../../assets/command-center.webp" width="1912" height="935" decoding="async" alt="The DiPGOS command centre: scope and work fronts at left, a live map of the dam site at the centre, and productivity, quality and business panels at right">
+        <span class="region r-what" data-r="what" aria-hidden="true"></span>
+        <span class="region r-where" data-r="where" aria-hidden="true"></span>
+        <span class="region r-how" data-r="how" aria-hidden="true"></span>
+        <span class="pin p-what" data-r="what" aria-hidden="true"><i></i>What</span>
+        <span class="pin p-where" data-r="where" aria-hidden="true"><i></i>Where</span>
+        <span class="pin p-how ph-cut" data-r="how" aria-hidden="true"><i></i>How</span>
+        <span class="mask" aria-hidden="true">name pending †</span>
+      </div>
+      <div class="shot__view cc-how" aria-hidden="true">
+        <img src="../../assets/command-center.webp" width="1912" height="935" decoding="async" alt="">
+        <span class="pin" data-r="how"><i></i>How</span>
+      </div>
+      <figcaption class="shot__cap"><b>The command centre.</b> The project name is hidden until the client agrees. <span class="prov">From the running system. Pilot data.</span></figcaption>
+      <div class="trio">
+        <div><span class="term" data-r="where"><i aria-hidden="true"></i>Where</span>: the live map.</div>
+        <div><span class="term" data-r="what"><i aria-hidden="true"></i>What</span>: scope and work fronts.</div>
+        <div><span class="term" data-r="how"><i aria-hidden="true"></i>How</span>: productivity, quality and business.</div>
+      </div>
+    </figure>
+
+    <figure class="wide shot sr hotfig ph-cut" id="sr">
+      <div class="shot__view">
+        <img src="assets/app-site-reports-folder.png" width="1920" height="935" decoding="async" loading="lazy" alt="The Document Manager open on the site-reports folder: two Place &amp; Spread RCC files for Blocks 14–15, EL 922.0–932.2, Lift 2, Layers 8 and 9, and the RCC-PL form, each with an Evaluate button">
+        <span class="region r-files" data-r="files" aria-hidden="true"></span>
+        <span class="region r-eval" data-r="eval" aria-hidden="true"></span>
+        <span class="mask" aria-hidden="true">Names hidden</span>
+        <span class="pin p-files" data-r="files" aria-hidden="true"><i></i>The day’s files</span>
+        <span class="pin pin--r p-eval" data-r="eval" aria-hidden="true"><i></i>Evaluate</span>
+      </div>
+      <figcaption class="shot__cap"><b>Site reports folder:</b> <span class="term" data-r="files"><i aria-hidden="true"></i>the day’s Place &amp; Spread files</span>, each with <span class="term" data-r="eval"><i aria-hidden="true"></i>Evaluate</span>. Staff names are hidden. <span class="prov">From the running system. Pilot data.</span></figcaption>
+    </figure>
+
+    <figure class="wide shot am hotfig" id="am">
+        <div class="shot__view">
+          <img src="assets/app-atom-manager-home.png" width="1440" height="900" decoding="async" loading="lazy" alt="Atom Manager: the whole catalogue by class: 28 material types, 536 people, 134 machines, 710 sets, 0 deliverables, 24 vessels, stamped LIVE as of 19 Sep 2026">
+          <span class="region r-cat" data-r="cat" aria-hidden="true"></span>
+          <span class="region r-live" data-r="live" aria-hidden="true"></span>
+          <span class="pin p-cat" data-r="cat" aria-hidden="true"><i></i>The whole catalogue</span>
+          <span class="pin pin--r p-live" data-r="live" aria-hidden="true"><i></i>Live stamp</span>
+        </div>
+        <figcaption class="shot__cap"><b>Atom Manager:</b> <span class="term" data-r="cat"><i aria-hidden="true"></i>“the whole catalogue, right now”</span>, with 536 people, 134 machines, 710 sets and 24 vessels, and <span class="term" data-r="live"><i aria-hidden="true"></i>“LIVE · as of 19 Sep 2026”</span>. <span class="prov">From the running system. Pilot data.</span></figcaption>
+      </figure>
+
+    <div class="r ev-row hotfig ph-cut">
+      <figure class="shot ev" id="ev">
+        <div class="shot__view">
+          <img src="assets/app-evaluate-against-contract.png" width="1920" height="935" decoding="async" loading="lazy" alt="The Evaluate document dialog: contract Volume 3A, document 2026-09-07 Place &amp; Spread RCC, Blocks 14–15. The document is reviewed against the contract clause by clause.">
+          <span class="region r-clause" data-r="clause" aria-hidden="true"></span>
+          <span class="pin p-clause" data-r="clause" aria-hidden="true"><i></i>Clause by clause</span>
+        </div>
+      </figure>
+      <aside class="notes"><p class="shot__cap"><b>Evaluate against the contract:</b> <span class="term" data-r="clause"><i aria-hidden="true"></i>“reviewed against the contract clause by clause”</span>. <span class="prov">From the running system. Pilot data.</span></p></aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ AI ============================ -->
+<section class="sec" id="ai" data-nav="system" aria-labelledby="ai-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">AI, on the record</p></div>
+    <h2 class="h2" id="ai-title">AI proposes. A named engineer decides. The record keeps both.</h2>
+    <p class="lede">DiPGOS uses AI where it removes the typing, not the judgement. It reads a photographed site sheet into a proposal for a person to confirm. It answers questions over the tender, the design documents and the delivered record, and cites its sources every time. It never writes a value without a source, and it never signs anything off.</p>
+    <p class="pull ai-aside ph-cut">AI can only act on ground it understands. The model of the work is that ground.</p>
+  </div>
+</section>
+
+<!-- ============================ PRINCIPLES ============================ -->
+<section class="sec" id="principles" data-nav="system" aria-labelledby="princ-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">Principles</p></div>
+    <h2 class="h2" id="princ-title">How the record stays true.</h2>
+    <ul class="wide princ">
+      <li><h3>Records in, state out.</h3>Nothing is typed as a total. Stock, hours, progress and earned value are all computed from dated records, so you can ask what any figure said on any past date.</li>
+      <li class="ph-cut"><h3>A blank is not a pass.</h3>“Nothing reported” and “we looked, and there is none” are different answers, and DiPGOS keeps them apart.</li>
+      <li><h3>Every verdict has an owner.</h3>A breach arrives with its margin and the name of the person who must act.</li>
+      <li class="ph-cut"><h3>Two denominators, both named.</h3>Progress is shown against the fronts that have started and against the whole job. The first can read 101% while the second reads 36%, and both are true.</li>
+      <li class="ph-cut"><h3>Paper stays paper.</h3>Forms are printed from the method and read back from photos. Nobody retypes a sheet.</li>
+      <li><h3>It sits alongside what you have.</h3>DiPGOS works with the contract schedule as issued and the folders your site already uses. It doesn’t ask you to throw away P6.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================ COMPANY ============================ -->
+<section class="sec sec--company" id="company" data-nav="company" aria-labelledby="company-title">
+  <div class="wrap essay co">
+    <div class="rail" aria-hidden="true"><p class="rail__head">Company</p></div>
+    <h2 class="h2" id="company-title">We lived the problem before we built the answer.</h2>
+    <p class="lede">Indus is built by engineers and builders who spent their careers inside real projects, and felt the gridlock first-hand. We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+    <p class="sig"><span class="sig__name">M. Kamran Basit</span><span class="sig__role">Founder &amp; CEO</span></p>
+    <aside class="facts ph-cut" aria-label="Company facts">
+      <p class="label">In brief</p>
+      <dl>
+        <div><dt>Experience</dt><dd><span class="todo" data-todo="needs owner input">[Years in heavy civil and hydropower]</span></dd></div>
+        <div><dt>Delivered</dt><dd><span class="todo" data-todo="needs owner input">[Projects delivered]</span></dd></div>
+        <div><dt>Offices</dt><dd><span class="todo" data-todo="needs owner input">[Offices: Pakistan · USA]</span></dd></div>
+        <div><dt>Entities</dt><dd>Indus Technology Solutions (Pvt) Ltd<br>Indus Technologies LLC, USA</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ CONTACT ============================ -->
+<section class="sec sec--contact" id="contact" aria-labelledby="contact-title">
+  <svg class="contact__ring" viewBox="0 0 600 500" aria-hidden="true" focusable="false">
+    <circle cx="300" cy="250" r="160" fill="none" stroke="#5F86C4" stroke-opacity=".35" stroke-width="1.2"/>
+    <path d="M161.44 170 A160 160 0 0 1 300 90" fill="none" stroke="#E8A020" stroke-opacity=".6" stroke-width="1.6"/>
+    <g fill="#070F1C" stroke="#9CB9E0" stroke-opacity=".5" stroke-width="1.2">
+      <circle cx="300" cy="90" r="12"/><circle cx="438.56" cy="170" r="12"/><circle cx="438.56" cy="330" r="12"/>
+      <circle cx="300" cy="410" r="12"/><circle cx="161.44" cy="330" r="12"/><circle cx="161.44" cy="170" r="12"/>
+    </g>
+  </svg>
+  <div class="wrap essay">
+    <h2 class="contact__title wide" id="contact-title">Let’s shape the future of how the world gets built.</h2>
+    <p class="contact__sub">Bring us the project you trust least. We’ll show you what its record would look like.</p>
+    <div class="mail" data-u="kamran" data-d="industechsol.com">
+      <p class="mail__addr"><span class="addr"></span></p>
+      <div class="mail__actions">
+        <button class="btn btn--ghost mail__copy" type="button">Copy</button>
+        <a class="btn btn--solid mail__send" href="#contact">Email us</a>
+      </div>
+      <p class="mail__status" role="status" aria-live="polite"></p>
+    </div>
+    <noscript><p class="mail__fallback">Write to <span class="em">kamran (at) industechsol.com</span>.</p></noscript>
+  </div>
+</section>
+
+<!-- ============================ SOURCES ============================ -->
+<section class="sec sources" id="sources" aria-labelledby="sources-title">
+  <div class="wrap essay">
+    <div class="rail" aria-hidden="true"><p class="rail__head">Sources</p></div>
+    <details class="srcs wide" id="srcs" open>
+      <summary id="sources-title">Sources, numbered as cited</summary>
+      <ol>
+        <li id="src-1"><span>1</span><span>Ansar, Flyvbjerg, Budzier &amp; Lunn (2014), “Should we build more large dams?”, <i>Energy Policy</i>. <a href="https://arxiv.org/pdf/1409.0002" rel="noopener">arxiv.org/pdf/1409.0002</a></span></li>
+        <li id="src-2"><span>2</span><span>Water Power Magazine, “Audit declares Neelum-Jhelum hydropower project a failure”. <a href="https://www.waterpowermagazine.com/news/audit-declares-neelum-jhelum-hydropower-project-a-failure/" rel="noopener">waterpowermagazine.com</a></span></li>
+        <li id="src-3"><span>3</span><span>PIDE Working Paper 2023:10, <i>Reforming the Federal PSDP</i>. <a href="https://file.pide.org.pk/pdfpideresearch/wp-23-10-reforming-the-federal-public-sector-development-programme.pdf" rel="noopener">file.pide.org.pk</a></span></li>
+        <li id="src-4"><span>4</span><span>McKinsey (2015), <i>The construction productivity imperative</i>. <a href="https://www.mckinsey.com/capabilities/operations/our-insights/the-construction-productivity-imperative" rel="noopener">mckinsey.com</a></span></li>
+        <li id="src-5"><span>5</span><span>Plummer Braeckman, Disselhoff &amp; Kirchherr (2020), <i>International Journal of Water Resources Development</i>. <a href="https://ideas.repec.org/a/taf/cijwxx/v36y2020i5p839-854.html" rel="noopener">ideas.repec.org</a></span></li>
+        <li id="src-6"><span>6</span><span>AACE International 18R-97, cost estimate classification. <a href="https://web.aacei.org/docs/default-source/toc/toc_18r-97.pdf" rel="noopener">web.aacei.org</a></span></li>
+        <li id="src-7"><span>7</span><span>Long International, “Contract scheduling provisions”. <a href="https://www.long-intl.com/articles/contract-scheduling-provisions/" rel="noopener">long-intl.com</a></span></li>
+        <li id="src-8"><span>8</span><span>Ballard (2000), <i>The Last Planner System of Production Control</i>. <a href="https://lean-construction-gcs.storage.googleapis.com/wp-content/uploads/2022/09/08152942/the-last-planner-system-of-production-control-ballard2000-dissertation.pdf" rel="noopener">lean-construction-gcs.storage.googleapis.com</a></span></li>
+        <li id="src-9"><span>9</span><span>ICCP, “FIDIC Red, Yellow and Silver Books”. <a href="https://www.instituteccp.com/fidic-red-yellow-and-silver-books-a-brief-overview/" rel="noopener">instituteccp.com</a></span></li>
+        <li id="src-10"><span>10</span><span>Gather Insights, progress measurement. <a href="https://www.gatherinsights.com/en/earned-value/definitions/progress-measurement" rel="noopener">gatherinsights.com</a></span></li>
+        <li id="src-11"><span>11</span><span>Ankura, “Construction schedules: why owners should monitor and care”. <a href="https://ankura.com/insights/construction-schedules-why-owners-should-monitor-and-care" rel="noopener">ankura.com</a></span></li>
+        <li id="src-12"><span>12</span><span>Quollnet, “Work breakdown structure explained”. <a href="https://quollnet.com/article/work-breakdown-structure-explained" rel="noopener">quollnet.com</a></span></li>
+        <li id="src-13"><span>13</span><span>JBKnowledge 2020 ConTech Report, via Construction Dive. <a href="https://www.constructiondive.com/news/construction-app-usage-increases-despite-continued-lack-of-integration/592922/" rel="noopener">constructiondive.com</a></span></li>
+        <li id="src-14"><span>14</span><span>Dawn, Tarbela 5th extension inquiry. <a href="https://www.dawn.com/news/2014942" rel="noopener">dawn.com/news/2014942</a></span></li>
+        <li id="src-15"><span>15</span><span>FMI &amp; Autodesk (2021), <i>Harnessing the Data Advantage</i>. <a href="https://fmicorp.com/insights/quick-reads/harnessing-the-data-advantage-in-engineering-and-construction" rel="noopener">fmicorp.com</a></span></li>
+        <li id="src-16"><span>16</span><span>FMI &amp; PlanGrid (2018), <i>Construction Disconnected</i>. <a href="https://www.prnewswire.com/news-releases/new-research-from-plangrid-and-fmi-identifies-factors-costing-the-construction-industry-more-than-177-billion-annually-300689826.html" rel="noopener">prnewswire.com</a></span></li>
+      </ol>
+    </details>
+    <p class="dagger-note wide" id="dagger">† Named with the client’s permission pending.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div class="foot__brandcol">
+      <a class="brand" href="#top" aria-label="Indus, back to top"><span class="wordmark" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span></a>
+      <p class="foot__motto">The project thinks; the human commands.</p>
+      <p class="foot__tag">The world’s oldest industry, reimagined from the ground up.</p>
+    </div>
+    <nav class="ph-cut" aria-label="Footer">
+      <h2>Read</h2>
+      <ul>
+        <li><a href="#stakes">The problem</a></li>
+        <li><a href="#model">The model</a></li>
+        <li><a href="#day">One day on a work front</a></li>
+        <li><a href="#screens">The system</a></li>
+        <li><a href="#sources">Sources</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h2>Company</h2>
+      <ul>
+        <li><a href="#contact">Get in touch</a></li>
+        <li class="foot__note">Indus Technology Solutions (Pvt) Ltd</li>
+        <li class="foot__note">Indus Technologies LLC, USA</li>
+      </ul>
+    </div>
+    <p class="foot__bottom"><span>© 2026 Indus Technology Solutions.</span><span class="ph-cut">† Named with the client’s permission pending.</span></p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var narrow = window.matchMedia('(max-width: 799.98px)');
+
+  /* --- contact: the address is assembled here, never written in the source */
+  var box = document.querySelector('.mail');
+  if (box) {
+    var addr = box.getAttribute('data-u') + '@' + box.getAttribute('data-d');
+    var out = box.querySelector('.addr'), send = box.querySelector('.mail__send');
+    var copy = box.querySelector('.mail__copy'), status = box.querySelector('.mail__status'), timer;
+    out.textContent = addr;
+    send.href = 'mail' + 'to:' + addr;
+    copy.addEventListener('click', function () {
+      function done(ok) {
+        copy.textContent = ok ? 'Copied' : 'Copy';
+        status.textContent = ok ? 'Address copied to your clipboard.' : 'Select the address above and copy it.';
+        clearTimeout(timer);
+        timer = setTimeout(function () { copy.textContent = 'Copy'; status.textContent = ''; }, 2400);
+      }
+      function selectAddr() { var r = document.createRange(); r.selectNodeContents(out); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(function () { done(true); }, function () { selectAddr(); done(false); });
+      } else { selectAddr(); done(false); }
+    });
+  }
+
+  /* --- mobile menu */
+  var nav = document.getElementById('nav'), toggle = document.getElementById('nav-toggle');
+  function setMenu(open) {
+    nav.classList.toggle('nav--open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('nav--open')); });
+  document.querySelectorAll('#nav-panel a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('nav--open')) { setMenu(false); toggle.focus(); } });
+
+  /* --- active link: the chapter crossing a line 35% down the viewport.
+         Hero, contact and sources carry no data-nav, so they clear it. */
+  var links = [].slice.call(document.querySelectorAll('.nav__link'));
+  var sections = [].slice.call(document.querySelectorAll('main > section[id]'));
+  function mark() {
+    var line = innerHeight * .35, cur = null;
+    for (var i = 0; i < sections.length; i++) {
+      var r = sections[i].getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) { cur = sections[i].getAttribute('data-nav'); break; }
+    }
+    links.forEach(function (a) {
+      if (cur && a.getAttribute('data-nav') === cur) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  addEventListener('scroll', mark, { passive: true });
+  addEventListener('resize', mark);
+  mark();
+
+  /* --- footnotes: on phones a superscript reveals its note in place;
+         wider, the note already sits in the margin and the mark jumps to Sources */
+  document.addEventListener('click', function (e) {
+    var fn = e.target.closest && e.target.closest('.fn');
+    if (!fn || !narrow.matches) return;
+    var holder = fn.closest('.r') || fn.closest('figure');
+    var sn = holder && holder.querySelector('.notes .sn[data-n="' + fn.getAttribute('data-n') + '"]');
+    if (!sn) return;
+    e.preventDefault();
+    var open = !sn.classList.contains('open');
+    sn.classList.toggle('open', open);
+    holder.querySelectorAll('.fn[data-n="' + fn.getAttribute('data-n') + '"]').forEach(function (f) { f.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  });
+  document.querySelectorAll('.fn').forEach(function (f) {
+    var id = 'sn-' + Math.random().toString(36).slice(2, 8);
+    var holder = f.closest('.r') || f.closest('figure');
+    var sn = holder && holder.querySelector('.notes .sn[data-n="' + f.getAttribute('data-n') + '"]');
+    if (sn) { if (!sn.id) sn.id = id; f.setAttribute('aria-controls', sn.id); f.setAttribute('aria-expanded', 'false'); }
+  });
+
+  /* --- sources: folded on phones, open wider; a jump to a source opens it */
+  var srcs = document.getElementById('srcs');
+  if (srcs && narrow.matches) srcs.open = false;
+  function openForHash() { if (/^#src-/.test(location.hash)) srcs.open = true; }
+  addEventListener('hashchange', openForHash); openForHash();
+
+  /* --- annotated screens: a term or pin lights its region of the image */
+  document.querySelectorAll('.hotfig').forEach(function (fig) {
+    fig.querySelectorAll('[data-r]').forEach(function (el) {
+      if (el.classList.contains('region')) return;
+      el.addEventListener('mouseenter', function () {
+        var k = el.getAttribute('data-r');
+        fig.setAttribute('data-hot', k);
+        fig.querySelectorAll('.region').forEach(function (r) { r.classList.toggle('hot', r.getAttribute('data-r') === k); });
+      });
+      el.addEventListener('mouseleave', function () { fig.removeAttribute('data-hot'); });
+    });
+  });
+
+  /* --- the ring: a station lights its step when you arrive there */
+  document.querySelectorAll('.ring__svg .st').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var li = document.querySelector(a.getAttribute('href'));
+      document.querySelectorAll('.day > li.lit').forEach(function (x) { x.classList.remove('lit'); });
+      if (li) li.classList.add('lit');
+    });
+  });
+
+  /* --- pause the orbit when the ring is off screen */
+  var ring = document.getElementById('ring');
+  if (ring && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { es.forEach(function (e) { ring.classList.toggle('is-paused', !e.isIntersecting); }); }).observe(ring);
+  }
+})();
+</script>
+</body>
+</html>

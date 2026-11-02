@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus — Mock A · Proof up front</title>
+<meta name="description" content="Redesign mock A for industechsol.com: the current site, fixed properly, with the command centre inside the first screen.">
+<meta name="theme-color" content="#0A1424">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Schibsted+Grotesk:wght@400..700&amp;display=swap" rel="stylesheet">
+<script>document.documentElement.className = 'js';</script>
+<style>
+/* ============================================================
+   Mock A · Proof up front
+   Tokens first; every component reads from them.
+   ============================================================ */
+:root {
+  /* surfaces */
+  --ink: #0A1424;
+  --navy: #0B182C;
+  --slate: #12233F;
+  --ink-deep: #070F1C;
+
+  /* text */
+  --bone: #FBF9F4;
+  --text: #C9D4E0;          /* running text: 12.4:1 on ink, 11.2:1 on slate */
+  --steel: #9DB0C4;         /* secondary text: 8.6:1 on ink, 7.0:1 on slate */
+
+  /* action */
+  --amber: #E8A020;
+  --amber-hi: #FFC24D;
+  --amber-rgb: 232, 160, 32;
+
+  /* rules */
+  --rule-rgb: 157, 176, 196;
+  --rule: rgba(var(--rule-rgb), .18);
+  --rule-strong: rgba(var(--rule-rgb), .32);
+
+  /* type */
+  --serif: 'Gelasio', Georgia, serif;
+  --sans: 'Schibsted Grotesk', system-ui, sans-serif;
+  /* the one label style: sentence case, never tracked caps */
+  --label: 600 13px/1.4 var(--sans);
+  --label-color: var(--steel);
+
+  /* layout: one container for everything */
+  --max: 1280px;
+  --gutter: clamp(18px, 5vw, 64px);
+  --measure: 27.5em;           /* ~65 characters of running text */
+  --pad-y: clamp(80px, 10vw, 144px);
+  --nav-h: 64px;
+  --radius: 10px;
+
+  /* motion (used only inside prefers-reduced-motion: no-preference) */
+  --ease-emph: cubic-bezier(.16, 1, .3, 1);
+  --ease-quick: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-padding-top: var(--nav-h); }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font: 400 17px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure { margin: 0; }
+h1, h2, h3, h4 { color: var(--bone); font-family: var(--serif); font-weight: 600; text-wrap: balance; }
+a { color: inherit; }
+strong { color: var(--bone); font-weight: 600; }
+::selection { background: rgba(var(--amber-rgb), .3); color: var(--bone); }
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.wrap { width: min(var(--max), 100% - 2 * var(--gutter)); margin-inline: auto; }
+.label { font: var(--label); color: var(--label-color); }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 100;
+  transform: translateY(-200%);
+  background: var(--amber); color: var(--ink);
+  font: 600 14px/1.4 var(--sans);
+  padding: 10px 18px; border-radius: 999px; text-decoration: none;
+}
+.skip-link:focus { transform: none; }
+
+/* --- wordmark ------------------------------------------------ */
+.wordmark { font: 600 26px/1 var(--serif); color: var(--bone); letter-spacing: -.2px; text-decoration: none; }
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .05em;
+  transform: translateX(-50%);
+  width: .30em; height: .30em;
+  background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+
+/* --- buttons: the only solid amber on the page --------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 26px;
+  border-radius: 999px; border: 1px solid transparent;
+  font: 600 15px/1.2 var(--sans); letter-spacing: .01em;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.btn--primary { background: var(--amber); color: var(--ink); }
+.btn--primary:hover { background: var(--amber-hi); }
+.btn--ghost { background: transparent; color: var(--bone); border-color: rgba(var(--amber-rgb), .6); }
+.btn--ghost:hover { background: rgba(var(--amber-rgb), .12); border-color: var(--amber); }
+.btn--sm { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+/* --- nav ------------------------------------------------------ */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10, 20, 36, .92);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav__inner { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.nav__links { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 36px); }
+.nav__link {
+  position: relative;
+  font: 500 15px/1.4 var(--sans); color: var(--steel);
+  text-decoration: none; padding: 8px 0;
+}
+.nav__link:hover { color: var(--bone); }
+.nav__link[aria-current="true"] { color: var(--bone); }
+.nav__link[aria-current="true"]::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1px; background: var(--amber);
+}
+.nav__toggle {
+  display: none; width: 44px; height: 44px; margin-right: -10px;
+  background: none; border: 0; cursor: pointer; padding: 11px;
+}
+.nav__bar { display: block; width: 22px; height: 2px; background: var(--bone); border-radius: 2px; }
+.nav__bar + .nav__bar { margin-top: 5px; }
+
+/* --- hero ----------------------------------------------------- */
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(var(--gutter), 1fr)
+    [content-start] minmax(0, 500px)
+    [text-end] 64px
+    [shot-start] minmax(0, 716px)
+    [content-end] minmax(var(--gutter), 1fr) [full-end];
+  align-items: center;
+  padding-block: clamp(48px, 7vh, 96px) clamp(64px, 9vh, 112px);
+  overflow: hidden;
+}
+.hero__bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: .35; pointer-events: none;
+}
+.hero__copy { grid-column: content-start / text-end; position: relative; }
+.hero__title {
+  font-size: clamp(44px, 5.4vw, 80px);
+  line-height: 1.04;
+  letter-spacing: -.025em;
+}
+.hero__title .hl { color: var(--amber); }
+.hero__lead {
+  margin-top: clamp(22px, 2.4vw, 32px);
+  max-width: 27.5em;
+  font-size: clamp(17px, 1.35vw, 19px);
+  line-height: 1.6;
+  color: var(--text);
+  text-wrap: pretty;
+}
+.hero__actions { margin-top: clamp(26px, 3vw, 36px); display: flex; gap: 12px; flex-wrap: wrap; }
+
+.hero__shot {
+  grid-column: shot-start / full-end;
+  position: relative;
+  border: 1px solid var(--rule-strong);
+  border-right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  overflow: hidden;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, .9);
+  /* desktop & tablet crop: map pins + the full productivity panel */
+  --x: 960; --y: 58; --w: 952; --h: 564;
+}
+
+/* --- art-directed crops of the one screenshot ------------------
+   --x/--y/--w/--h are the crop rectangle in the source's own pixels
+   (1912×935). The crop keeps that aspect ratio at every width, so no
+   UI text is ever sliced by object-fit guessing. Markers use --mx/--my
+   in the same pixel space and land on the same spot in every crop. */
+.crop { position: relative; overflow: hidden; aspect-ratio: var(--w) / var(--h); background: #05090f; }
+.crop > img {
+  position: absolute; max-width: none;
+  width: calc(1912 / var(--w) * 100%);
+  height: auto;
+  left: calc(var(--x) / var(--w) * -100%);
+  top: calc(var(--y) / var(--h) * -100%);
+}
+.crop--full  { --x: 0;    --y: 0;   --w: 1912; --h: 935; }
+.crop--where { --x: 348;  --y: 58;  --w: 1220; --h: 877; }
+.crop--what  { --x: 61;   --y: 66;  --w: 280;  --h: 300; }
+.crop--how   { --x: 1575; --y: 62;  --w: 332;  --h: 343; }
+
+.marker {
+  display: inline-grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--ink); color: var(--bone);
+  border: 2px solid var(--amber);
+  font: 700 14px/1 var(--sans);
+  flex: 0 0 auto;
+  transition: background-color .15s, color .15s;
+}
+.crop .marker {
+  position: absolute;
+  left: calc((var(--mx) - var(--x)) / var(--w) * 100%);
+  top: calc((var(--my) - var(--y)) / var(--h) * 100%);
+  translate: -50% -50%;
+  box-shadow: 0 0 0 4px rgba(10, 20, 36, .55), 0 6px 16px rgba(0, 0, 0, .6);
+}
+.marker--1 { --mx: 940;  --my: 330; }
+.marker--2 { --mx: 300;  --my: 96; }
+.marker--3 { --mx: 1790; --my: 90; }
+.is-hot .marker, .marker.is-hot { background: var(--bone); color: var(--ink); }
+
+/* --- sections -------------------------------------------------- */
+.section { padding-block: var(--pad-y); position: relative; }
+.section--navy { background: var(--navy); }
+.section--slate { background: var(--slate); }
+.h2 { font-size: clamp(34px, 4.4vw, 58px); line-height: 1.1; letter-spacing: -.02em; max-width: 20ch; }
+.h3 { font-size: clamp(26px, 2.8vw, 36px); line-height: 1.18; letter-spacing: -.012em; max-width: 26ch; }
+.prose { max-width: var(--measure); }
+.prose p + p { margin-top: 1.1em; }
+.lead { font-size: clamp(18px, 1.5vw, 20px); line-height: 1.6; max-width: var(--measure); color: var(--text); text-wrap: pretty; }
+
+/* --- conviction: one column, the statement as a pull quote ----- */
+.conviction .h2 { max-width: 18ch; font-size: clamp(36px, 5vw, 68px); }
+.conviction .prose { margin-top: clamp(32px, 4vw, 48px); font-size: clamp(17px, 1.4vw, 19px); line-height: 1.65; }
+@media (min-width: 1000px) {
+  .conviction .prose { margin-left: calc(100% / 12 * 5); }
+}
+.pull {
+  margin: clamp(44px, 5vw, 64px) 0 0;
+  padding-left: clamp(20px, 2.4vw, 32px);
+  border-left: 3px solid var(--amber);
+}
+.pull p {
+  max-width: 27em;
+  font: 500 clamp(22px, 2.3vw, 30px)/1.42 var(--serif);
+  color: var(--bone);
+  text-wrap: balance;
+}
+
+/* --- DiPGOS ----------------------------------------------------- */
+.lockup { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: clamp(24px, 3vw, 36px); }
+.lockup__mark { width: clamp(40px, 4vw, 52px); height: auto; }
+.lockup__word { font: 700 clamp(30px, 3.4vw, 42px)/1 var(--serif); color: var(--bone); letter-spacing: -.5px; }
+.lockup__word .wordmark__dot { top: .07em; }
+.lockup__tag { border-left: 1px solid var(--rule-strong); padding-left: 14px; }
+.dipgos .lead { margin-top: clamp(20px, 2.4vw, 28px); }
+
+.block { margin-top: clamp(72px, 8vw, 120px); }
+.block--first { margin-top: clamp(56px, 6vw, 80px); }
+.block > .h3 + p, .block > .h3 + .prose { margin-top: 16px; }
+
+/* command centre */
+.cc { margin-top: clamp(32px, 4vw, 48px); }
+.cc__overview {
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 50px 110px -46px rgba(0, 0, 0, .85);
+}
+.cc__caption { margin-top: 22px; display: flex; justify-content: flex-start; }
+.cc__grid {
+  margin-top: clamp(28px, 3.4vw, 44px);
+  display: grid;
+  grid-template-columns: 5fr 3.5fr 3.5fr;
+  gap: clamp(24px, 3vw, 48px);
+}
+.cc__col { border-top: 1px solid var(--rule-strong); padding-top: 20px; min-width: 0; }
+.cc__col h4 { font: 600 20px/1.35 var(--serif); margin-bottom: 12px; }
+.cc__col p { font-size: 16px; line-height: 1.6; color: var(--steel); }
+.keys { list-style: none; padding: 0; display: grid; gap: 10px; }
+.key { display: grid; gap: 12px; }
+.key__text { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.55; color: var(--text); }
+.key__text .marker { translate: 0 -2px; }
+.key .crop { display: none; border: 1px solid var(--rule-strong); border-radius: var(--radius); }
+.cc__close { margin-top: 14px; }
+
+/* the loop, drawn as a ring */
+.loop-block .h3 { max-width: none; }
+.ring { position: relative; height: 680px; margin-top: 12px; --cy: 380px; }
+.ring__svg { position: absolute; width: 560px; height: 560px; left: calc(50% - 280px); top: calc(var(--cy) - 280px); overflow: visible; }
+.ring__center {
+  position: absolute; left: 50%; top: var(--cy);
+  translate: -50% -50%;
+  width: 290px;
+  text-align: center;
+  font: 400 19px/1.5 var(--serif);
+  color: var(--text);
+}
+.stations { list-style: none; padding: 0; }
+.st { position: absolute; width: 232px; }
+.st h4 { font: 600 22px/1.35 var(--serif); }
+.st p { margin-top: 4px; font-size: 15px; line-height: 1.5; color: var(--steel); }
+.st__num { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.st--1 { left: 50%; top: calc(var(--cy) - 262px); translate: -50% -100%; text-align: center; }
+.st--2 { left: calc(50% + 252px); top: calc(var(--cy) - 68px); translate: 0 -15px; }
+.st--3 { left: calc(50% + 172px); top: calc(var(--cy) + 178px); translate: 0 -15px; }
+.st--4 { left: calc(50% - 172px); top: calc(var(--cy) + 178px); translate: -100% -15px; text-align: right; }
+.st--5 { left: calc(50% - 252px); top: calc(var(--cy) - 68px); translate: -100% -15px; text-align: right; }
+
+/* functions resting on the foundation */
+.fn-intro { margin-top: 28px; font-weight: 500; color: var(--bone); max-width: var(--measure); }
+.fns {
+  margin-top: 22px;
+  list-style: none; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-right: 1px solid var(--rule-strong);
+}
+.fns li { border-left: 1px solid var(--rule-strong); padding: 6px clamp(14px, 2vw, 28px) 30px; min-width: 0; }
+.fns h4 { font: 600 20px/1.35 var(--serif); }
+.fns p { margin-top: 4px; font-size: 15.5px; line-height: 1.5; color: var(--steel); }
+.foundation {
+  background: var(--slate);
+  border-top: 2px solid var(--amber);
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: clamp(24px, 3vw, 36px) clamp(20px, 3vw, 40px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(24px, 4vw, 56px); align-items: center;
+}
+.foundation h4 { margin-top: 6px; font: 600 clamp(24px, 2.4vw, 30px)/1.25 var(--serif); }
+.foundation__lead p { margin-top: 8px; font-size: 15.5px; line-height: 1.55; color: var(--steel); max-width: 44ch; }
+.measures { list-style: none; padding: 0; display: flex; flex-wrap: wrap; }
+.measures li {
+  flex: 1 1 auto;
+  font: 500 20px/1.35 var(--serif); color: var(--bone);
+  padding: 6px 18px;
+  border-left: 1px solid var(--rule-strong);
+}
+.statement-close {
+  margin-top: clamp(28px, 3vw, 40px);
+  max-width: 30em;
+  font: 500 clamp(19px, 1.8vw, 23px)/1.5 var(--serif);
+  color: var(--bone);
+}
+
+/* --- applied AI: strata -------------------------------------- */
+.ai .h2 { max-width: 22ch; }
+.ai__grid {
+  margin-top: clamp(40px, 5vw, 64px);
+  display: grid; grid-template-columns: 6fr 5fr; gap: clamp(32px, 5vw, 80px); align-items: center;
+}
+.strata { min-width: 0; }
+.stratum { padding: 18px 24px; }
+.stratum h3 { font: 600 19px/1.35 var(--serif); }
+.stratum p { margin-top: 2px; font-size: 15px; line-height: 1.5; color: var(--steel); }
+.stratum--ai {
+  margin-inline: 15%;
+  background: var(--slate);
+  border: 1px solid rgba(var(--amber-rgb), .55);
+  border-top: 3px solid var(--amber);
+  border-radius: 6px 6px 0 0;
+  padding-block: 20px;
+}
+.stratum--ai h3 { font-size: clamp(20px, 1.9vw, 24px); }
+.stands-on { display: flex; flex-direction: column; align-items: center; }
+.stands-on::before, .stands-on::after { content: ''; width: 1px; height: 14px; background: rgba(var(--amber-rgb), .7); }
+.stands-on .label { padding: 4px 0; color: var(--steel); }
+.ground > .stratum { border: 1px solid var(--rule-strong); }
+.ground > .stratum + .stratum { margin-top: -1px; }
+.ground > .stratum:first-child { border-radius: 6px 6px 0 0; }
+.stratum--l1 { margin-inline: 10%; background: rgba(var(--rule-rgb), .05); }
+.stratum--l2 { margin-inline: 5%; background: rgba(var(--rule-rgb), .09); }
+.stratum--l3 { background: rgba(var(--rule-rgb), .15); border-bottom: 3px solid var(--steel) !important; }
+.ai-prose { min-width: 0; max-width: var(--measure); }
+.ai-prose p { font-size: clamp(17px, 1.4vw, 19px); line-height: 1.62; color: var(--steel); }
+.ai-prose p + p { margin-top: 20px; }
+.ai-prose .first { color: var(--text); }
+.ai-prose .close { font: 600 clamp(19px, 1.8vw, 23px)/1.45 var(--serif); color: var(--bone); margin-top: 26px; }
+
+/* --- company ------------------------------------------------- */
+.company { display: grid; grid-template-columns: 8fr 4fr; gap: clamp(28px, 5vw, 80px); align-items: end; }
+.company .h2 { max-width: 18ch; }
+.company__prose { margin-top: clamp(20px, 2.4vw, 28px); max-width: var(--measure); font-size: clamp(17px, 1.4vw, 19px); line-height: 1.65; }
+.founder { border-left: 1px solid var(--rule-strong); padding-left: 22px; }
+.founder__name { margin-top: 6px; font: 500 22px/1.35 var(--serif); color: var(--bone); }
+.founder__role { font-size: 15px; line-height: 1.5; color: var(--steel); }
+
+.todo {
+  position: relative;
+  outline: 1.5px dashed rgba(var(--amber-rgb), .85);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.todo__tag {
+  position: absolute; right: 8px; top: -6px; translate: 0 -50%;
+  background: var(--todo-bg, var(--ink));
+  color: var(--amber);
+  font: 600 11px/1.4 var(--sans);
+  padding: 0 6px;
+  white-space: nowrap;
+}
+.facts-wrap { margin-top: clamp(48px, 6vw, 80px); --todo-bg: var(--slate); }
+.facts {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding-block: 8px;
+}
+.fact { padding: 14px clamp(14px, 2vw, 24px); border-left: 1px solid var(--rule-strong); min-width: 0; }
+.fact:first-of-type { border-left: 0; padding-left: 0; }
+.fact dt { font: 600 clamp(21px, 1.9vw, 25px)/1.35 var(--serif); color: var(--bone); }
+.fact dd { margin-top: 4px; font-size: 15px; line-height: 1.5; color: var(--steel); }
+
+/* --- contact ------------------------------------------------- */
+.contact { background: linear-gradient(180deg, var(--ink) 0%, var(--ink-deep) 100%); border-top: 1px solid var(--rule); overflow: hidden; }
+.contact__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .4; pointer-events: none; }
+.contact .wrap { position: relative; }
+.contact__title { font-size: clamp(38px, 5.8vw, 80px); line-height: 1.06; letter-spacing: -.025em; max-width: 16ch; }
+.contact__title .hl { color: var(--amber); }
+.reach { margin-top: clamp(32px, 4vw, 48px); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.addr {
+  display: inline-flex; align-items: center;
+  min-height: 48px; padding: 0 4px 0 0; margin-right: 12px;
+  font: 500 clamp(19px, 1.8vw, 24px)/1.35 var(--sans); color: var(--bone);
+  border-bottom: 1px solid var(--rule-strong);
+  user-select: all; -webkit-user-select: all;
+}
+.no-js-hide { display: none; }
+.js .no-js-hide { display: flex; }
+.noscript { margin-top: 28px; font-size: 17px; color: var(--text); }
+.copied { font: var(--label); color: var(--steel); flex-basis: 100%; }
+.copied:empty { display: none; }
+
+/* --- footer -------------------------------------------------- */
+.footer { background: var(--ink-deep); }
+.footer__inner {
+  padding-block: clamp(44px, 5vw, 64px) 84px;
+  border-top: 1px solid var(--rule);
+  display: grid; grid-template-columns: 6fr 3fr 3fr; gap: 32px;
+}
+.footer__tagline { margin-top: 14px; max-width: 32ch; font-size: 15px; line-height: 1.55; color: var(--steel); }
+.footer__col .label { margin-bottom: 10px; }
+.footer__links { list-style: none; padding: 0; display: grid; gap: 4px; }
+.footer__links a { display: inline-block; padding: 3px 0; font-size: 15px; line-height: 1.45; color: var(--text); text-decoration: none; }
+.footer__links a:hover { color: var(--bone); text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 4px; }
+.footer__note { font-size: 14px; line-height: 1.5; color: var(--steel); padding-block: 3px; }
+.footer__bottom {
+  grid-column: 1 / -1; margin-top: 12px; padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap;
+  font-size: 13.5px; line-height: 1.5; color: var(--steel);
+}
+.footer__motto { font: italic 400 14.5px/1.5 var(--serif); color: var(--text); }
+
+/* --- mock tag ------------------------------------------------ */
+.mock-tag {
+  position: fixed; left: 10px; bottom: 10px; z-index: 90;
+  font: 500 11.5px/1.4 var(--sans); color: var(--steel);
+  background: rgba(7, 15, 28, .9);
+  border: 1px solid var(--rule-strong);
+  padding: 5px 10px; border-radius: 999px; text-decoration: none;
+  min-height: 24px; display: inline-flex; align-items: center;
+}
+.mock-tag:hover { color: var(--bone); }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+/* ring gives way to a list with a drawn return path */
+@media (max-width: 1139.98px) {
+  .ring { height: auto; margin-top: 16px; }
+  .ring__svg { display: none; }
+  .ring__center { position: static; translate: none; width: auto; max-width: 29em; text-align: left; font-size: 19px; }
+  .stations { position: relative; margin-top: 28px; padding: 0 0 20px 84px; max-width: 42em; }
+  .st { position: relative; width: auto; left: auto; top: auto; translate: none; text-align: left; padding-bottom: 24px; }
+  .st:last-child { padding-bottom: 0; }
+  .st__num {
+    position: absolute; left: -64px; top: 0;
+    width: 36px; height: 36px; clip: auto; overflow: visible;
+    display: grid; place-items: center;
+    border-radius: 50%; background: var(--ink);
+    border: 1.5px solid var(--steel);
+    font: 600 14px/1 var(--serif); color: var(--bone);
+    z-index: 1;
+  }
+  .st--5 .st__num { border: 2px solid var(--amber); }
+  .st::before {
+    content: ''; position: absolute; left: -46px; top: 36px; bottom: 0; width: 1px; background: var(--rule-strong);
+  }
+  .st:last-child::before { bottom: -20px; background: var(--amber); width: 1.5px; }
+  /* 05 → down → left → up → back into 01 */
+  .stations::after {
+    content: ''; position: absolute; left: 4px; width: 34px; top: 18px; bottom: 0;
+    border: 1.5px solid var(--amber); border-right: 0; border-radius: 12px 0 0 12px;
+  }
+  .stations::before {
+    content: ''; position: absolute; left: 12px; top: 13px;
+    border: 5.5px solid transparent; border-left: 8px solid var(--amber); border-right: 0;
+  }
+  .st h4 { font-size: 21px; }
+}
+
+@media (max-width: 999.98px) {
+  .hero {
+    grid-template-columns:
+      [full-start] minmax(var(--gutter), 1fr)
+      [content-start shot-start] minmax(0, var(--max))
+      [content-end text-end] minmax(var(--gutter), 1fr) [full-end];
+    align-items: start;
+    row-gap: clamp(36px, 5vw, 56px);
+    padding-top: clamp(40px, 6vw, 64px);
+  }
+  .hero__copy { grid-column: content-start / content-end; }
+  .hero__title { font-size: clamp(42px, 8vw, 72px); max-width: 12em; }
+
+  .cc__overview, .cc__caption--wide { display: none; }
+  .key .crop { display: block; }
+  .cc__grid { grid-template-columns: 1fr 1fr; }
+  .cc__col--nav { grid-column: 1 / -1; }
+  .keys { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+  .key--where { grid-column: 1 / -1; }
+  .ai__grid { grid-template-columns: 1fr; }
+  .strata { max-width: 620px; }
+  .company { grid-template-columns: 1fr; align-items: start; }
+  .facts { grid-template-columns: repeat(2, 1fr); row-gap: 8px; }
+  .fact:nth-of-type(3) { border-left: 0; padding-left: 0; }
+  .footer__inner { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
+}
+@media (min-width: 1000px) {
+  .cc__caption--narrow { display: none; }
+}
+
+@media (max-width: 859.98px) {
+  .js .nav__toggle { display: block; }
+  .js .nav__links {
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px var(--gutter) 24px;
+    background: var(--ink);                /* opaque: nothing shows through */
+    border-bottom: 1px solid var(--rule-strong);
+    box-shadow: 0 24px 40px -20px rgba(0, 0, 0, .9);
+    display: none;
+  }
+  .js .nav--open .nav__links { display: flex; }
+  .js .nav__link { padding: 14px 0; font-size: 17px; border-bottom: 1px solid var(--rule); }
+  .js .nav__link[aria-current="true"]::after { left: auto; right: 0; top: 50%; bottom: auto; width: 6px; height: 6px; border-radius: 50%; translate: 0 -50%; }
+  .js .nav__links .btn { margin-top: 18px; }
+  .nav--open .nav__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav--open .nav__bar:nth-child(2) { opacity: 0; }
+  .nav--open .nav__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+}
+
+@media (max-width: 699.98px) {
+  body { font-size: 16.5px; }
+  .hero { padding-bottom: 56px; row-gap: 32px; }
+  .hero__title { font-size: clamp(40px, 11.4vw, 56px); line-height: 1.06; }
+  .hero__lead { font-size: 16.5px; line-height: 1.58; }
+  .hero__actions .btn { flex: 1 1 auto; padding: 0 18px; }
+  /* phone crop: productivity panel at a size its text can be read */
+  .hero__shot { --x: 1380; --y: 58; --w: 532; --h: 347; }
+
+  .crop--where { --x: 590; --y: 100; --w: 580; --h: 620; }
+  .crop--what  { --h: 196; }   /* header + first scope */
+  .crop--how   { --h: 172; }   /* header + overall progress */
+  .keys { grid-template-columns: 1fr; gap: 28px; }
+  .cc__grid { grid-template-columns: 1fr; }
+
+  .fns { grid-template-columns: 1fr 1fr; }
+  .fns li { padding: 4px 12px 22px; }
+  .fns h4 { font-size: 17.5px; }
+  .fns p { font-size: 14.5px; }
+  .foundation { grid-template-columns: 1fr; border-radius: 0 0 8px 8px; }
+  .measures { flex-direction: column; }
+  .measures li { font-size: 18px; padding: 10px 0; border-left: 0; border-top: 1px solid var(--rule-strong); }
+
+  .stratum { padding: 14px 16px; }
+  .stratum--ai { margin-inline: 8%; }
+  .stratum--l1 { margin-inline: 6%; }
+  .stratum--l2 { margin-inline: 3%; }
+
+  .facts { grid-template-columns: 1fr 1fr; }
+  .fact { padding: 12px 12px; }
+  .fact:nth-of-type(odd) { border-left: 0; padding-left: 0; }
+
+  .reach .btn { flex: 1 1 auto; }
+  .addr { flex: 1 1 100%; margin-right: 0; }
+  .footer__inner { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
+  .mock-tag { font-size: 11px; left: 8px; bottom: 8px; }
+}
+
+/* ============================================================
+   Motion: one orchestrated moment. The hero copy settles and the
+   command centre slides in from the right edge it bleeds off.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .btn, .nav__link, .footer__links a { transition: background-color .18s var(--ease-quick), color .18s var(--ease-quick), border-color .18s var(--ease-quick); }
+  .js .hero__copy > * { animation: rise .8s var(--ease-emph) both; }
+  .js .hero__lead { animation-delay: 90ms; }
+  .js .hero__actions { animation-delay: 180ms; }
+  .js .hero__shot { animation: enter 1.15s var(--ease-emph) 220ms both; }
+  .js .hero__shot img { animation: settle 1.6s var(--ease-emph) 220ms both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes enter { from { opacity: 0; transform: translateX(22%); } to { opacity: 1; transform: none; } }
+  @keyframes settle { from { scale: 1.06; } to { scale: 1; } }
+}
+</style>
+<style>/* mock chrome: on phones the tag sits under the nav and scrolls away instead of covering content */@media (max-width:699.98px){.mock-tag,.mocktag{position:absolute!important;top:76px!important;bottom:auto!important}}</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="#top" aria-label="Indus — home"><span aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span></a>
+
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+      <span class="nav__bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#conviction">Conviction</a>
+      <a class="nav__link" href="#dipgos">DiPGOS</a>
+      <a class="nav__link" href="#ai">Applied AI</a>
+      <a class="nav__link" href="#company">Company</a>
+      <a class="btn btn--ghost btn--sm" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main id="content" tabindex="-1">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top" data-nav="none">
+  <img class="hero__bg" src="../../assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <div class="hero__copy">
+    <h1 class="hero__title">The world needs a new way to <span class="hl">build</span>.</h1>
+    <p class="hero__lead">We can’t house, power and connect eight billion people with the fractured way the world builds today. <strong>Indus</strong>&nbsp;is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="#dipgos">See DiPGOS</a>
+      <a class="btn btn--ghost" href="#contact">Get in touch</a>
+    </div>
+  </div>
+  <figure class="hero__shot crop">
+    <img src="../../assets/command-center.webp" width="1912" height="935" fetchpriority="high"
+         alt="DiPGOS command centre — a live project map with productivity, quality and business panels at right">
+  </figure>
+</section>
+
+<!-- ============ CONVICTION ============ -->
+<section class="section section--navy conviction" id="conviction">
+  <div class="wrap">
+    <h2 class="h2">We built the world. But never built the machine that builds it.</h2>
+    <div class="prose">
+      <p>Roads, dams, cities, power plants, buildings — every physical thing around us was delivered by engineering and construction. It is the largest industry on earth: <strong>$15 trillion a year</strong>. And its greatest work is still ahead — <strong>the build now coming is the largest in the history of human civilisation.</strong></p>
+      <p>What keeps us up at night is one question: <strong>how will the world deliver it?</strong> The industry carrying humanity’s future still fights the battles it has always fought — productivity stalled for decades, cost and schedule overruns the norm rather than the exception, quality failures still making headlines.</p>
+    </div>
+    <blockquote class="pull">
+      <p>The answer is not another tool on the pile. The industry has thousands of tools — each holding a fragment of the project. What’s missing is the machine: an operating system, one place where every part of a project connects, understands itself, and acts. Connect the work, and it begins to think.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============ DiPGOS ============ -->
+<section class="section dipgos" id="dipgos">
+  <div class="wrap">
+    <div class="lockup">
+      <img class="lockup__mark" src="../../assets/dipgos-mark-light.svg" alt="" aria-hidden="true">
+      <span class="lockup__word" aria-hidden="true">D<span class="wordmark__i">ı<span class="wordmark__dot"></span></span>PGOS</span><span class="sr-only">DiPGOS</span>
+      <span class="lockup__tag label">Project operating system</span>
+    </div>
+    <h2 class="h2">Your whole project, running as one system.</h2>
+    <p class="lead">The first system built to run the work itself — connecting every signal, reasoning over the whole, and turning your project into one that can think and act.</p>
+
+    <!-- command centre: evidence first -->
+    <div class="block block--first">
+      <h3 class="h3">The command centre&nbsp;— not a dashboard.</h3>
+      <p class="prose">The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+
+      <div class="cc">
+        <figure class="cc__overview">
+          <div class="crop crop--full">
+            <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async"
+                 alt="DiPGOS command centre — scope navigation at left, a live project map at the centre, and productivity, quality and business panels at right">
+            <span class="marker marker--1" data-k="1" aria-hidden="true">1</span>
+            <span class="marker marker--2" data-k="2" aria-hidden="true">2</span>
+            <span class="marker marker--3" data-k="3" aria-hidden="true">3</span>
+          </div>
+        </figure>
+        <p class="cc__caption cc__caption--wide"><span class="todo label"><span class="todo__tag">needs owner input</span>[Shown live on the Diamer-Basha Dam project]</span></p>
+
+        <div class="cc__grid">
+          <div class="cc__col cc__col--nav">
+            <h4>Navigate — where, what &amp; how</h4>
+            <ol class="keys">
+              <li class="key key--where" data-k="1">
+                <div class="crop crop--where">
+                  <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="A live project map at the centre">
+                  <span class="marker marker--1" aria-hidden="true">1</span>
+                </div>
+                <p class="key__text"><span class="marker" aria-hidden="true">1</span><span><strong>Where</strong> — the live map, the epicentre of activity.</span></p>
+              </li>
+              <li class="key key--what" data-k="2">
+                <div class="crop crop--what">
+                  <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="Scope navigation at left">
+                  <span class="marker marker--2" aria-hidden="true">2</span>
+                </div>
+                <p class="key__text"><span class="marker" aria-hidden="true">2</span><span><strong>What</strong> — scope, blocks and work fronts.</span></p>
+              </li>
+              <li class="key key--how" data-k="3">
+                <div class="crop crop--how">
+                  <img src="../../assets/command-center.webp" width="1912" height="935" loading="lazy" decoding="async" alt="Productivity, quality and business panels at right">
+                  <span class="marker marker--3" aria-hidden="true">3</span>
+                </div>
+                <p class="key__text"><span class="marker" aria-hidden="true">3</span><span><strong>How</strong> — productivity, quality and safety.</span></p>
+              </li>
+            </ol>
+            <p class="cc__close" style="color:var(--steel)">The whole project, navigable from one place.</p>
+            <p class="cc__caption cc__caption--narrow"><span class="todo label"><span class="todo__tag">needs owner input</span>[Shown live on the Diamer-Basha Dam project]</span></p>
+          </div>
+          <div class="cc__col">
+            <h4>Action &amp; command</h4>
+            <p>Approve, escalate, change, resolve — every action taken inside the system, in context, on the record. Alarms, decision engine, change manager, notifications, collaboration — command lives where the work lives.</p>
+          </div>
+          <div class="cc__col">
+            <h4>Decision intelligence</h4>
+            <p>Your knowledge repository — historic projects and contracts — reasoned against the live operation the moment a decision is made.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the loop -->
+    <div class="block loop-block">
+      <h3 class="h3">How it thinks</h3>
+      <div class="ring">
+        <svg class="ring__svg" viewBox="-280 -280 560 560" aria-hidden="true" focusable="false">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#9DB0C4"/>
+            </marker>
+            <marker id="ah-amber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#E8A020"/>
+            </marker>
+          </defs>
+          <g fill="none" stroke="#9DB0C4" stroke-opacity=".55" stroke-width="1.5">
+            <path d="M34.4,-217.3 A220,220 0 0 1 196,-99.9" marker-end="url(#ah)"/>
+            <path d="M217.3,-34.4 A220,220 0 0 1 155.6,155.6" marker-end="url(#ah)"/>
+            <path d="M99.9,196 A220,220 0 0 1 -99.9,196" marker-end="url(#ah)"/>
+            <path d="M-155.6,155.6 A220,220 0 0 1 -217.3,-34.4" marker-end="url(#ah)"/>
+          </g>
+          <!-- Act returns to Sense -->
+          <path d="M-196,-99.9 A220,220 0 0 1 -34.4,-217.3" fill="none" stroke="#E8A020" stroke-width="2.25" marker-end="url(#ah-amber)"/>
+          <g font-family="Gelasio, serif" font-size="17" font-weight="600" fill="#FBF9F4" text-anchor="middle">
+            <g transform="translate(0,-220)"><circle r="28" fill="#0A1424" stroke="#9DB0C4" stroke-width="1.5"/><text dy="6">01</text></g>
+            <g transform="translate(209.2,-68)"><circle r="28" fill="#0A1424" stroke="#9DB0C4" stroke-width="1.5"/><text dy="6">02</text></g>
+            <g transform="translate(129.3,178)"><circle r="28" fill="#0A1424" stroke="#9DB0C4" stroke-width="1.5"/><text dy="6">03</text></g>
+            <g transform="translate(-129.3,178)"><circle r="28" fill="#0A1424" stroke="#9DB0C4" stroke-width="1.5"/><text dy="6">04</text></g>
+            <g transform="translate(-209.2,-68)"><circle r="28" fill="#0A1424" stroke="#E8A020" stroke-width="2.25"/><text dy="6">05</text></g>
+          </g>
+        </svg>
+        <p class="ring__center">A living loop runs continuously over the work. Each turn makes the next sharper — the project learns as it is built.</p>
+        <ol class="stations">
+          <li class="st st--1"><span class="st__num">01</span><h4>Sense</h4><p>Read the project’s true state from the ground, live.</p></li>
+          <li class="st st--2"><span class="st__num">02</span><h4>Understand</h4><p>Set it against what you know and the science of the work.</p></li>
+          <li class="st st--3"><span class="st__num">03</span><h4>Foresee</h4><p>See what’s coming before it lands on the programme.</p></li>
+          <li class="st st--4"><span class="st__num">04</span><h4>Adapt</h4><p>Reshape the plan against the live operation.</p></li>
+          <li class="st st--5"><span class="st__num">05</span><h4>Act</h4><p>Put the call in front of the right person, and move.</p></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- functions on the foundation -->
+    <div class="block">
+      <h3 class="h3">Every function, on one live picture of the work.</h3>
+      <p class="prose">Today each function runs in its own tool, blind to the rest. In DiPGOS they all run on one live picture of the job — so schedule, cost, supply chain, quality and safety finally move together.</p>
+      <p class="fn-intro">Functions that run themselves — driven by the work, approved by you.</p>
+      <ul class="fns">
+        <li><h4>Autonomous scheduling</h4><p>The plan drives itself off the live process.</p></li>
+        <li><h4>Finance</h4><p>Cost and value move with the work.</p></li>
+        <li><h4>Supply chain</h4><p>Materials sequenced to the real plan.</p></li>
+        <li><h4>Risk management</h4><p>Exposure caught before it bites.</p></li>
+        <li><h4>Resource manager</h4><p>People and plant, put where they pay.</p></li>
+        <li><h4>Document manager</h4><p>The right revision, tied to the work.</p></li>
+      </ul>
+      <div class="foundation">
+        <div class="foundation__lead">
+          <p class="label" style="margin:0">The foundation</p>
+          <h4>Operational management</h4>
+          <p>How the work is actually going, on the ground — captured live, where delivery is won or lost.</p>
+        </div>
+        <ul class="measures">
+          <li>Productivity</li>
+          <li>Quality</li>
+          <li>Health &amp; safety</li>
+        </ul>
+      </div>
+      <p class="statement-close">The intelligence does the heavy lifting; you approve. Every function runs itself — and you stay in command.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPLIED AI ============ -->
+<section class="section section--navy ai" id="ai">
+  <div class="wrap">
+    <h2 class="h2">AI can only act on ground it understands. We build the ground.</h2>
+    <div class="ai__grid">
+      <div class="strata">
+        <div class="stratum stratum--ai">
+          <h3>Applied AI — human in command</h3>
+          <p>AI does the heavy lifting; your engineers stay in command.</p>
+        </div>
+        <div class="stands-on" aria-hidden="true"><span class="label">Stands on</span></div>
+        <div class="ground">
+          <div class="stratum stratum--l1">
+            <h3>Semantic &amp; knowledge layer</h3>
+            <p>The meaning and context of your project.</p>
+          </div>
+          <div class="stratum stratum--l2">
+            <h3>Operational relationships</h3>
+            <p>How work sequences, depends and constrains.</p>
+          </div>
+          <div class="stratum stratum--l3">
+            <h3>Physics &amp; operational sciences</h3>
+            <p>How things really behave on the ground.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ai-prose">
+        <p class="first">Everyone is racing to put AI to work. But an agent is only as good as what it understands — and in construction, that understanding never existed.</p>
+        <p>DiPGOS builds the layers AI must stand on: the meaning, the relationships, the operational sciences and the physics of the work. Give AI that ground, and it can finally reason and act on real projects.</p>
+        <p class="close">Electricity. The internet. AI. The value was never in the raw technology — it was in the application layer built on top. We are that applied layer for engineering &amp; construction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPANY ============ -->
+<section class="section section--slate" id="company">
+  <div class="wrap">
+    <div class="company">
+      <div>
+        <h2 class="h2">We lived the problem before we built the answer.</h2>
+        <p class="company__prose">Indus is built by engineers and builders who spent their careers inside real projects — feeling the gridlock first-hand. We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      </div>
+      <div class="founder">
+        <p class="label">Founded by</p>
+        <p class="founder__name">M. Kamran Basit</p>
+        <p class="founder__role">Founder &amp; CEO</p>
+      </div>
+    </div>
+    <div class="facts-wrap todo">
+    <span class="todo__tag">needs owner input</span>
+    <dl class="facts">
+      <div class="fact"><dt>[20+ years]</dt><dd>[delivering hydropower &amp; infrastructure]</dd></div>
+      <div class="fact"><dt>[N projects]</dt><dd>[run on DiPGOS]</dd></div>
+      <div class="fact"><dt>[Diamer-Basha Dam]</dt><dd>[flagship project, live in the command centre]</dd></div>
+      <div class="fact"><dt>[Islamabad · USA]</dt><dd>[offices]</dd></div>
+    </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section contact" id="contact" data-nav="none">
+  <img class="contact__bg" src="../../assets/constellation-dark.svg" alt="" aria-hidden="true">
+  <div class="wrap">
+    <h2 class="contact__title">Let’s shape the future of how the world <span class="hl">gets built</span>.</h2>
+    <div class="reach no-js-hide">
+      <span class="addr" id="addr" data-u="kamran" data-d="industechsol.com"></span>
+      <button class="btn btn--ghost" type="button" id="copy">Copy</button>
+      <a class="btn btn--primary" id="email" href="#contact">Email us</a>
+      <span class="copied" id="copied" role="status" aria-live="polite"></span>
+    </div>
+    <noscript><p class="noscript">Write to <strong>kamran (at) industechsol.com</strong>.</p></noscript>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div class="footer__brand">
+      <span class="wordmark" aria-hidden="true" style="font-size:32px"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span><span class="sr-only">Indus</span>
+      <p class="footer__tagline">The world’s oldest industry, reimagined from the ground up.</p>
+    </div>
+    <div class="footer__col">
+      <p class="label">Explore</p>
+      <ul class="footer__links">
+        <li><a href="#conviction">Our conviction</a></li>
+        <li><a href="#dipgos">DiPGOS</a></li>
+        <li><a href="#ai">Applied &amp; physical AI</a></li>
+        <li><a href="#company">Company</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <p class="label">Contact</p>
+      <ul class="footer__links">
+        <li><a href="#contact">Get in touch</a></li>
+      </ul>
+      <p class="footer__note">Indus Technology Solutions (Pvt) Ltd</p>
+      <p class="footer__note">Indus Technologies LLC · USA</p>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Indus Technology Solutions. All rights reserved.</span>
+      <span class="footer__motto">The project thinks; the human commands.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="mock-tag" href="../../index.html" target="_top">Mock A · Proof up front · ← all mocks</a>
+
+<script>
+(function () {
+  /* --- contact: assemble the address at runtime --------------- */
+  var addr = document.getElementById('addr');
+  var email = document.getElementById('email');
+  var copyBtn = document.getElementById('copy');
+  var status = document.getElementById('copied');
+  var address = addr.getAttribute('data-u') + '@' + addr.getAttribute('data-d');
+  addr.textContent = address;
+  email.setAttribute('href', ['mail', 'to'].join('') + ':' + address);
+
+  var timer;
+  function confirmCopy(msg) {
+    copyBtn.textContent = msg;
+    status.textContent = msg === 'Copied' ? 'Address copied' : 'Address selected, ready to copy';
+    clearTimeout(timer);
+    timer = setTimeout(function () { copyBtn.textContent = 'Copy'; status.textContent = ''; }, 2200);
+  }
+  function selectAddr() {
+    var r = document.createRange(); r.selectNodeContents(addr);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  copyBtn.addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(address).then(function () { confirmCopy('Copied'); },
+        function () { selectAddr(); confirmCopy('Selected'); });
+    } else { selectAddr(); confirmCopy('Selected'); }
+  });
+
+  /* --- mobile menu -------------------------------------------- */
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  function setOpen(open) {
+    nav.classList.toggle('nav--open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setOpen(!nav.classList.contains('nav--open')); });
+  document.getElementById('nav-links').addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('nav--open')) { setOpen(false); toggle.focus(); }
+  });
+
+  /* --- active nav link: follows the section in view, clears on
+         the hero and on contact --------------------------------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav__link'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var line = window.innerHeight * 0.35;
+    var current = null;
+    sections.forEach(function (s) { if (s.getBoundingClientRect().top <= line) current = s; });
+    var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    var id = (!current || current.hasAttribute('data-nav') || atBottom) ? null : current.id;
+    links.forEach(function (a) {
+      if (id && a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  /* --- key ↔ marker pairing ------------------------------------ */
+  var overviewMarkers = document.querySelectorAll('.cc__overview .marker');
+  document.querySelectorAll('.key').forEach(function (key) {
+    var k = key.getAttribute('data-k');
+    function hot(on) {
+      key.classList.toggle('is-hot', on);
+      overviewMarkers.forEach(function (m) { if (m.getAttribute('data-k') === k) m.classList.toggle('is-hot', on); });
+    }
+    key.addEventListener('mouseenter', function () { hot(true); });
+    key.addEventListener('mouseleave', function () { hot(false); });
+  });
+})();
+</script>
+</body>
+</html>

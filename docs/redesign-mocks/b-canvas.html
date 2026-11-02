@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus — Mock B: the command centre is the page</title>
+<meta name="theme-color" content="#0A1424">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;500;600&amp;family=Hanken+Grotesk:wght@400..700&amp;display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* ============================================================
+   Mock B · "The command centre is the page"
+   Tokens → base → chrome → hero → product → loop → functions
+   → conviction → AI → company → contact → footer → responsive
+   ============================================================ */
+:root {
+  /* surfaces */
+  --ink: #0A1424;
+  --navy: #0B182C;
+  --slate: #12233F;
+  --slate-hi: #182C4D;
+  /* text */
+  --bone: #FBF9F4;       /* headings + the one highlight level */
+  --text: #C1CDDA;       /* body: 11.4:1 on ink, 9.8:1 on slate */
+  --steel: #9DB0C4;      /* secondary: 8.1:1 on ink, 7.0:1 on slate */
+  /* action — solid fill is only ever a button */
+  --amber: #E8A020;
+  --amber-hi: #FFC24D;
+  /* annotation — the product's own signal blue. Used only for image
+     markers, region outlines and the step numbers that pair with them. */
+  --signal: #3E74D6;
+  /* rules */
+  --rule: rgba(157, 176, 196, .16);
+  --rule-strong: rgba(157, 176, 196, .34);
+
+  --serif: 'Gelasio', Georgia, serif;
+  --sans: 'Hanken Grotesk', system-ui, sans-serif;
+
+  /* the one label style */
+  --label: 600 .8125rem/1.4 var(--sans);
+  --label-track: .01em;
+
+  /* layout: one container for everything */
+  --max: 1280px;
+  --gutter: clamp(16px, 5vw, 72px);
+  --measure: 31em;      /* ≈ 65 characters of Hanken Grotesk */
+  --nav-h: 64px;
+  --section-y: clamp(72px, 9vw, 136px);
+  --radius: 10px;
+
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { overflow-x: clip; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font: 400 1.0625rem/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4 { margin: 0; color: var(--bone); font-weight: 600; }
+p { margin: 0; }
+a { color: inherit; }
+section { scroll-margin-top: var(--nav-h); }
+::selection { background: rgba(232, 160, 32, .28); }
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+.label {
+  font: var(--label);
+  letter-spacing: var(--label-track);
+  color: var(--steel);
+}
+
+/* one highlight level over body text */
+.hl { color: var(--bone); font-weight: 600; }
+.accent { color: var(--amber); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* owner-input placeholders */
+.todo {
+  position: relative;
+  outline: 1.5px dashed var(--amber);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.todo::after {
+  content: "needs owner input";
+  position: absolute;
+  right: -4px;
+  top: -1.55em;
+  font: 600 10px/1.4 var(--sans);
+  letter-spacing: .02em;
+  color: var(--amber);
+  background: var(--ink);
+  padding: 0 5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- buttons ------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font: 600 1rem/1.35 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.btn--primary { background: var(--amber); color: var(--ink); }
+.btn--primary:hover { background: var(--amber-hi); }
+.btn--quiet {
+  background: var(--ink);
+  color: var(--bone);
+  border-color: var(--rule-strong);
+}
+.btn--quiet:hover { border-color: var(--bone); }
+.btn--sm { min-height: 40px; padding: 0 16px; font-size: .9375rem; }
+
+/* ---- skip link & mock tag ----------------------------------- */
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 90;
+  transform: translateY(-200%);
+  background: var(--amber); color: var(--ink);
+  font: 700 .9375rem/1 var(--sans);
+  padding: 14px 18px; border-radius: 8px; text-decoration: none;
+}
+.skip-link:focus { transform: none; }
+
+.mock-tag {
+  position: fixed; left: 10px; bottom: 10px; z-index: 70;
+  display: inline-flex; align-items: center; min-height: 28px;
+  padding: 3px 11px;
+  font: 500 .75rem/1.35 var(--sans);
+  color: var(--steel);
+  background: rgba(10, 20, 36, .94);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  text-decoration: none;
+}
+.mock-tag:hover { color: var(--bone); }
+
+/* ---- wordmark ----------------------------------------------- */
+.wordmark {
+  white-space: nowrap;
+  font: 600 26px/1.2 var(--serif);
+  color: var(--bone);
+  letter-spacing: -.2px;
+  text-decoration: none;
+}
+.wordmark__i { position: relative; }
+.wordmark__dot {
+  position: absolute; left: 50%; top: .12em;
+  transform: translateX(-50%);
+  width: .30em; height: .30em;
+  background: url(../../assets/i-dot.svg) center / contain no-repeat;
+}
+
+/* ---- nav ---------------------------------------------------- */
+.nav {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.nav__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: var(--nav-h);
+}
+.nav__links { display: flex; align-items: center; gap: 30px; }
+.nav__link {
+  position: relative;
+  color: var(--steel);
+  font: 500 .9375rem/1.4 var(--sans);
+  text-decoration: none;
+  padding: 8px 0;
+}
+.nav__link:hover { color: var(--bone); }
+.nav__link[aria-current="true"] { color: var(--bone); }
+.nav__link[aria-current="true"]::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 2px;
+  height: 2px; background: var(--bone); border-radius: 2px;
+}
+.nav__toggle {
+  display: none;
+  width: 44px; height: 44px;
+  background: none; border: 1px solid var(--rule-strong); border-radius: 8px;
+  color: var(--bone); cursor: pointer;
+  align-items: center; justify-content: center;
+}
+.nav__toggle svg { width: 20px; height: 20px; }
+
+/* ---- hero: the product is the stage ------------------------- */
+/* the ink panel rises just far enough to land its buttons inside the fold */
+.hero { position: relative; --overlap: clamp(140px, calc(500px + 48.9vw - 100vh), 30vw); }
+.stage { margin: 0; position: relative; }
+.crop {
+  --cx: 0; --cy: 0; --cw: 1912; --ch: 935;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--cw) / var(--ch);
+  background: #05090f;
+}
+.crop > img {
+  position: absolute;
+  max-width: none;
+  width: calc(1912 / var(--cw) * 100%);
+  height: auto;
+  left: calc(var(--cx) / var(--cw) * -100%);
+  top: calc(var(--cy) / var(--ch) * -100%);
+}
+.stage .crop::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to top right, rgba(10,20,36,.94) 0%, rgba(10,20,36,.6) 32%, rgba(10,20,36,0) 60%),
+    linear-gradient(to top, rgba(10,20,36,.55) 0%, rgba(10,20,36,0) 26%);
+}
+.hero__panel {
+  position: relative; z-index: 2;
+  margin-top: calc(-1 * var(--overlap));
+}
+.hero__row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 32px;
+}
+.hero__copy {
+  position: relative;
+  background: var(--ink);
+  max-width: 43rem;
+  padding: clamp(28px, 3.4vw, 44px) clamp(24px, 3.4vw, 52px) 0 0;
+}
+/* the panel runs off the left edge; the text keeps the container edge */
+.hero__copy::before {
+  content: ""; position: absolute; top: 0; bottom: 0; right: 100%;
+  width: 50vw; background: var(--ink);
+}
+.hero__title {
+  font: 600 clamp(2.5rem, 1rem + 3.4vw, 4.125rem)/1.08 var(--serif);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+.hero__lead {
+  margin-top: 18px;
+  max-width: var(--measure);
+  font-size: clamp(1.0625rem, 1rem + .2vw, 1.1875rem);
+  line-height: 1.55;
+}
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.hero__caption {
+  text-wrap: pretty;
+  max-width: 25rem;
+  align-self: flex-start;
+  margin-top: calc(var(--overlap) + 16px);   /* always below the image, never over it */
+  font: 400 .875rem/1.5 var(--sans);
+  color: var(--steel);
+  text-align: right;
+}
+.hero__caption .todo { display: table; margin: 20px 0 0 auto; color: var(--text); }
+
+/* ---- sections ----------------------------------------------- */
+.section { padding-block: var(--section-y); border-top: 1px solid var(--rule); }
+.section--first { border-top: 0; }
+.h2 {
+  font: 600 clamp(2rem, 1.2rem + 2.6vw, 3.25rem)/1.14 var(--serif);
+  letter-spacing: -.015em;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+.h3 {
+  font: 600 clamp(1.625rem, 1.2rem + 1.2vw, 2.25rem)/1.35 var(--serif);
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.lead {
+  font-size: clamp(1.125rem, 1rem + .4vw, 1.3125rem);
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+.prose { max-width: var(--measure); }
+.prose + .prose { margin-top: 1em; }
+
+/* ---- DiPGOS header ------------------------------------------ */
+.lockup { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; }
+.lockup__mark { width: 52px; height: 52px; }
+.lockup__word {
+  white-space: nowrap;
+  font: 600 34px/1.2 var(--serif);
+  color: var(--bone);
+  letter-spacing: .01em;
+}
+.lockup__tag {
+  padding-left: 14px;
+  border-left: 1px solid var(--rule-strong);
+}
+.dg-head .lead { margin-top: 22px; }
+@media (min-width: 1024px) {
+  .dg-head {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: clamp(32px, 4vw, 64px);
+    align-items: end;
+  }
+  .dg-head .lockup { grid-column: 1 / -1; }
+  .dg-head .lead { margin-top: 0; padding-bottom: 6px; font-size: 1.125rem; }
+}
+
+/* ---- the signature: sticky annotated product ---------------- */
+.scrolly {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: clamp(32px, 4vw, 64px);
+  margin-top: clamp(56px, 7vw, 96px);
+}
+.scrolly__intro { padding-bottom: 12vh; }
+.scrolly__intro .prose { margin-top: 18px; }
+.step {
+  min-height: 58vh;
+  padding-block: 8px;
+  scroll-margin-top: 30vh;
+}
+.step:last-child { min-height: 52vh; }
+.step__head { display: flex; align-items: center; gap: 14px; }
+.num {
+  flex: none;
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--signal);
+  color: var(--bone);
+  font: 700 .9375rem/1 var(--sans);
+}
+.step__title {
+  font: 600 clamp(1.5rem, 1.2rem + .8vw, 2rem)/1.35 var(--serif);
+}
+.step__text { margin-top: 14px; max-width: 34em; }
+.step__crop { display: none; }
+
+.scrolly__stage { position: relative; }
+.cc {
+  position: sticky;
+  top: max(calc(var(--nav-h) + 24px), calc(50vh - 190px));
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--rule-strong);
+  background: #05090f;
+}
+.cc svg, .step__crop svg { display: block; width: 100%; height: auto; }
+
+.dim { fill: rgba(6, 12, 22, .7); opacity: 0; }
+.ol {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+.mk { cursor: pointer; }
+.mk__dot { fill: var(--ink); stroke: var(--signal); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+.mk__halo { fill: none; stroke: var(--signal); stroke-width: 2px; vector-effect: non-scaling-stroke; opacity: 0; }
+.mk text {
+  fill: var(--bone);
+  font-family: var(--sans);
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.mk:focus-visible { outline: none; }
+.mk:focus-visible .mk__dot { stroke: var(--amber); stroke-width: 3px; }
+
+/* before the first step: every region shown, dashed, nothing dimmed */
+.scrolly[data-active="0"] .ol { opacity: .7; stroke-dasharray: 7 6; stroke-width: 1.5px; }
+.scrolly[data-active="1"] .cc [data-for="1"],
+.scrolly[data-active="2"] .cc [data-for="2"],
+.scrolly[data-active="3"] .cc [data-for="3"],
+.scrolly[data-active="4"] .cc [data-for="4"],
+.scrolly[data-active="5"] .cc [data-for="5"] { opacity: 1; }
+.scrolly[data-active="1"] .mk[data-for="1"] .mk__halo,
+.scrolly[data-active="2"] .mk[data-for="2"] .mk__halo,
+.scrolly[data-active="3"] .mk[data-for="3"] .mk__halo,
+.scrolly[data-active="4"] .mk[data-for="4"] .mk__halo,
+.scrolly[data-active="5"] .mk[data-for="5"] .mk__halo { opacity: 1; }
+.scrolly[data-active="1"] .mk[data-for="1"] .mk__dot,
+.scrolly[data-active="2"] .mk[data-for="2"] .mk__dot,
+.scrolly[data-active="3"] .mk[data-for="3"] .mk__dot,
+.scrolly[data-active="4"] .mk[data-for="4"] .mk__dot,
+.scrolly[data-active="5"] .mk[data-for="5"] .mk__dot { stroke-width: 4px; }
+
+/* inactive steps recede, still at AA */
+.js .scrolly .step .step__title,
+.js .scrolly .step .step__text { color: var(--steel); }
+.js .scrolly .step.is-active .step__title { color: var(--bone); }
+.js .scrolly .step.is-active .step__text { color: var(--text); }
+.js .scrolly .step:not(.is-active) .num { border-color: rgba(62, 116, 214, .55); }
+
+/* phone/tablet crops: each step owns its own view */
+.step__crop .dim { opacity: 1; fill: rgba(6, 12, 22, .6); }
+.step__crop .ol { opacity: 1; }
+.step__crop .mk__halo { opacity: 1; }
+
+/* ---- the loop: a closed racetrack --------------------------- */
+.loop { margin-top: clamp(80px, 10vw, 140px); }
+.loop .prose { margin-top: 16px; }
+.track {
+  --lane: 34px;
+  --pad: 40px;
+  position: relative;
+  margin-top: 44px;
+  padding: var(--lane);
+  background: var(--slate);
+  border-radius: 92px;
+}
+.track__field {
+  list-style: none; margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 36px;
+  padding: var(--pad) calc(var(--pad) + 8px) calc(var(--pad) - 4px);
+  background: var(--ink);
+  border-radius: 58px;
+}
+.station { position: relative; max-width: var(--measure); }
+.station__node {
+  position: absolute;
+  left: 0;
+  top: calc(-1 * var(--pad) - var(--lane) / 2);
+  transform: translateY(-50%);
+  display: inline-grid; place-items: center;
+  height: 26px; min-width: 40px; padding: 0 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  border: 1.5px solid var(--steel);
+  color: var(--bone);
+  font: 700 .75rem/1 var(--sans);
+  letter-spacing: .02em;
+}
+.station--act .station__node { border-color: var(--amber); border-width: 2px; }
+/* direction of travel along the top lane */
+.station:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  top: calc(-1 * var(--pad) - var(--lane) / 2);
+  width: 8px; height: 8px;
+  border-top: 1.5px solid var(--steel);
+  border-right: 1.5px solid var(--steel);
+  transform: translate(50%, -50%) rotate(45deg);
+}
+.station__title { font: 600 1.375rem/1.4 var(--serif); }
+.station--act::before {
+  content: ""; position: absolute; left: 0; top: -14px;
+  width: 28px; height: 2px; background: var(--amber);
+}
+.station__text { margin-top: 8px; font-size: 1rem; line-height: 1.5; }
+.track__return {
+  position: absolute;
+  left: 96px; right: 96px; bottom: 0;
+  height: var(--lane);
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+}
+.track__return .label { color: var(--text); }
+.chev {
+  width: 8px; height: 8px; flex: none;
+  border-bottom: 1.5px solid var(--steel);
+  border-left: 1.5px solid var(--steel);
+  transform: rotate(45deg); /* points left */
+}
+.track__turn {
+  position: absolute; top: 50%;
+  width: 8px; height: 8px;
+  border-bottom: 1.5px solid var(--steel);
+  border-right: 1.5px solid var(--steel);
+}
+.track__turn--r { right: calc(var(--lane) / 2); transform: translate(50%, -50%) rotate(45deg); }   /* down */
+.track__turn--l { left: calc(var(--lane) / 2); transform: translate(-50%, -50%) rotate(-135deg); } /* up */
+
+/* ---- functions on the foundation ---------------------------- */
+.fnset { margin-top: clamp(80px, 10vw, 140px); }
+.fnset .prose { margin-top: 16px; }
+.kicker { margin-top: 44px; color: var(--bone); font-weight: 600; max-width: var(--measure); text-wrap: balance; }
+.fn-list {
+  list-style: none; margin: 26px 0 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.fn {
+  border-left: 1px solid var(--rule-strong);
+  padding: 4px 24px 34px 20px;
+}
+.fn__title { font: 600 1.125rem/1.35 var(--sans); }
+.fn p { margin-top: 4px; font-size: 1rem; line-height: 1.5; }
+.foundation {
+  background: var(--slate);
+  border-top: 2px solid var(--steel);
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: clamp(24px, 3vw, 36px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 24px 48px;
+  align-items: end;
+}
+.foundation__title { font: 600 clamp(1.5rem, 1.2rem + .8vw, 1.875rem)/1.35 var(--serif); margin-top: 6px; }
+.foundation p { margin-top: 10px; max-width: 46ch; }
+.pillars { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; }
+.pillars li {
+  color: var(--bone); font-weight: 600;
+  padding: 2px 18px;
+  border-left: 1px solid var(--rule-strong);
+}
+.close-line {
+  margin-top: 48px;
+  max-width: 34ch;
+  font: 400 clamp(1.375rem, 1.1rem + .9vw, 1.875rem)/1.4 var(--serif);
+  color: var(--bone);
+}
+
+/* ---- conviction --------------------------------------------- */
+.conv-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 56px;
+  margin-top: 40px;
+}
+.conv-cols p { max-width: var(--measure); }
+.pull {
+  margin: 56px 0 0;
+  padding-left: clamp(20px, 3vw, 36px);
+  border-left: 2px solid var(--steel);
+  max-width: 44ch;
+  font: 400 clamp(1.3125rem, 1.05rem + .9vw, 1.75rem)/1.45 var(--serif);
+  color: var(--text);
+}
+.pull .hl { font-weight: 600; }
+
+/* ---- applied AI: strata ------------------------------------- */
+.ai-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px 64px;
+  align-items: start;
+}
+.ai-head .prose:first-child { color: var(--bone); }
+.strata { margin-top: clamp(48px, 6vw, 72px); }
+.stratum {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px 48px;
+  align-items: center;
+  padding: 22px clamp(20px, 3vw, 36px);
+}
+.stratum__title { font: 600 1.3125rem/1.35 var(--serif); }
+.stratum p { max-width: 46ch; }
+.stratum--ai {
+  background: var(--slate);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.strata__on {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px clamp(20px, 3vw, 36px);
+}
+.strata__on::before, .strata__on::after {
+  content: ""; height: 1px; flex: 1; background: var(--rule-strong);
+}
+.strata__ground > .stratum + .stratum { border-top: 1px solid rgba(157, 176, 196, .22); }
+.strata__ground { border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; border: 1px solid var(--rule); }
+.stratum--1 { background: #1B3053; padding-block: 20px; }
+.stratum--2 { background: #142744; padding-block: 26px; }
+.stratum--3 {
+  padding-block: 40px;
+  background:
+    repeating-linear-gradient(135deg, rgba(157,176,196,.07) 0 1px, transparent 1px 12px),
+    #0D1D36;
+}
+
+/* ---- company ------------------------------------------------ */
+.company {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 40px 64px;
+}
+.company .prose { margin-top: 22px; }
+.founder { margin-top: 36px; }
+.founder__name { margin-top: 4px; font: 600 1.375rem/1.4 var(--serif); color: var(--bone); }
+.founder__role { color: var(--steel); }
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; align-self: start; }
+.facts li {
+  padding: 22px 0 18px;
+  border-top: 1px solid var(--rule-strong);
+  color: var(--bone);
+  font: 500 1.125rem/1.45 var(--sans);
+}
+.facts li:last-child { border-bottom: 1px solid var(--rule-strong); }
+.facts .todo { display: inline-block; }
+
+/* ---- contact ------------------------------------------------ */
+.contact { padding-block: clamp(88px, 11vw, 160px); border-top: 1px solid var(--rule); }
+.contact__title {
+  font: 600 clamp(2.25rem, 1.2rem + 3.6vw, 4.25rem)/1.1 var(--serif);
+  letter-spacing: -.02em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.addr { margin-top: 40px; }
+.addr__text {
+  display: block;
+  margin-top: 6px;
+  font: 500 clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem)/1.35 var(--serif);
+  color: var(--bone);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.addr__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; align-items: center; }
+.copy-status { color: var(--steel); font-size: .9375rem; min-width: 5em; }
+.no-js-hide { display: none; }
+.js .no-js-hide { display: block; }
+.fallback { margin-top: 28px; max-width: var(--measure); }
+
+/* ---- footer ------------------------------------------------- */
+.footer { border-top: 1px solid var(--rule); padding-block: 56px 72px; background: var(--navy); }
+.footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 36px 48px;
+}
+.footer__tagline { margin-top: 12px; max-width: 30ch; color: var(--steel); }
+.footer__list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.footer__list a { color: var(--text); text-decoration: none; display: inline-block; padding: 3px 0; }
+.footer__list a:hover { color: var(--bone); text-decoration: underline; text-underline-offset: 4px; }
+.footer__list span { color: var(--steel); display: inline-block; padding: 3px 0; }
+.footer__bottom {
+  margin-top: 48px; padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px;
+  font-size: .9375rem; color: var(--steel);
+}
+.footer__motto { font-family: var(--serif); color: var(--text); }
+
+/* ---- motion: the one moment is the region highlight --------- */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .dim, .ol, .mk__halo { transition: opacity 420ms var(--ease); }
+  .mk__dot { transition: stroke-width 300ms var(--ease); }
+  .js .scrolly .step .step__title,
+  .js .scrolly .step .step__text { transition: color 300ms var(--ease); }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 1023px) {
+  .scrolly { grid-template-columns: 1fr; gap: 0; margin-top: 56px; }
+  .scrolly__stage { display: none; }
+  .scrolly__intro { padding-bottom: 36px; }
+  .step, .step:last-child { min-height: 0; padding-block: 0; }
+  .step + .step { margin-top: 56px; }
+  .step__crop {
+    display: block;
+    margin: 0 0 18px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--rule-strong);
+    background: #05090f;
+  }
+  .js .scrolly .step .step__title { color: var(--bone); }
+  .js .scrolly .step .step__text { color: var(--text); }
+  .js .scrolly .step:not(.is-active) .num { border-color: var(--signal); }
+
+  .hero .crop { --cx: 346; --cw: 1566; }
+  /* the ink panel stops short of the product's right-hand panel,
+     so it never covers UI text mid-word */
+  .hero { --overlap: clamp(44px, 16vw, 150px); }
+  .hero__copy { max-width: min(36rem, 72%); }
+  .hero__row { flex-direction: column; align-items: stretch; }
+  .hero__caption { text-align: left; max-width: var(--measure); margin-top: 0; }
+  .hero__caption .todo { margin: 20px 0 0; }
+
+  .ai-head, .company { grid-template-columns: 1fr; }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
+}
+
+
+@media (min-width: 700px) and (max-width: 1023px) {
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 36px;
+  }
+  .step__crop { grid-row: 1 / 3; margin: 0; align-self: start; }
+  .step__head { align-self: end; }
+  .step__text { align-self: start; }
+}
+
+@media (max-width: 899px) {
+  /* the loop turns vertical: stations down the left lane, return up the right */
+  .track {
+    --lane: 30px; --pad: 22px;
+    border-radius: 48px;
+    margin-top: 32px;
+  }
+  .track__field {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 26px 18px 26px 18px;
+    border-radius: 22px;
+  }
+  .station__node {
+    top: 2px;
+    left: calc(-18px - var(--lane) / 2);
+    transform: translateX(-50%);
+    min-width: 26px; width: 26px; height: 26px; padding: 0;
+    font-size: .6875rem;
+  }
+  .station:not(:last-child)::after {
+    right: auto; top: auto;
+    left: calc(-18px - var(--lane) / 2);
+    bottom: -11px;
+    transform: translate(-50%, 50%) rotate(135deg); /* points down */
+  }
+  .station--act::before { top: -10px; }
+  .track__return {
+    left: auto; right: 0; top: 60px; bottom: 60px;
+    width: var(--lane); height: auto;
+    flex-direction: column;
+  }
+  .track__return .label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    font-size: .75rem;
+  }
+  .chev { transform: rotate(135deg); } /* points up */
+  .track__turn--r { right: auto; left: 50%; top: auto; bottom: calc(var(--lane) / 2); transform: translate(-50%, 50%) rotate(-45deg); } /* right, along bottom */
+  .track__turn--l { left: 50%; top: calc(var(--lane) / 2); transform: translate(-50%, -50%) rotate(135deg); } /* left, along top */
+
+}
+
+@media (max-width: 859px) {
+  .nav__toggle { display: inline-flex; }
+  .nav__links {
+    display: none;
+    position: absolute; top: var(--nav-h); left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--ink);            /* opaque, always */
+    border-bottom: 1px solid var(--rule-strong);
+    padding: 8px var(--gutter) 20px;
+  }
+  .nav.is-open .nav__links { display: flex; }
+  .nav__link { padding: 13px 0; font-size: 1.0625rem; border-bottom: 1px solid var(--rule); }
+  .nav__link[aria-current="true"]::after { bottom: 8px; width: 2.5em; right: auto; }
+  .nav__links .btn { margin-top: 16px; }
+}
+
+@media (max-width: 699px) {
+  body { font-size: 1rem; }
+  .hero { --overlap: 0px; }
+  .hero .crop { --cx: 960; --cy: 0; --cw: 952; --ch: 622; }
+  .stage .crop::after {
+    background: linear-gradient(to top right, rgba(10,20,36,.75) 0%, rgba(10,20,36,0) 45%);
+  }
+  .hero__copy { padding: 22px 0 0; max-width: none; }
+  .hero__copy::before { display: none; }
+  .hero__lead { margin-top: 16px; }
+  .hero__actions { margin-top: 24px; }
+  .hero__actions .btn { flex: 1 1 auto; }
+
+  .lockup__mark { width: 42px; height: 42px; }
+  .lockup__word { font-size: 28px; }
+
+  .fn-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fn { padding: 2px 12px 24px 14px; }
+  .fn__title { font-size: 1rem; }
+  .fn p { font-size: .9375rem; }
+  .foundation { grid-template-columns: 1fr; border-radius: 0 0 var(--radius) var(--radius); }
+  .pillars { gap: 6px 22px; }
+  .pillars li { padding: 0; border-left: 0; }
+
+  .conv-cols { grid-template-columns: 1fr; }
+  .stratum { grid-template-columns: 1fr; padding-block: 18px; }
+  .stratum--3 { padding-block: 30px; }
+
+  .addr__actions .btn { flex: 1 1 8rem; }
+  .footer__grid { grid-template-columns: 1fr; }
+  .footer { padding-bottom: 88px; }
+}
+</style>
+<style>/* mock chrome: on phones the tag sits under the nav and scrolls away instead of covering content */@media (max-width:699.98px){.mock-tag,.mocktag{position:absolute!important;top:76px!important;bottom:auto!important}}</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="#top" aria-label="Indus — home"><span aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span></a>
+    <button class="nav__toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a class="nav__link" href="#dipgos" data-spy="dipgos">DiPGOS</a>
+      <a class="nav__link" href="#conviction" data-spy="conviction">Conviction</a>
+      <a class="nav__link" href="#ai" data-spy="ai">Applied AI</a>
+      <a class="nav__link" href="#company" data-spy="company">Company</a>
+      <a class="btn btn--quiet btn--sm" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main id="content" tabindex="-1">
+
+<!-- 1 · Hero: the command centre is the stage -->
+<section class="hero" id="top" data-section>
+  <figure class="stage">
+    <div class="crop">
+      <img src="../../assets/command-center.webp" width="1912" height="935" fetchpriority="high" decoding="async"
+           alt="DiPGOS command centre — scope navigation at left, a live project map at the centre, and productivity, quality and business panels at right">
+    </div>
+  </figure>
+  <div class="hero__panel">
+    <div class="wrap hero__row">
+      <div class="hero__copy">
+        <h1 class="hero__title">The world needs a new way to <span class="accent">build</span>.</h1>
+        <p class="hero__lead">We can’t house, power and connect eight billion people with the fractured way the world builds today. Indus is rebuilding it from the ground up — a single operating system where every part of a project connects, so the project itself can think and act.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#dipgos">See DiPGOS</a>
+          <a class="btn btn--quiet" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <p class="hero__caption">The DiPGOS command centre, running a live dam project. <span class="todo">[Name it: Diamer-Basha, MW-1]</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · DiPGOS: show, then explain -->
+<section class="section section--first" id="dipgos" data-section>
+  <div class="wrap">
+    <header class="dg-head">
+      <div class="lockup">
+        <img class="lockup__mark" src="../../assets/dipgos-mark-light.svg" alt="" width="52" height="52">
+        <span class="lockup__word" aria-hidden="true">D<span class="wordmark__i">ı<span class="wordmark__dot"></span></span>PGOS</span><span class="sr-only">DiPGOS</span>
+        <span class="lockup__tag label">Project operating system</span>
+      </div>
+      <h2 class="h2">Your whole project, running as one system.</h2>
+      <p class="lead">The first system built to run the work itself — connecting every signal, reasoning over the whole, and turning your project into one that can think and act.</p>
+    </header>
+
+    <div class="scrolly" id="scrolly" data-active="0">
+      <div class="scrolly__steps">
+        <div class="scrolly__intro">
+          <h3 class="h3">The command centre — not a dashboard.</h3>
+          <p class="prose">The operational command centre your team runs the work from, and takes decisions in. One place: where the work stands, what it’s made of, and how it’s performing.</p>
+        </div>
+
+        <article class="step" id="step-1" data-step="1">
+          <figure class="step__crop" style="max-width:720px">
+            <svg viewBox="580 96 600 620" role="img" aria-label="Crop of the command centre: the live project map, with work-front markers showing percent complete">
+              <image href="../../assets/command-center.webp" width="1912" height="935"/>
+              <g class="mk" transform="translate(622 138)" aria-hidden="true"><circle class="mk__halo" r="34"/><circle class="mk__dot" r="24"/><text font-size="24">1</text></g>
+            </svg>
+          </figure>
+          <div class="step__head"><span class="num" aria-hidden="true">1</span><h4 class="step__title">Where</h4></div>
+          <p class="step__text">The live map, the epicentre of activity.</p>
+        </article>
+
+        <article class="step" id="step-2" data-step="2">
+          <figure class="step__crop" style="max-width:390px">
+            <svg viewBox="50 60 300 306" role="img" aria-label="Crop of the command centre: the scope rail, listing each scope with its actual and planned progress">
+              <image href="../../assets/command-center.webp" width="1912" height="935"/>
+              <rect class="ol" x="60" y="63" width="284" height="870" rx="16"/>
+              <g class="mk" transform="translate(318 96)" aria-hidden="true"><circle class="mk__halo" r="17"/><circle class="mk__dot" r="12"/><text font-size="12">2</text></g>
+            </svg>
+          </figure>
+          <div class="step__head"><span class="num" aria-hidden="true">2</span><h4 class="step__title">What</h4></div>
+          <p class="step__text">Scope, blocks and work fronts.</p>
+        </article>
+
+        <article class="step" id="step-3" data-step="3">
+          <figure class="step__crop" style="max-width:414px">
+            <svg viewBox="1567 60 345 348" role="img" aria-label="Crop of the command centre: the productivity panel, with physical works completed against plan and design work output">
+              <image href="../../assets/command-center.webp" width="1912" height="935"/>
+              <rect class="ol" x="1575" y="63" width="334" height="870" rx="16"/>
+              <g class="mk" transform="translate(1826 90)" aria-hidden="true"><circle class="mk__halo" r="19"/><circle class="mk__dot" r="13"/><text font-size="13">3</text></g>
+            </svg>
+          </figure>
+          <div class="step__head"><span class="num" aria-hidden="true">3</span><h4 class="step__title">How</h4></div>
+          <p class="step__text">Productivity, quality and safety. The whole project, navigable from one place.</p>
+        </article>
+
+        <article class="step" id="step-4" data-step="4">
+          <figure class="step__crop" style="max-width:614px">
+            <svg viewBox="1400 0 512 232" role="img" aria-label="Crop of the command centre: the alert bar, with alarms, approvals, messages and the AI assistant">
+              <image href="../../assets/command-center.webp" width="1912" height="935"/>
+              <path class="dim" fill-rule="evenodd" d="M0 0H1912V935H0Z M1576 2H1908V54H1576Z"/>
+              <rect class="ol" x="1576" y="2" width="332" height="52" rx="12"/>
+              <g class="mk" transform="translate(1536 28)" aria-hidden="true"><circle class="mk__halo" r="25"/><circle class="mk__dot" r="18"/><text font-size="18">4</text></g>
+            </svg>
+          </figure>
+          <div class="step__head"><span class="num" aria-hidden="true">4</span><h4 class="step__title">Action &amp; command</h4></div>
+          <p class="step__text">Approve, escalate, change, resolve — every action taken inside the system, in context, on the record. Alarms, decision engine, change manager, notifications, collaboration — command lives where the work lives.</p>
+        </article>
+
+        <article class="step" id="step-5" data-step="5">
+          <figure class="step__crop" style="max-width:756px">
+            <svg viewBox="640 705 630 230" role="img" aria-label="Crop of the command centre: the toolbar of project records, schedule, finance, documents and maps">
+              <image href="../../assets/command-center.webp" width="1912" height="935"/>
+              <path class="dim" fill-rule="evenodd" d="M0 0H1912V935H0Z M761 869H1149V933H761Z"/>
+              <rect class="ol" x="761" y="869" width="388" height="64" rx="18"/>
+              <g class="mk" transform="translate(718 901)" aria-hidden="true"><circle class="mk__halo" r="30"/><circle class="mk__dot" r="22"/><text font-size="22">5</text></g>
+            </svg>
+          </figure>
+          <div class="step__head"><span class="num" aria-hidden="true">5</span><h4 class="step__title">Decision intelligence</h4></div>
+          <p class="step__text">Your knowledge repository — historic projects and contracts — reasoned against the live operation the moment a decision is made.</p>
+        </article>
+      </div>
+
+      <div class="scrolly__stage">
+        <figure class="cc">
+          <svg viewBox="0 0 1912 935" role="group" aria-labelledby="cc-title">
+            <title id="cc-title">DiPGOS command centre with five annotated regions: the live map, the scope rail, the productivity and quality panel, the alert bar and the toolbar</title>
+            <image href="../../assets/command-center.webp" width="1912" height="935"/>
+            <g aria-hidden="true">
+              <path class="dim" data-for="1" fill-rule="evenodd" d="M0 0H1912V935H0Z M346 58H1573V864H346Z"/>
+              <path class="dim" data-for="2" fill-rule="evenodd" d="M0 0H1912V935H0Z M60 63H344V933H60Z"/>
+              <path class="dim" data-for="3" fill-rule="evenodd" d="M0 0H1912V935H0Z M1575 63H1909V933H1575Z"/>
+              <path class="dim" data-for="4" fill-rule="evenodd" d="M0 0H1912V935H0Z M1576 2H1908V54H1576Z"/>
+              <path class="dim" data-for="5" fill-rule="evenodd" d="M0 0H1912V935H0Z M761 869H1149V933H761Z"/>
+              <rect class="ol" data-for="1" x="346" y="58" width="1227" height="806" rx="16"/>
+              <rect class="ol" data-for="2" x="60" y="63" width="284" height="870" rx="16"/>
+              <rect class="ol" data-for="3" x="1575" y="63" width="334" height="870" rx="16"/>
+              <rect class="ol" data-for="4" x="1576" y="2" width="332" height="52" rx="12"/>
+              <rect class="ol" data-for="5" x="761" y="869" width="388" height="64" rx="18"/>
+            </g>
+            <a class="mk" data-for="1" href="#step-1" aria-label="Step 1: where" transform="translate(430 130)"><circle class="mk__halo" r="54"/><circle class="mk__dot" r="38"/><text font-size="38">1</text></a>
+            <a class="mk" data-for="2" href="#step-2" aria-label="Step 2: what" transform="translate(250 96)"><circle class="mk__halo" r="54"/><circle class="mk__dot" r="38"/><text font-size="38">2</text></a>
+            <a class="mk" data-for="3" href="#step-3" aria-label="Step 3: how" transform="translate(1810 92)"><circle class="mk__halo" r="54"/><circle class="mk__dot" r="38"/><text font-size="38">3</text></a>
+            <a class="mk" data-for="4" href="#step-4" aria-label="Step 4: action and command" transform="translate(1530 28)"><circle class="mk__halo" r="30"/><circle class="mk__dot" r="26"/><text font-size="30">4</text></a>
+            <a class="mk" data-for="5" href="#step-5" aria-label="Step 5: decision intelligence" transform="translate(716 900)"><circle class="mk__halo" r="34"/><circle class="mk__dot" r="28"/><text font-size="30">5</text></a>
+          </svg>
+        </figure>
+      </div>
+    </div>
+
+    <!-- 3 · The loop -->
+    <div class="loop">
+      <h3 class="h3">How it thinks</h3>
+      <p class="prose">A living loop runs continuously over the work. Each turn makes the next sharper — the project learns as it is built.</p>
+      <div class="track">
+        <ol class="track__field">
+          <li class="station"><span class="station__node">01</span><h4 class="station__title">Sense</h4><p class="station__text">Read the project’s true state from the ground, live.</p></li>
+          <li class="station"><span class="station__node">02</span><h4 class="station__title">Understand</h4><p class="station__text">Set it against what you know and the science of the work.</p></li>
+          <li class="station"><span class="station__node">03</span><h4 class="station__title">Foresee</h4><p class="station__text">See what’s coming before it lands on the programme.</p></li>
+          <li class="station"><span class="station__node">04</span><h4 class="station__title">Adapt</h4><p class="station__text">Reshape the plan against the live operation.</p></li>
+          <li class="station station--act"><span class="station__node">05</span><h4 class="station__title">Act</h4><p class="station__text">Put the call in front of the right person, and move.</p></li>
+        </ol>
+        <div class="track__return" aria-hidden="true">
+          <span class="chev"></span><span class="chev"></span>
+          <span class="label">Act returns to Sense</span>
+          <span class="chev"></span><span class="chev"></span>
+        </div>
+        <span class="track__turn track__turn--r" aria-hidden="true"></span>
+        <span class="track__turn track__turn--l" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!-- 4 · Functions on the foundation -->
+    <div class="fnset">
+      <p class="label">What it connects</p>
+      <h3 class="h3" style="margin-top:8px">Every function, on one live picture of the work.</h3>
+      <p class="prose">Today each function runs in its own tool, blind to the rest. In DiPGOS they all run on one live picture of the job — so schedule, cost, supply chain, quality and safety finally move together.</p>
+
+      <p class="kicker">Functions that run themselves — driven by the work, approved by you.</p>
+      <ul class="fn-list">
+        <li class="fn"><h4 class="fn__title">Autonomous scheduling</h4><p>The plan drives itself off the live process.</p></li>
+        <li class="fn"><h4 class="fn__title">Finance</h4><p>Cost and value move with the work.</p></li>
+        <li class="fn"><h4 class="fn__title">Supply chain</h4><p>Materials sequenced to the real plan.</p></li>
+        <li class="fn"><h4 class="fn__title">Risk management</h4><p>Exposure caught before it bites.</p></li>
+        <li class="fn"><h4 class="fn__title">Resource manager</h4><p>People and plant, put where they pay.</p></li>
+        <li class="fn"><h4 class="fn__title">Document manager</h4><p>The right revision, tied to the work.</p></li>
+      </ul>
+      <div class="foundation">
+        <div>
+          <p class="label">The foundation</p>
+          <h4 class="foundation__title">Operational management</h4>
+          <p>How the work is actually going, on the ground — captured live, where delivery is won or lost.</p>
+        </div>
+        <ul class="pillars">
+          <li>Productivity</li>
+          <li>Quality</li>
+          <li>Health &amp; safety</li>
+        </ul>
+      </div>
+      <p class="close-line">The intelligence does the heavy lifting; you approve. Every function runs itself — and you stay in command.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Why we built it -->
+<section class="section" id="conviction" data-section>
+  <div class="wrap">
+    <h2 class="h2">We built the world. But never built the machine that builds it.</h2>
+    <div class="conv-cols">
+      <p>Roads, dams, cities, power plants, buildings — every physical thing around us was delivered by engineering and construction. It is the largest industry on earth: <span class="hl">$15 trillion a year</span>. And its greatest work is still ahead — <span class="hl">the build now coming is the largest in the history of human civilisation.</span></p>
+      <p>What keeps us up at night is one question: <span class="hl">how will the world deliver it?</span> The industry carrying humanity’s future still fights the battles it has always fought — productivity stalled for decades, cost and schedule overruns the norm rather than the exception, quality failures still making headlines.</p>
+    </div>
+    <blockquote class="pull">
+      <p>The answer is not another tool on the pile. The industry has thousands of tools — each holding a fragment of the project. What’s missing is <span class="hl">the machine</span>: an operating system, one place where every part of a project connects, understands itself, and acts. Connect the work, and it begins to think.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- 6 · Applied AI -->
+<section class="section" id="ai" data-section>
+  <div class="wrap">
+    <div class="ai-head">
+      <h2 class="h2">AI can only act on ground it understands. We build the ground.</h2>
+      <div>
+        <p class="prose">Everyone is racing to put AI to work. But an agent is only as good as what it understands — and in construction, that understanding never existed.</p>
+        <p class="prose">DiPGOS builds the layers AI must stand on: the meaning, the relationships, the operational sciences and the physics of the work. Give AI that ground, and it can finally reason and act on real projects.</p>
+        <p class="prose">Electricity. The internet. AI. The value was never in the raw technology — it was in the application layer built on top. We are that applied layer for engineering &amp; construction.</p>
+      </div>
+    </div>
+
+    <div class="strata">
+      <div class="stratum stratum--ai">
+        <h3 class="stratum__title">Applied AI — human in command</h3>
+        <p>AI does the heavy lifting; your engineers stay in command.</p>
+      </div>
+      <p class="strata__on label">stands on</p>
+      <div class="strata__ground">
+        <div class="stratum stratum--1">
+          <h3 class="stratum__title">Semantic &amp; knowledge layer</h3>
+          <p>The meaning and context of your project.</p>
+        </div>
+        <div class="stratum stratum--2">
+          <h3 class="stratum__title">Operational relationships</h3>
+          <p>How work sequences, depends and constrains.</p>
+        </div>
+        <div class="stratum stratum--3">
+          <h3 class="stratum__title">Physics &amp; operational sciences</h3>
+          <p>How things really behave on the ground.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · Company -->
+<section class="section" id="company" data-section>
+  <div class="wrap company">
+    <div>
+      <h2 class="h2">We lived the problem before we built the answer.</h2>
+      <p class="prose">Indus is built by engineers and builders who spent their careers inside real projects — feeling the gridlock first-hand. We’re not software people guessing at the industry. We’re industry people building the system we always needed.</p>
+      <div class="founder">
+        <p class="label">Founded by</p>
+        <p class="founder__name">M. Kamran Basit</p>
+        <p class="founder__role">Founder &amp; CEO</p>
+      </div>
+    </div>
+    <ul class="facts">
+      <li><span class="todo">[20+ years delivering hydropower &amp; infrastructure]</span></li>
+      <li><span class="todo">[N projects run on DiPGOS]</span></li>
+      <li><span class="todo">[Flagship: Diamer-Basha dam, MW-1]</span></li>
+      <li><span class="todo">[Offices: Islamabad and USA]</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8 · Contact -->
+<section class="contact" id="contact" data-section>
+  <div class="wrap">
+    <h2 class="contact__title">Let’s shape the future of how the world <span class="accent">gets built</span>.</h2>
+    <div class="addr no-js-hide">
+      <p class="label" id="addr-label">Write to</p>
+      <p class="addr__text" id="addr" aria-labelledby="addr-label"></p>
+      <div class="addr__actions">
+        <a class="btn btn--primary" id="email-btn" href="#contact" data-u="kamran" data-d="industechsol.com">Email us</a>
+        <button class="btn btn--quiet" id="copy-btn" type="button">Copy</button>
+        <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+    <noscript><p class="fallback">JavaScript is off, so this button can’t open your mail app. Write to <span class="hl">kamran (at) industechsol.com</span>.</p></noscript>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <span class="wordmark" style="font-size:32px" aria-hidden="true"><span class="wordmark__i">ı<span class="wordmark__dot"></span></span>ndus</span><span class="sr-only">Indus</span>
+        <p class="footer__tagline">The world’s oldest industry, reimagined from the ground up.</p>
+      </div>
+      <nav aria-label="Footer">
+        <p class="label">Explore</p>
+        <ul class="footer__list">
+          <li><a href="#dipgos">DiPGOS</a></li>
+          <li><a href="#conviction">Our conviction</a></li>
+          <li><a href="#ai">Applied &amp; physical AI</a></li>
+          <li><a href="#company">Company</a></li>
+        </ul>
+      </nav>
+      <div>
+        <p class="label">Contact</p>
+        <ul class="footer__list">
+          <li><a href="#contact">Get in touch</a></li>
+          <li><span>Indus Technology Solutions (Pvt) Ltd</span></li>
+          <li><span>Indus Technologies LLC, USA</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Indus Technology Solutions. All rights reserved.</span>
+      <span class="footer__motto">The project thinks; the human commands.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="mock-tag" href="index.html">Mock B · The command centre is the page · ← all mocks</a>
+
+<script>
+(function () {
+  /* ---- mobile menu ---- */
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('nav-links');
+  function setMenu(open) {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+  toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('is-open')); });
+  links.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+
+  /* ---- scroll spy: active link follows the section in view,
+          and clears on the hero, contact and footer ---- */
+  var spyLinks = Array.prototype.slice.call(document.querySelectorAll('[data-spy]'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
+  var scrolly = document.getElementById('scrolly');
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var ticking = false;
+
+  function update() {
+    ticking = false;
+    var line = window.innerHeight * 0.4;
+    var current = null;
+    sections.forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) current = s.id;
+    });
+    spyLinks.forEach(function (a) {
+      if (a.dataset.spy === current) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+
+    /* ---- region highlighting ---- */
+    var trigger = window.innerHeight * 0.58;
+    var active = 0;
+    steps.forEach(function (st) {
+      if (st.getBoundingClientRect().top < trigger) active = +st.dataset.step;
+    });
+    if (scrolly.getBoundingClientRect().bottom < window.innerHeight * 0.25) active = 0;
+    if (scrolly.dataset.active !== String(active)) {
+      scrolly.dataset.active = String(active);
+      steps.forEach(function (st) { st.classList.toggle('is-active', +st.dataset.step === active); });
+    }
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+
+  /* ---- contact: the address is assembled here, never written in the source ---- */
+  var btn = document.getElementById('email-btn');
+  var addr = btn.dataset.u + '@' + btn.dataset.d;
+  document.getElementById('addr').textContent = addr;
+  btn.href = ['mail', 'to:'].join('') + addr;
+
+  var copyBtn = document.getElementById('copy-btn');
+  var status = document.getElementById('copy-status');
+  var timer;
+  function selectAddr() {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById('addr'));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  }
+  function confirmCopy(ok) {
+    clearTimeout(timer);
+    if (ok) {
+      copyBtn.textContent = 'Copied';
+      status.innerHTML = '<span class="sr-only">Address copied</span>';
+    } else {
+      selectAddr();
+      status.textContent = 'Address selected. Copy it with your keyboard.';
+    }
+    timer = setTimeout(function () { copyBtn.textContent = 'Copy'; status.textContent = ''; }, 2600);
+  }
+  copyBtn.addEventListener('click', function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(addr).then(function () { confirmCopy(true); }, function () { confirmCopy(false); });
+    } else {
+      confirmCopy(false);
+    }
+  });
+})();
+</script>
+</body>
+</html>

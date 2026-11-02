@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus redesign mocks</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #0A1424; --panel: #0F1D33; --line: rgba(157,176,196,.18);
+  --text: #D3DCE6; --muted: #9DB0C4; --bone: #FBF9F4; --amber: #E8A020;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 16px/1.55 var(--sans); padding: clamp(24px, 5vw, 64px) clamp(16px, 5vw, 64px) 96px; }
+.wrap { max-width: 1280px; margin: 0 auto; }
+h1 { font: 600 clamp(32px, 5vw, 52px)/1.1 var(--serif); color: var(--bone); letter-spacing: -.5px; }
+h2 { font: 600 26px/1.2 var(--serif); color: var(--bone); margin: 64px 0 16px; }
+h3 { font: 600 24px/1.2 var(--serif); color: var(--bone); }
+p, li { max-width: 68ch; }
+.intro { margin-top: 16px; color: var(--muted); }
+.intro b { color: var(--text); }
+a { color: var(--bone); }
+a:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+code { font-size: .92em; color: var(--bone); }
+
+.grid { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 580px), 1fr)); margin-top: 40px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.card__shots { display: grid; grid-template-columns: 1fr 30%; gap: 10px; align-items: start; }
+.card__shots img { width: 100%; height: auto; display: block; border-radius: 6px; border: 1px solid var(--line); }
+.card__shots .phone { aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+.card__tag { color: var(--amber); font-weight: 600; font-size: 14px; }
+.card__idea { color: var(--bone); }
+.card dl { display: grid; grid-template-columns: 8.5em 1fr; gap: 6px 14px; font-size: 14.5px; }
+.card dt { color: var(--muted); }
+.card ul { padding-left: 1.1em; font-size: 14.5px; display: grid; gap: 4px; }
+.card .pro li::marker { content: '+  '; color: #6fcf97; }
+.card .con li::marker { content: '–  '; color: #eb8a8a; }
+.open { margin-top: auto; display: inline-flex; align-self: flex-start; background: var(--amber); color: #0A1424; font-weight: 700; padding: 11px 20px; border-radius: 999px; text-decoration: none; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14.5px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { color: var(--bone); background: var(--panel); }
+tbody th { color: var(--muted); font-weight: 500; white-space: nowrap; }
+tr:last-child > * { border-bottom: 0; }
+.num { font-variant-numeric: tabular-nums; }
+
+ol, .list { padding-left: 1.2em; display: grid; gap: 8px; }
+.note { color: var(--muted); font-size: 14.5px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Four directions for industechsol.com</h1>
+  <p class="intro">Each mock is a complete, responsive page. They all use the site’s current copy and fix everything in the <a href="../design-audit-2026-09-25/README.md">design audit</a>. They differ in <b>layout, page order, typography and the one signature element</b>. Open each on a desktop and on a phone. Choose one direction, or mix parts of them (see the end of this page), and it gets built into the real site.</p>
+  <p class="note">View them through the local server (<code>npm run serve</code>, then <code>/docs/redesign-mocks/</code>). Opening the files directly also works, but the web fonts need a network connection. Anything outlined with an amber dashed border and marked “needs owner input” is a placeholder, not a fact.</p>
+
+  <div class="grid">
+    <article class="card">
+      <span class="card__tag">Mock A · Proof up front</span>
+      <div class="card__shots">
+        <img src="shots/a-proof-desktop-fold.png" alt="Mock A desktop first screen: headline left, command centre crop bleeding off the right edge" loading="lazy">
+        <img class="phone" src="shots/a-proof-phone-fold.png" alt="Mock A phone first screen" loading="lazy">
+      </div>
+      <h3>The evolution</h3>
+      <p class="card__idea">Today’s site with the audit fixed. The one real change is that the product shows up in the first screen.</p>
+      <dl>
+        <dt>Signature</dt><dd>A readable crop of the command centre enters from the right and bleeds off the edge</dd>
+        <dt>Order</dt><dd>Unchanged: Hero · Conviction · DiPGOS · AI · Company · Contact</dd>
+        <dt>Type</dt><dd>Gelasio + Schibsted Grotesk</dd>
+        <dt>Loop</dt><dd>Ring of five stations with an amber return arc (a list on phones)</dd>
+      </dl>
+      <ul class="pro"><li>Lowest risk, and the fastest to build from today’s code</li><li>Visitors who know the current site will recognise it</li></ul>
+      <ul class="con"><li>The least distinctive of the four</li><li>The manifesto still comes before the full product explanation</li></ul>
+      <a class="open" href="a-proof.html">Open mock A</a>
+    </article>
+
+    <article class="card">
+      <span class="card__tag">Mock B · The command centre is the page</span>
+      <div class="card__shots">
+        <img src="shots/b-canvas-desktop-fold.png" alt="Mock B desktop first screen: full-bleed command centre with the headline in an ink panel" loading="lazy">
+        <img class="phone" src="shots/b-canvas-phone-fold.png" alt="Mock B phone first screen" loading="lazy">
+      </div>
+      <h3>Show, then argue</h3>
+      <p class="card__idea">The product is the hero. A sticky, annotated walkthrough explains it region by region, and only then does the page make its case.</p>
+      <dl>
+        <dt>Signature</dt><dd>Sticky screenshot. Each step outlines its region in the product’s signal blue and dims the rest</dd>
+        <dt>Order</dt><dd>Product · Walkthrough · Loop · Functions · Why (Conviction) · AI · Company · Contact</dd>
+        <dt>Type</dt><dd>Gelasio + Hanken Grotesk</dd>
+        <dt>Loop</dt><dd>Racetrack band with a return lane</dd>
+      </dl>
+      <ul class="pro"><li>The strongest proof: a buyer sees the real system within 0.1 screens</li><li>The walkthrough turns a dense screenshot into something people can follow</li></ul>
+      <ul class="con"><li>The longest page (12.4 screens on a phone)</li><li>It depends entirely on one screenshot. A second product view would help</li><li>Which regions steps 4 and 5 point at is a guess and needs confirming</li></ul>
+      <a class="open" href="b-canvas.html">Open mock B</a>
+    </article>
+
+    <article class="card">
+      <span class="card__tag">Mock C · The loop</span>
+      <div class="card__shots">
+        <img src="shots/c-loop-desktop-fold.png" alt="Mock C desktop first screen: headline left, loop diagram with the DiPGOS mark at its hub on the right" loading="lazy">
+        <img class="phone" src="shots/c-loop-phone-fold.png" alt="Mock C phone first screen" loading="lazy">
+      </div>
+      <h3>Editorial long-read</h3>
+      <p class="card__idea">The idea leads. The loop grows out of the DiPGOS mark in the hero, and the page reads like a considered essay set in Gelasio.</p>
+      <dl>
+        <dt>Signature</dt><dd>A hub-and-ring loop built from the brand mark, with one highlight travelling round it</dd>
+        <dt>Order</dt><dd>Hero (loop) · DiPGOS · Conviction · AI · Company (a signed founder statement) · Contact</dd>
+        <dt>Type</dt><dd>Gelasio for body text too; Instrument Sans for UI only</dd>
+        <dt>Loop</dt><dd>It is the hero</dd>
+      </dl>
+      <ul class="pro"><li>The most ownable image: the mark and the method become one picture</li><li>The founder statement gives the Company section a human voice</li></ul>
+      <ul class="con"><li>The product only appears after 1.9 screens on desktop and 2.7 on a phone</li><li>Serif body text is slower to scan for busy readers</li><li>The desktop margin rail sits empty in places</li></ul>
+      <a class="open" href="c-loop.html">Open mock C</a>
+    </article>
+
+    <article class="card">
+      <span class="card__tag">Mock D · Drawing sheet</span>
+      <div class="card__shots">
+        <img src="shots/d-sheet-desktop-fold.png" alt="Mock D desktop first screen: light drafting sheet with the headline, and the command centre in an ink band below" loading="lazy">
+        <img class="phone" src="shots/d-sheet-phone-fold.png" alt="Mock D phone first screen" loading="lazy">
+      </div>
+      <h3>Engineering drawing, light</h3>
+      <p class="card__idea">It speaks the audience’s own visual language: a flowchart for the loop, a hatched section-cut for the AI stack, and a drawing title block as the footer.</p>
+      <dl>
+        <dt>Signature</dt><dd>Construction-drawing vernacular, with dimension lines marking What / Where / How on the product</dd>
+        <dt>Order</dt><dd>Hero · Command centre · DiPGOS · Conviction · AI · Company · Contact</dd>
+        <dt>Type</dt><dd>Gelasio + Public Sans, with tabular figures</dd>
+        <dt>Loop</dt><dd>Process flow with a return line from Act to Sense</dd>
+      </dl>
+      <ul class="pro"><li>The most distinctive direction. Engineers read it as “made by people like us”</li><li>The shortest page on desktop (8.1 screens)</li></ul>
+      <ul class="con"><li>The biggest break from the current brand: light instead of dark</li><li>The brand assets were drawn for dark backgrounds, so the mark sits on an ink tile</li><li>The most work to build</li></ul>
+      <a class="open" href="d-sheet.html">Open mock D</a>
+    </article>
+  </div>
+
+  <h2>Side by side</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Today</th><th>A · Proof up front</th><th>B · Command centre</th><th>C · The loop</th><th>D · Drawing sheet</th></tr></thead>
+      <tbody class="num">
+        <tr><th>Product first seen, desktop</th><td>4.9 screens</td><td>0.1</td><td>0.1</td><td>1.9</td><td>0.7</td></tr>
+        <tr><th>Product first seen, phone</th><td>6.5 screens</td><td>0.6</td><td>0.1</td><td>2.7</td><td>1.3</td></tr>
+        <tr><th>Page length, desktop</th><td>9.2 screens</td><td>9.4</td><td>10.5</td><td>8.7</td><td>8.1</td></tr>
+        <tr><th>Page length, phone</th><td>10.8 screens</td><td>11.3</td><td>12.4</td><td>11.7</td><td>11.1</td></tr>
+        <tr><th>Theme</th><td>Dark</td><td>Dark</td><td>Dark + signal blue</td><td>Deeper dark</td><td>Light sheet, ink bands</td></tr>
+        <tr><th>Body typeface</th><td>Arial</td><td>Schibsted Grotesk</td><td>Hanken Grotesk</td><td>Gelasio (serif)</td><td>Public Sans</td></tr>
+        <tr><th>Build effort from today</th><td>—</td><td>Small</td><td>Large (scroll logic, crops)</td><td>Medium (diagram, rail)</td><td>Large (new theme, diagrams)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Screens are measured at 1440×900 and 390×844. Every mock is <b>longer on phones than today</b>, because the command centre is now shown as three readable crops instead of one thumbnail. Trimming that is part of the build, whichever direction you choose.</p>
+
+  <h2>Fixed in every mock</h2>
+  <ul class="list">
+    <li>One container, so the nav, hero, sections and footer share the same edges. Paragraphs run about 65 characters or fewer at every width.</li>
+    <li>Solid amber appears only on buttons. Amber highlighted words appear only in the hero and contact headlines.</li>
+    <li>One small label style, with no numbered eyebrows or ghost numerals. Numbers are kept only on the five loop steps.</li>
+    <li>The loop is drawn as a cycle, and the AI layers are drawn as a stack that rests on its base.</li>
+    <li>The command centre is readable on a 390px phone, UI text is never cropped, and the markers tie Where / What / How to the image.</li>
+    <li>The contact address shows as text and has a Copy button (the page script still assembles it, so it never appears in the source). There’s one <b>Email us</b> button, and <b>Get in touch</b> is used everywhere else.</li>
+    <li>The nav highlight clears on the hero and contact sections. The mobile menu is opaque. No wrapping text has a line-height of 1.</li>
+    <li>Sentence case and UK spelling throughout. Duplicate labels and the extra taglines are gone. Otherwise the copy is today’s, word for word.</li>
+  </ul>
+
+  <h2>Mixing is allowed</h2>
+  <p>The signatures are independent. These combinations would work:</p>
+  <ul class="list">
+    <li><b>A + C’s loop.</b> Today’s structure with the product up front, and the brand-mark loop as the centrepiece of the DiPGOS section.</li>
+    <li><b>B + D’s section-cut and title block.</b> The product-led walkthrough, with the drawing diagrams kept on the dark theme.</li>
+    <li><b>Any mock + C’s founder statement.</b> It works in every layout.</li>
+  </ul>
+
+  <h2>Needs your input, whichever you pick</h2>
+  <ol>
+    <li><b>Diamer-Basha:</b> can the project be named? It already appears in the screenshot’s breadcrumb.</li>
+    <li><b>Company facts:</b> years, number of projects, flagship project, offices. Every fact in the mocks is a bracketed placeholder.</li>
+    <li><b>Spelling:</b> the mocks use UK English (“centre”, “programme”, “civilisation”). Say if you want US English.</li>
+    <li><b>Mock B only:</b> confirm which parts of the screen “Action &amp; command” and “Decision intelligence” live in.</li>
+  </ol>
+</main>
+</body>
+</html>
